@@ -40,3 +40,19 @@
 - 更新了mainwindow.cpp以使用DataSynchronizer
 - 实现了完整的数据流：从设备采集 -> 通道处理 -> 数据同步
 - 更新了CMakeLists.txt以包含新文件
+
+## 五、实时数据可视化
+- 添加了QCustomPlot库到项目中：
+  - 更新了CMakeLists.txt以包含QCustomPlot源文件
+  - 添加了Qt PrintSupport模块以支持QCustomPlot的PDF导出功能
+- 实现了UI控制功能：
+  - 添加了开始/停止采集按钮
+  - 实现了采集状态控制逻辑
+- 实现了实时数据绘图功能：
+  - 为每个通道创建一条曲线
+  - 实现了数据点添加和图表更新逻辑
+  - 添加了自动缩放和时间轴滚动功能
+- 优化了UI布局：
+  - 使用QVBoxLayout和QHBoxLayout组织控件
+  - 设置了合适的窗口大小和标题
+- 实现了完整的数据流：从设备采集 -> 通道处理 -> 数据同步 -> 实时显示

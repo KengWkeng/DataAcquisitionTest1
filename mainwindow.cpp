@@ -8,6 +8,10 @@
 #include <QJsonArray>
 #include <QFile>
 #include <QDateTime>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QRandomGenerator>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -15,6 +19,11 @@ MainWindow::MainWindow(QWidget *parent)
     , m_configManager(nullptr)
     , m_deviceManager(nullptr)
     , m_dataSynchronizer(nullptr)
+    , m_startStopButton(nullptr)
+    , m_plot(nullptr)
+    , m_isAcquiring(false)
+    , m_plotUpdateTimer(nullptr)
+    , m_startTimestamp(0)
 {
     ui->setupUi(this);
 
@@ -26,6 +35,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 初始化处理
     initializeProcessing();
+
+    // 初始化UI
+    initializeUI();
 
     // 测试配置管理器
     testConfigManager();
@@ -39,6 +51,13 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    // 停止图表更新定时器
+    if (m_plotUpdateTimer) {
+        m_plotUpdateTimer->stop();
+        delete m_plotUpdateTimer;
+        m_plotUpdateTimer = nullptr;
+    }
+
     // 清理数据同步器
     if (m_dataSynchronizer) {
         // 停止同步
@@ -373,19 +392,7 @@ void MainWindow::onProcessedDataPointReady(QString channelId, Core::ProcessedDat
              << "状态:" << Core::statusCodeToString(dataPoint.status);
 }
 
-void MainWindow::onSyncFrameReady(Core::SynchronizedDataFrame frame)
-{
-    // 将时间戳转换为可读格式
-    QString timeStr = frame.getFormattedTimestamp();
-
-    // 输出同步数据帧信息
-    qDebug() << "同步数据帧 [" << timeStr << "] 通道数量:" << frame.channelData.size();
-
-    // 打印每个通道的数据
-    for (auto it = frame.channelData.constBegin(); it != frame.channelData.constEnd(); ++it) {
-        qDebug() << "  通道:" << it.key() << "值:" << it.value().value << it.value().unit;
-    }
-}
+// 旧的onSyncFrameReady方法已被替换为新的实现，位于文件末尾
 
 void MainWindow::onChannelStatusChanged(QString channelId, Core::StatusCode status, QString message)
 {
@@ -399,4 +406,200 @@ void MainWindow::onProcessingError(QString errorMsg)
 {
     // 输出处理错误信息
     qDebug() << "处理错误:" << errorMsg;
+}
+
+void MainWindow::initializeUI()
+{
+    // 设置窗口标题
+    setWindowTitle("数据采集系统");
+
+    // 创建中央部件和布局
+    QWidget* centralWidget = new QWidget(this);
+    QVBoxLayout* mainLayout = new QVBoxLayout(centralWidget);
+
+    // 创建控制面板
+    QHBoxLayout* controlLayout = new QHBoxLayout();
+
+    // 创建开始/停止按钮
+    m_startStopButton = new QPushButton("开始采集", this);
+    connect(m_startStopButton, &QPushButton::clicked, this, &MainWindow::onStartStopButtonClicked);
+    controlLayout->addWidget(m_startStopButton);
+
+    // 添加弹簧
+    controlLayout->addStretch();
+
+    // 添加控制面板到主布局
+    mainLayout->addLayout(controlLayout);
+
+    // 创建图表
+    m_plot = new QCustomPlot(this);
+    mainLayout->addWidget(m_plot);
+
+    // 设置中央部件
+    setCentralWidget(centralWidget);
+
+    // 设置图表
+    setupPlot();
+
+    // 创建图表更新定时器
+    m_plotUpdateTimer = new QTimer(this);
+    connect(m_plotUpdateTimer, &QTimer::timeout, this, &MainWindow::updatePlot);
+    m_plotUpdateTimer->setInterval(100); // 100ms更新一次图表
+}
+
+void MainWindow::setupPlot()
+{
+    // 设置图表标题
+    m_plot->plotLayout()->insertRow(0);
+    m_plot->plotLayout()->addElement(0, 0, new QCPTextElement(m_plot, "通道数据实时显示", QFont("sans", 12, QFont::Bold)));
+
+    // 设置坐标轴标签
+    m_plot->xAxis->setLabel("时间 (秒)");
+    m_plot->yAxis->setLabel("值");
+
+    // 设置图例可见
+    m_plot->legend->setVisible(true);
+
+    // 允许用户交互
+    m_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+
+    // 设置坐标轴范围
+    m_plot->xAxis->setRange(0, 10);
+    m_plot->yAxis->setRange(-10, 10);
+
+    // 添加通道到图表
+    if (m_dataSynchronizer) {
+        QMap<QString, Processing::Channel*> channels = m_dataSynchronizer->getChannels();
+
+        // 定义一些颜色
+        QVector<QColor> colors = {
+            QColor(255, 0, 0),      // 红色
+            QColor(0, 0, 255),      // 蓝色
+            QColor(0, 128, 0),      // 绿色
+            QColor(128, 0, 128),    // 紫色
+            QColor(255, 165, 0),    // 橙色
+            QColor(0, 128, 128),    // 青色
+            QColor(128, 0, 0),      // 深红色
+            QColor(0, 0, 128)       // 深蓝色
+        };
+
+        int colorIndex = 0;
+        for (auto it = channels.constBegin(); it != channels.constEnd(); ++it) {
+            QString channelId = it.key();
+            QString channelName = it.value()->getChannelName();
+            QColor color = colors[colorIndex % colors.size()];
+
+            addChannelToPlot(channelId, channelName, color);
+            colorIndex++;
+        }
+    }
+}
+
+void MainWindow::addChannelToPlot(const QString& channelId, const QString& channelName, const QColor& color)
+{
+    // 创建新的图表
+    QCPGraph* graph = m_plot->addGraph();
+    graph->setName(channelName);
+
+    // 设置图表样式
+    QPen pen;
+    pen.setColor(color);
+    pen.setWidth(2);
+    graph->setPen(pen);
+
+    // 存储图表对象
+    m_channelGraphs[channelId] = graph;
+
+    // 初始化数据容器
+    m_timeData[channelId] = QVector<double>();
+    m_valueData[channelId] = QVector<double>();
+
+    // 重绘图表
+    m_plot->replot();
+}
+
+void MainWindow::onStartStopButtonClicked()
+{
+    if (!m_dataSynchronizer || !m_deviceManager) {
+        qDebug() << "数据同步器或设备管理器未初始化!";
+        return;
+    }
+
+    if (m_isAcquiring) {
+        // 停止采集
+        m_deviceManager->stopAllDevices();
+        m_dataSynchronizer->stopSync();
+        m_plotUpdateTimer->stop();
+
+        m_startStopButton->setText("开始采集");
+        m_isAcquiring = false;
+
+        qDebug() << "停止数据采集";
+    } else {
+        // 开始采集
+        // 清除所有通道的数据
+        for (auto it = m_channelGraphs.begin(); it != m_channelGraphs.end(); ++it) {
+            m_timeData[it.key()].clear();
+            m_valueData[it.key()].clear();
+            it.value()->data()->clear();
+        }
+
+        // 记录开始时间戳
+        m_startTimestamp = QDateTime::currentMSecsSinceEpoch();
+
+        // 启动设备和同步
+        m_deviceManager->startAllDevices();
+        m_dataSynchronizer->startSync();
+        m_plotUpdateTimer->start();
+
+        m_startStopButton->setText("停止采集");
+        m_isAcquiring = true;
+
+        qDebug() << "开始数据采集";
+    }
+}
+
+void MainWindow::updatePlot()
+{
+    // 重绘图表
+    m_plot->replot();
+}
+
+void MainWindow::onSyncFrameReady(Core::SynchronizedDataFrame frame)
+{
+    // 将时间戳转换为可读格式
+    QString timeStr = frame.getFormattedTimestamp();
+
+    // 计算相对时间（秒）
+    double relativeTime = (frame.timestamp - m_startTimestamp) / 1000.0;
+
+    // 输出同步数据帧信息
+    qDebug() << "同步数据帧 [" << timeStr << "] 通道数量:" << frame.channelData.size();
+
+    // 处理每个通道的数据
+    for (auto it = frame.channelData.constBegin(); it != frame.channelData.constEnd(); ++it) {
+        QString channelId = it.key();
+        double value = it.value().value;
+
+        // 检查通道是否存在于图表中
+        if (m_channelGraphs.contains(channelId)) {
+            // 添加数据点
+            m_timeData[channelId].append(relativeTime);
+            m_valueData[channelId].append(value);
+
+            // 更新图表数据
+            m_channelGraphs[channelId]->setData(m_timeData[channelId], m_valueData[channelId]);
+
+            // 自动调整X轴范围以显示最新数据
+            if (m_timeData[channelId].size() > 0) {
+                double maxTime = m_timeData[channelId].last();
+                m_plot->xAxis->setRange(maxTime - 10, maxTime);
+            }
+
+            qDebug() << "  通道:" << channelId << "值:" << value << it.value().unit;
+        }
+    }
+
+    // 自动调整Y轴范围
+    m_plot->rescaleAxes();
 }
