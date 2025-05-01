@@ -31,13 +31,18 @@
 - 实现了Processing模块：
   - 创建了Channel类，用于处理和存储单个通道的数据
   - 创建了DataSynchronizer类，用于同步和处理来自不同设备的数据
+  - 创建了DataProcessor类，统一管理数据同步和通道计算
 - 实现了数据处理功能：
   - 增益和偏移应用
   - 校准多项式应用（立方校准）
 - 实现了数据同步功能：
   - 定时创建同步数据帧
   - 将所有通道的最新数据组合到一个帧中
-- 更新了mainwindow.cpp以使用DataSynchronizer
+- 实现了线程管理：
+  - 将DataProcessor移至独立线程
+  - 使用Qt::QueuedConnection确保线程安全
+  - 添加线程ID调试输出
+- 更新了mainwindow.cpp以使用DataProcessor
 - 实现了完整的数据流：从设备采集 -> 通道处理 -> 数据同步
 - 更新了CMakeLists.txt以包含新文件
 

@@ -370,6 +370,12 @@
 			null
 		],
 		[
+			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataProcessor.h",
+			"MU",
+			"ZOB7DK4HPL/moc_DataProcessor.cpp",
+			null
+		],
+		[
 			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataSynchronizer.h",
 			"MU",
 			"ZOB7DK4HPL/moc_DataSynchronizer.cpp",
@@ -467,6 +473,11 @@
 		],
 		[
 			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/Channel.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataProcessor.cpp",
 			"MU",
 			null
 		],

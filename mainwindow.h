@@ -5,9 +5,10 @@
 #include <QPushButton>
 #include <QTimer>
 #include <QMap>
+#include <QThread>
 #include "Config/ConfigManager.h"
 #include "Device/DeviceManager.h"
-#include "Processing/DataSynchronizer.h"
+#include "Processing/DataProcessor.h"
 #include "plot/qcustomplot.h"
 
 QT_BEGIN_NAMESPACE
@@ -59,7 +60,8 @@ private:
     Ui::MainWindow *ui;
     Config::ConfigManager *m_configManager;
     Device::DeviceManager *m_deviceManager;
-    Processing::DataSynchronizer *m_dataSynchronizer;
+    Processing::DataProcessor *m_dataProcessor;
+    QThread *m_processorThread;
 
     // UI 组件
     QPushButton *m_startStopButton;

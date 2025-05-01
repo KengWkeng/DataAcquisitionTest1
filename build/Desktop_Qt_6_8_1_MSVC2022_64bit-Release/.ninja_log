@@ -1,0 +1,22 @@
+# ninja log v6
+11	814	7678129072640827	DataAcquisitionTest1_autogen/timestamp	4971fe5c33556b38
+11	814	7678129072640827	DataAcquisitionTest1_autogen/mocs_compilation.cpp	4971fe5c33556b38
+11	814	7678129072640827	C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022_64bit-Release/DataAcquisitionTest1_autogen/timestamp	4971fe5c33556b38
+11	814	7678129072640827	C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022_64bit-Release/DataAcquisitionTest1_autogen/mocs_compilation.cpp	4971fe5c33556b38
+828	1930	7678129073387058	CMakeFiles/DataAcquisitionTest1.dir/Device/AbstractDevice.cpp.obj	22b56516f970256e
+836	1933	7678129073467217	CMakeFiles/DataAcquisitionTest1.dir/Processing/Channel.cpp.obj	a970a9f18fcb0b1
+838	2079	7678129073497270	CMakeFiles/DataAcquisitionTest1.dir/Processing/DataSynchronizer.cpp.obj	b0cc5de918601d58
+830	2307	7678129073412115	CMakeFiles/DataAcquisitionTest1.dir/Device/VirtualDevice.cpp.obj	eba426cd83eaff85
+833	2486	7678129073442186	CMakeFiles/DataAcquisitionTest1.dir/Device/DeviceManager.cpp.obj	507a743bf9de928
+825	2511	7678129073351965	CMakeFiles/DataAcquisitionTest1.dir/Config/ConfigManager.cpp.obj	e7a80c1bc1fcdc81
+821	4653	7678129073321957	CMakeFiles/DataAcquisitionTest1.dir/main.cpp.obj	5160647ab72216e
+823	5065	7678129073341966	CMakeFiles/DataAcquisitionTest1.dir/mainwindow.cpp.obj	79e60e4328b3e591
+818	6649	7678129073291959	CMakeFiles/DataAcquisitionTest1.dir/DataAcquisitionTest1_autogen/mocs_compilation.cpp.obj	1e61458605079542
+841	8430	7678129073520615	CMakeFiles/DataAcquisitionTest1.dir/plot/qcustomplot.cpp.obj	b70361e6ec32faf6
+8430	8595	7678129149408945	DataAcquisitionTest1.exe	591ddab2d72ff01d
+21	818	7678142338001089	DataAcquisitionTest1_autogen/timestamp	4971fe5c33556b38
+21	818	7678142338001089	DataAcquisitionTest1_autogen/mocs_compilation.cpp	4971fe5c33556b38
+21	818	7678142338001089	C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022_64bit-Release/DataAcquisitionTest1_autogen/timestamp	4971fe5c33556b38
+21	818	7678142338001089	C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022_64bit-Release/DataAcquisitionTest1_autogen/mocs_compilation.cpp	4971fe5c33556b38
+822	4723	7678142338747718	CMakeFiles/DataAcquisitionTest1.dir/main.cpp.obj	5160647ab72216e
+819	6707	7678142338727714	CMakeFiles/DataAcquisitionTest1.dir/DataAcquisitionTest1_autogen/mocs_compilation.cpp.obj	1e61458605079542
