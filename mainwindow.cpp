@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , m_configManager(nullptr)
     , m_deviceManager(nullptr)
+    , m_dataSynchronizer(nullptr)
 {
     ui->setupUi(this);
 
@@ -23,15 +24,30 @@ MainWindow::MainWindow(QWidget *parent)
     // 初始化设备
     initializeDevices();
 
+    // 初始化处理
+    initializeProcessing();
+
     // 测试配置管理器
     testConfigManager();
 
     // 测试设备管理器
     testDeviceManager();
+
+    // 测试数据同步器
+    testDataSynchronizer();
 }
 
 MainWindow::~MainWindow()
 {
+    // 清理数据同步器
+    if (m_dataSynchronizer) {
+        // 停止同步
+        m_dataSynchronizer->stopSync();
+
+        delete m_dataSynchronizer;
+        m_dataSynchronizer = nullptr;
+    }
+
     // 清理设备管理器
     if (m_deviceManager) {
         // 停止所有设备
@@ -251,6 +267,77 @@ void MainWindow::testDeviceManager()
     }
 }
 
+void MainWindow::initializeProcessing()
+{
+    // 创建数据同步器
+    int syncIntervalMs = m_configManager ? m_configManager->getSynchronizationIntervalMs() : Core::DEFAULT_SYNC_INTERVAL_MS;
+    m_dataSynchronizer = new Processing::DataSynchronizer(syncIntervalMs, this);
+
+    // 连接数据同步器信号
+    connect(m_dataSynchronizer, &Processing::DataSynchronizer::processedDataPointReady,
+            this, &MainWindow::onProcessedDataPointReady);
+    connect(m_dataSynchronizer, &Processing::DataSynchronizer::syncFrameReady,
+            this, &MainWindow::onSyncFrameReady);
+    connect(m_dataSynchronizer, &Processing::DataSynchronizer::channelStatusChanged,
+            this, &MainWindow::onChannelStatusChanged);
+    connect(m_dataSynchronizer, &Processing::DataSynchronizer::errorOccurred,
+            this, &MainWindow::onProcessingError);
+
+    // 连接设备管理器信号到数据同步器
+    if (m_deviceManager) {
+        connect(m_deviceManager, &Device::DeviceManager::rawDataPointReady,
+                m_dataSynchronizer, &Processing::DataSynchronizer::onRawDataPointReceived);
+        connect(m_deviceManager, &Device::DeviceManager::deviceStatusChanged,
+                m_dataSynchronizer, &Processing::DataSynchronizer::onDeviceStatusChanged);
+    }
+
+    // 创建通道
+    if (m_configManager) {
+        QMap<QString, Core::ChannelConfig> channelConfigs = m_configManager->getChannelConfigs();
+        if (!channelConfigs.isEmpty()) {
+            bool success = m_dataSynchronizer->createChannels(channelConfigs);
+            if (success) {
+                qDebug() << "成功创建" << channelConfigs.size() << "个通道";
+            } else {
+                qDebug() << "创建通道失败!";
+            }
+        } else {
+            qDebug() << "没有通道配置";
+        }
+    }
+
+    qDebug() << "初始化处理模块完成";
+}
+
+void MainWindow::testDataSynchronizer()
+{
+    if (!m_dataSynchronizer) {
+        qDebug() << "数据同步器未初始化!";
+        return;
+    }
+
+    // 获取同步间隔
+    int syncInterval = m_dataSynchronizer->getSyncIntervalMs();
+    qDebug() << "数据同步间隔:" << syncInterval << "毫秒";
+
+    // 获取通道
+    QMap<QString, Processing::Channel*> channels = m_dataSynchronizer->getChannels();
+    qDebug() << "通道数量:" << channels.size();
+
+    // 打印每个通道的信息
+    for (auto it = channels.constBegin(); it != channels.constEnd(); ++it) {
+        qDebug() << "通道ID:" << it.key();
+        qDebug() << "  通道名称:" << it.value()->getChannelName();
+        qDebug() << "  设备ID:" << it.value()->getDeviceId();
+        qDebug() << "  硬件通道:" << it.value()->getHardwareChannel();
+        qDebug() << "  状态:" << Core::statusCodeToString(it.value()->getStatus());
+    }
+
+    // 启动同步
+    m_dataSynchronizer->startSync();
+    qDebug() << "启动数据同步";
+}
+
 void MainWindow::onRawDataPointReady(QString deviceId, QString hardwareChannel, double rawValue, qint64 timestamp)
 {
     // 将时间戳转换为可读格式
@@ -273,4 +360,43 @@ void MainWindow::onErrorOccurred(QString deviceId, QString errorMsg)
 {
     // 输出设备错误信息
     qDebug() << "设备错误 - 设备:" << deviceId << "错误:" << errorMsg;
+}
+
+void MainWindow::onProcessedDataPointReady(QString channelId, Core::ProcessedDataPoint dataPoint)
+{
+    // 将时间戳转换为可读格式
+    QString timeStr = QDateTime::fromMSecsSinceEpoch(dataPoint.timestamp).toString("hh:mm:ss.zzz");
+
+    // 输出处理后数据点信息
+    qDebug() << "处理后数据点 [" << timeStr << "] 通道:" << channelId
+             << "值:" << dataPoint.value << dataPoint.unit
+             << "状态:" << Core::statusCodeToString(dataPoint.status);
+}
+
+void MainWindow::onSyncFrameReady(Core::SynchronizedDataFrame frame)
+{
+    // 将时间戳转换为可读格式
+    QString timeStr = frame.getFormattedTimestamp();
+
+    // 输出同步数据帧信息
+    qDebug() << "同步数据帧 [" << timeStr << "] 通道数量:" << frame.channelData.size();
+
+    // 打印每个通道的数据
+    for (auto it = frame.channelData.constBegin(); it != frame.channelData.constEnd(); ++it) {
+        qDebug() << "  通道:" << it.key() << "值:" << it.value().value << it.value().unit;
+    }
+}
+
+void MainWindow::onChannelStatusChanged(QString channelId, Core::StatusCode status, QString message)
+{
+    // 输出通道状态变化信息
+    qDebug() << "通道状态变化 - 通道:" << channelId
+             << "状态:" << Core::statusCodeToString(status)
+             << "消息:" << message;
+}
+
+void MainWindow::onProcessingError(QString errorMsg)
+{
+    // 输出处理错误信息
+    qDebug() << "处理错误:" << errorMsg;
 }

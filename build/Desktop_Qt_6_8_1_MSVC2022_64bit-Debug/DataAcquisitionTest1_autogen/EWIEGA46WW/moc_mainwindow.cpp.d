@@ -5,6 +5,8 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/AbstractDevice.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/DeviceManager.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/VirtualDevice.h \
+  C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/Channel.h \
+  C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataSynchronizer.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QDateTime \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QDebug \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QFile \
@@ -13,7 +15,9 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QJsonObject \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QList \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QMap \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/QMutex \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QObject \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/QQueue \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QRandomGenerator \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QString \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QThread \
@@ -94,6 +98,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qmetacontainer.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qmetatype.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qminmax.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/qmutex.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qnamespace.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qnumeric.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qobject.h \
@@ -104,6 +109,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qpair.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qpoint.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qprocessordetection.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/qqueue.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qrandom.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qrect.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qrefcount.h \
@@ -147,6 +153,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qtnoop.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qtpreprocessorsupport.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qtresource.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/qtsan_impl.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qttranslation.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qttypetraits.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qtversion.h \

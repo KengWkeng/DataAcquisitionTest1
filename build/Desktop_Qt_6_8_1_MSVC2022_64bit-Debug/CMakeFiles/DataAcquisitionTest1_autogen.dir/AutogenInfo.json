@@ -353,6 +353,18 @@
 			null
 		],
 		[
+			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/Channel.h",
+			"MU",
+			"ZOB7DK4HPL/moc_Channel.cpp",
+			null
+		],
+		[
+			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataSynchronizer.h",
+			"MU",
+			"ZOB7DK4HPL/moc_DataSynchronizer.cpp",
+			null
+		],
+		[
 			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/mainwindow.h",
 			"MU",
 			"EWIEGA46WW/moc_mainwindow.cpp",
@@ -431,6 +443,16 @@
 		],
 		[
 			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/VirtualDevice.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/Channel.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataSynchronizer.cpp",
 			"MU",
 			null
 		],

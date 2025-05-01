@@ -121,7 +121,7 @@
       "signal_type": "sine",
       "amplitude": 5.0,
       "frequency": 10.0, 
-      "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+      "channel_params": { "gain": 2.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
     },
     {
       "instance_name": "Random_Noise_Source",

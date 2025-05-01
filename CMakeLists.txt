@@ -27,6 +27,10 @@ set(PROJECT_SOURCES
         Device/VirtualDevice.cpp
         Device/DeviceManager.h
         Device/DeviceManager.cpp
+        Processing/Channel.h
+        Processing/Channel.cpp
+        Processing/DataSynchronizer.h
+        Processing/DataSynchronizer.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
