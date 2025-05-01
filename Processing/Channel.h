@@ -97,13 +97,6 @@ public:
 
 signals:
     /**
-     * @brief 处理后数据点就绪信号
-     * @param channelId 通道ID
-     * @param dataPoint 处理后的数据点
-     */
-    void processedDataPointReady(QString channelId, Core::ProcessedDataPoint dataPoint);
-
-    /**
      * @brief 通道状态变化信号
      * @param channelId 通道ID
      * @param status 状态码

@@ -30,8 +30,6 @@ set(PROJECT_SOURCES
         Device/DeviceManager.cpp
         Processing/Channel.h
         Processing/Channel.cpp
-        Processing/DataSynchronizer.h
-        Processing/DataSynchronizer.cpp
         Processing/DataProcessor.h
         Processing/DataProcessor.cpp
         plot/qcustomplot.h

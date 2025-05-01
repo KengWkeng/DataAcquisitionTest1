@@ -58,10 +58,9 @@ static constexpr auto qt_meta_stringdata_ZN10Processing13DataProcessorE = QtMocH
     "rawValue",
     "timestamp",
     "onDeviceStatusChanged",
+    "performProcessing",
     "onChannelStatusChanged",
-    "onChannelError",
-    "onProcessedDataPointReady",
-    "onSyncFrameReady"
+    "onChannelError"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -73,7 +72,7 @@ Q_CONSTINIT static const uint qt_meta_data_ZN10Processing13DataProcessorE[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      10,   14, // methods
+       9,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -81,18 +80,17 @@ Q_CONSTINIT static const uint qt_meta_data_ZN10Processing13DataProcessorE[] = {
        4,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    2,   74,    2, 0x06,    1 /* Public */,
-       6,    1,   79,    2, 0x06,    4 /* Public */,
-       9,    3,   82,    2, 0x06,    6 /* Public */,
-      13,    1,   89,    2, 0x06,   10 /* Public */,
+       1,    2,   68,    2, 0x06,    1 /* Public */,
+       6,    1,   73,    2, 0x06,    4 /* Public */,
+       9,    3,   76,    2, 0x06,    6 /* Public */,
+      13,    1,   83,    2, 0x06,   10 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-      15,    4,   92,    2, 0x0a,   12 /* Public */,
-      20,    3,  101,    2, 0x0a,   17 /* Public */,
-      21,    3,  108,    2, 0x08,   21 /* Private */,
-      22,    2,  115,    2, 0x08,   25 /* Private */,
-      23,    2,  120,    2, 0x08,   28 /* Private */,
-      24,    1,  125,    2, 0x08,   31 /* Private */,
+      15,    4,   86,    2, 0x0a,   12 /* Public */,
+      20,    3,   95,    2, 0x0a,   17 /* Public */,
+      21,    0,  102,    2, 0x08,   21 /* Private */,
+      22,    3,  103,    2, 0x08,   22 /* Private */,
+      23,    2,  110,    2, 0x08,   26 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString, 0x80000000 | 4,    3,    5,
@@ -103,10 +101,9 @@ Q_CONSTINIT static const uint qt_meta_data_ZN10Processing13DataProcessorE[] = {
  // slots: parameters
     QMetaType::Void, QMetaType::QString, QMetaType::QString, QMetaType::Double, QMetaType::LongLong,   16,   17,   18,   19,
     QMetaType::Void, QMetaType::QString, 0x80000000 | 10, QMetaType::QString,   16,   11,   12,
+    QMetaType::Void,
     QMetaType::Void, QMetaType::QString, 0x80000000 | 10, QMetaType::QString,    3,   11,   12,
     QMetaType::Void, QMetaType::QString, QMetaType::QString,    3,   14,
-    QMetaType::Void, QMetaType::QString, 0x80000000 | 4,    3,    5,
-    QMetaType::Void, 0x80000000 | 7,    8,
 
        0        // eod
 };
@@ -146,6 +143,8 @@ Q_CONSTINIT const QMetaObject Processing::DataProcessor::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<QString, std::false_type>,
         QtPrivate::TypeAndForceComplete<Core::StatusCode, std::false_type>,
         QtPrivate::TypeAndForceComplete<QString, std::false_type>,
+        // method 'performProcessing'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'onChannelStatusChanged'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<QString, std::false_type>,
@@ -154,14 +153,7 @@ Q_CONSTINIT const QMetaObject Processing::DataProcessor::staticMetaObject = { {
         // method 'onChannelError'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<QString, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
-        // method 'onProcessedDataPointReady'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
-        QtPrivate::TypeAndForceComplete<Core::ProcessedDataPoint, std::false_type>,
-        // method 'onSyncFrameReady'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<Core::SynchronizedDataFrame, std::false_type>
+        QtPrivate::TypeAndForceComplete<QString, std::false_type>
     >,
     nullptr
 } };
@@ -177,10 +169,9 @@ void Processing::DataProcessor::qt_static_metacall(QObject *_o, QMetaObject::Cal
         case 3: _t->errorOccurred((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
         case 4: _t->onRawDataPointReceived((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[3])),(*reinterpret_cast< std::add_pointer_t<qint64>>(_a[4]))); break;
         case 5: _t->onDeviceStatusChanged((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<Core::StatusCode>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[3]))); break;
-        case 6: _t->onChannelStatusChanged((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<Core::StatusCode>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[3]))); break;
-        case 7: _t->onChannelError((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2]))); break;
-        case 8: _t->onProcessedDataPointReady((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<Core::ProcessedDataPoint>>(_a[2]))); break;
-        case 9: _t->onSyncFrameReady((*reinterpret_cast< std::add_pointer_t<Core::SynchronizedDataFrame>>(_a[1]))); break;
+        case 6: _t->performProcessing(); break;
+        case 7: _t->onChannelStatusChanged((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<Core::StatusCode>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[3]))); break;
+        case 8: _t->onChannelError((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2]))); break;
         default: ;
         }
     }
@@ -236,14 +227,14 @@ int Processing::DataProcessor::qt_metacall(QMetaObject::Call _c, int _id, void *
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 10)
+        if (_id < 9)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 10;
+        _id -= 9;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 10)
+        if (_id < 9)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 10;
+        _id -= 9;
     }
     return _id;
 }

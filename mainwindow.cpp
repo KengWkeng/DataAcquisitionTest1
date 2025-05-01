@@ -61,20 +61,17 @@ MainWindow::~MainWindow()
 
     // 清理数据处理器和线程
     if (m_dataProcessor) {
-        // 停止同步
-        m_dataProcessor->stopSync();
+        // 停止处理
+        m_dataProcessor->stopProcessing();
     }
 
     if (m_processorThread) {
-        // 退出线程并等待完成
+        // 停止并等待线程结束
         m_processorThread->quit();
         m_processorThread->wait();
-
         delete m_processorThread;
         m_processorThread = nullptr;
-
-        // 数据处理器会在线程结束时自动删除
-        m_dataProcessor = nullptr;
+        // m_dataProcessor 会在线程结束时自动删除
     }
 
     // 清理设备管理器
@@ -298,22 +295,21 @@ void MainWindow::testDeviceManager()
 
 void MainWindow::initializeProcessing()
 {
-    // 获取同步间隔
-    int syncIntervalMs = m_configManager ? m_configManager->getSynchronizationIntervalMs() : Core::DEFAULT_SYNC_INTERVAL_MS;
-
-    // 创建处理线程
-    m_processorThread = new QThread();
-    m_processorThread->setObjectName("DataProcessorThread");
+    // 创建数据处理器线程
+    m_processorThread = new QThread(this);
 
     // 创建数据处理器（不设置父对象，以便可以移动到线程）
+    int syncIntervalMs = m_configManager ? m_configManager->getSynchronizationIntervalMs() : Core::DEFAULT_SYNC_INTERVAL_MS;
     m_dataProcessor = new Processing::DataProcessor(syncIntervalMs);
 
     // 将数据处理器移动到线程
     m_dataProcessor->moveToThread(m_processorThread);
 
-    // 连接线程信号
-    connect(m_processorThread, &QThread::started,
-            [this]() { qDebug() << "数据处理线程已启动，线程ID:" << QThread::currentThreadId(); });
+    // 连接线程启动和结束信号
+    connect(m_processorThread, &QThread::started, [this]() {
+        qDebug() << "数据处理器线程已启动，线程ID:" << QThread::currentThreadId();
+    });
+
     connect(m_processorThread, &QThread::finished, m_dataProcessor, &QObject::deleteLater);
 
     // 连接数据处理器信号（使用Qt::QueuedConnection确保线程安全）
@@ -334,18 +330,19 @@ void MainWindow::initializeProcessing()
                 m_dataProcessor, &Processing::DataProcessor::onDeviceStatusChanged, Qt::QueuedConnection);
     }
 
-    // 启动处理线程
+    // 启动处理器线程
     m_processorThread->start();
 
-    // 创建通道（通过信号槽调用，确保在处理线程中执行）
+    // 创建通道
     if (m_configManager) {
         QMap<QString, Core::ChannelConfig> channelConfigs = m_configManager->getChannelConfigs();
         if (!channelConfigs.isEmpty()) {
-            // 等待线程启动
-            QThread::msleep(100);
+            // 使用QMetaObject::invokeMethod确保在正确的线程中创建通道
+            bool success = false;
+            QMetaObject::invokeMethod(m_dataProcessor, [this, channelConfigs, &success]() {
+                success = m_dataProcessor->createChannels(channelConfigs);
+            }, Qt::BlockingQueuedConnection);
 
-            // 创建通道
-            bool success = m_dataProcessor->createChannels(channelConfigs);
             if (success) {
                 qDebug() << "成功创建" << channelConfigs.size() << "个通道";
             } else {
@@ -368,10 +365,14 @@ void MainWindow::testDataSynchronizer()
 
     // 获取同步间隔
     int syncInterval = m_dataProcessor->getSyncIntervalMs();
-    qDebug() << "数据同步间隔:" << syncInterval << "毫秒";
+    qDebug() << "数据处理间隔:" << syncInterval << "毫秒";
 
-    // 获取通道
-    QMap<QString, Processing::Channel*> channels = m_dataProcessor->getChannels();
+    // 获取通道（使用QMetaObject::invokeMethod确保在正确的线程中获取通道）
+    QMap<QString, Processing::Channel*> channels;
+    QMetaObject::invokeMethod(m_dataProcessor, [this, &channels]() {
+        channels = m_dataProcessor->getChannels();
+    }, Qt::BlockingQueuedConnection);
+
     qDebug() << "通道数量:" << channels.size();
 
     // 打印每个通道的信息
@@ -383,9 +384,9 @@ void MainWindow::testDataSynchronizer()
         qDebug() << "  状态:" << Core::statusCodeToString(it.value()->getStatus());
     }
 
-    // 启动同步
-    m_dataProcessor->startSync();
-    qDebug() << "启动数据同步";
+    // 启动处理
+    QMetaObject::invokeMethod(m_dataProcessor, &Processing::DataProcessor::startProcessing, Qt::QueuedConnection);
+    qDebug() << "启动数据处理";
 }
 
 void MainWindow::onRawDataPointReady(QString deviceId, QString hardwareChannel, double rawValue, qint64 timestamp)
@@ -500,7 +501,11 @@ void MainWindow::setupPlot()
 
     // 添加通道到图表
     if (m_dataProcessor) {
-        QMap<QString, Processing::Channel*> channels = m_dataProcessor->getChannels();
+        // 获取通道（使用QMetaObject::invokeMethod确保在正确的线程中获取通道）
+        QMap<QString, Processing::Channel*> channels;
+        QMetaObject::invokeMethod(m_dataProcessor, [this, &channels]() {
+            channels = m_dataProcessor->getChannels();
+        }, Qt::BlockingQueuedConnection);
 
         // 定义一些颜色
         QVector<QColor> colors = {
@@ -559,13 +564,13 @@ void MainWindow::onStartStopButtonClicked()
     if (m_isAcquiring) {
         // 停止采集
         m_deviceManager->stopAllDevices();
-        m_dataProcessor->stopSync();
+        QMetaObject::invokeMethod(m_dataProcessor, &Processing::DataProcessor::stopProcessing, Qt::QueuedConnection);
         m_plotUpdateTimer->stop();
 
         m_startStopButton->setText("开始采集");
         m_isAcquiring = false;
 
-        qDebug() << "停止数据采集，主线程ID:" << QThread::currentThreadId();
+        qDebug() << "停止数据采集";
     } else {
         // 开始采集
         // 清除所有通道的数据
@@ -578,15 +583,15 @@ void MainWindow::onStartStopButtonClicked()
         // 记录开始时间戳
         m_startTimestamp = QDateTime::currentMSecsSinceEpoch();
 
-        // 启动设备和同步
+        // 启动设备和处理
         m_deviceManager->startAllDevices();
-        m_dataProcessor->startSync();
+        QMetaObject::invokeMethod(m_dataProcessor, &Processing::DataProcessor::startProcessing, Qt::QueuedConnection);
         m_plotUpdateTimer->start();
 
         m_startStopButton->setText("停止采集");
         m_isAcquiring = true;
 
-        qDebug() << "开始数据采集，主线程ID:" << QThread::currentThreadId();
+        qDebug() << "开始数据采集";
     }
 }
 

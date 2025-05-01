@@ -1,4 +1,5 @@
 #include "Channel.h"
+#include <QThread>
 
 namespace Processing {
 
@@ -17,12 +18,14 @@ Channel::Channel(const Core::ChannelConfig& config, QObject *parent)
     qDebug() << "创建通道:" << m_config.channelId
              << "名称:" << m_config.channelName
              << "设备:" << m_config.deviceId
-             << "硬件通道:" << m_config.hardwareChannel;
+             << "硬件通道:" << m_config.hardwareChannel
+             << "线程ID:" << QThread::currentThreadId();
 }
 
 Channel::~Channel()
 {
-    qDebug() << "销毁通道:" << m_config.channelId;
+    qDebug() << "销毁通道:" << m_config.channelId
+             << "线程ID:" << QThread::currentThreadId();
 }
 
 Core::ProcessedDataPoint Channel::processRawData(double rawValue, qint64 timestamp)
@@ -46,8 +49,11 @@ Core::ProcessedDataPoint Channel::processRawData(double rawValue, qint64 timesta
     // 更新最新数据点
     m_latestDataPoint = dataPoint;
 
-    // 发送处理后数据点就绪信号
-    emit processedDataPointReady(m_config.channelId, dataPoint);
+    // 记录处理信息
+    qDebug() << "通道处理数据:" << m_config.channelId
+             << "原始值:" << rawValue
+             << "处理后值:" << calibratedValue
+             << "线程ID:" << QThread::currentThreadId();
 
     return dataPoint;
 }
@@ -112,7 +118,8 @@ void Channel::setStatus(Core::StatusCode status, const QString& message)
 
         // 记录状态变化
         qDebug() << "通道" << m_config.channelId << "状态变为"
-                 << Core::statusCodeToString(m_status) << ":" << m_statusMessage;
+                 << Core::statusCodeToString(m_status) << ":" << m_statusMessage
+                 << "线程ID:" << QThread::currentThreadId();
     }
 }
 

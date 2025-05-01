@@ -14,8 +14,6 @@ DataAcquisitionTest1_autogen/timestamp: \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/Channel.h \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataProcessor.cpp \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataProcessor.h \
-	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataSynchronizer.cpp \
-	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataSynchronizer.h \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022_64bit-Debug/.qtc/package-manager/auto-setup.cmake \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022_64bit-Debug/CMakeFiles/3.29.3/CMakeCXXCompiler.cmake \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022_64bit-Debug/CMakeFiles/3.29.3/CMakeRCCompiler.cmake \

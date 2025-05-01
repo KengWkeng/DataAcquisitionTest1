@@ -2,7 +2,6 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Core/Constants.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Core/DataTypes.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/Channel.h \
-  C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataSynchronizer.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QDateTime \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QDebug \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QList \

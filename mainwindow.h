@@ -5,7 +5,6 @@
 #include <QPushButton>
 #include <QTimer>
 #include <QMap>
-#include <QThread>
 #include "Config/ConfigManager.h"
 #include "Device/DeviceManager.h"
 #include "Processing/DataProcessor.h"

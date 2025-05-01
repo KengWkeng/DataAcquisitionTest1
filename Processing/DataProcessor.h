@@ -4,17 +4,18 @@
 #include <QObject>
 #include <QMap>
 #include <QMutex>
-#include <QThread>
+#include <QTimer>
 #include <QDebug>
-#include "DataSynchronizer.h"
-#include "Channel.h"
+#include <QThread>
+#include "../Core/Constants.h"
 #include "../Core/DataTypes.h"
+#include "Channel.h"
 
 namespace Processing {
 
 /**
  * @brief 数据处理器类
- * 统一管理数据同步和通道计算，在单独的线程中运行
+ * 负责数据同步和通道处理
  */
 class DataProcessor : public QObject
 {
@@ -73,20 +74,20 @@ public:
     void setSyncIntervalMs(int intervalMs);
     
     /**
-     * @brief 开始同步
+     * @brief 开始处理
      */
-    void startSync();
+    void startProcessing();
     
     /**
-     * @brief 停止同步
+     * @brief 停止处理
      */
-    void stopSync();
+    void stopProcessing();
     
     /**
-     * @brief 是否正在同步
-     * @return 是否正在同步
+     * @brief 是否正在处理
+     * @return 是否正在处理
      */
-    bool isSyncing() const;
+    bool isProcessing() const;
     
     /**
      * @brief 获取最新的同步数据帧
@@ -95,7 +96,7 @@ public:
     Core::SynchronizedDataFrame getLatestSyncFrame() const;
     
     /**
-     * @brief 清除所有通道的数据缓冲区
+     * @brief 清除所有缓冲区
      */
     void clearAllBuffers();
 
@@ -147,6 +148,12 @@ signals:
 
 private slots:
     /**
+     * @brief 执行同步和处理
+     * 定时器触发时同步和处理数据
+     */
+    void performProcessing();
+    
+    /**
      * @brief 处理通道状态变化
      * @param channelId 通道ID
      * @param status 状态码
@@ -160,19 +167,6 @@ private slots:
      * @param errorMsg 错误消息
      */
     void onChannelError(QString channelId, QString errorMsg);
-    
-    /**
-     * @brief 处理处理后数据点
-     * @param channelId 通道ID
-     * @param dataPoint 处理后的数据点
-     */
-    void onProcessedDataPointReady(QString channelId, Core::ProcessedDataPoint dataPoint);
-    
-    /**
-     * @brief 处理同步数据帧就绪
-     * @param frame 同步数据帧
-     */
-    void onSyncFrameReady(Core::SynchronizedDataFrame frame);
 
 private:
     /**
@@ -183,11 +177,33 @@ private:
      * @return 通道指针，如果不存在则返回nullptr
      */
     Channel* findChannel(const QString& deviceId, const QString& hardwareChannel) const;
+    
+    /**
+     * @brief 处理原始数据
+     * 对原始数据进行处理并生成同步数据帧
+     * @return 同步数据帧
+     */
+    Core::SynchronizedDataFrame processData();
 
 private:
-    DataSynchronizer* m_dataSynchronizer;        // 数据同步器
-    QMap<QString, Channel*> m_channels;          // 通道映射（通道ID -> 通道指针）
-    mutable QMutex m_mutex;                      // 互斥锁
+    // 通道管理
+    QMap<QString, Channel*> m_channels;                  // 通道映射（通道ID -> 通道指针）
+    
+    // 原始数据缓存
+    struct RawDataPoint {
+        double value;
+        qint64 timestamp;
+    };
+    QMap<QPair<QString, QString>, RawDataPoint> m_rawDataCache; // 原始数据缓存 (设备ID,硬件通道) -> 原始数据点
+    
+    // 同步和处理
+    QTimer* m_processingTimer;                           // 处理定时器
+    int m_syncIntervalMs;                                // 同步间隔（毫秒）
+    Core::SynchronizedDataFrame m_latestSyncFrame;       // 最新的同步数据帧
+    
+    // 线程安全
+    mutable QMutex m_mutex;                              // 互斥锁
+    bool m_isProcessing;                                 // 是否正在处理
 };
 
 } // namespace Processing

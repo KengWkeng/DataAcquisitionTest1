@@ -376,12 +376,6 @@
 			null
 		],
 		[
-			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataSynchronizer.h",
-			"MU",
-			"ZOB7DK4HPL/moc_DataSynchronizer.cpp",
-			null
-		],
-		[
 			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/mainwindow.h",
 			"MU",
 			"EWIEGA46WW/moc_mainwindow.cpp",
@@ -478,11 +472,6 @@
 		],
 		[
 			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataProcessor.cpp",
-			"MU",
-			null
-		],
-		[
-			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataSynchronizer.cpp",
 			"MU",
 			null
 		],
