@@ -1,0 +1,21 @@
+{
+    "synchronization_interval_ms": 100,
+    "virtual_devices": [
+        {
+            "amplitude": 5,
+            "channel_params": {
+                "calibration_params": {
+                    "a": 0,
+                    "b": 0,
+                    "c": 1,
+                    "d": 0
+                },
+                "gain": 1,
+                "offset": 0
+            },
+            "frequency": 10,
+            "instance_name": "Test_Sine_Wave",
+            "signal_type": "sine"
+        }
+    ]
+}

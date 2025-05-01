@@ -1,0 +1,141 @@
+{
+  "modbus_devices": [
+    {
+      "instance_name": "SerialPort1_Modbus",
+      "serial_config": { "port": "/dev/ttyS0", "baudrate": 9600, "databits": 8, "stopbits": 1, "parity": "N" },
+      "read_cycle_ms": 1000,
+      "slaves": [
+        {
+          "slave_id": 1,
+          "operation_command": 3,
+          "registers": [
+            {
+              "register_address": 40001,
+              "channel_name": "Temperature_Sensor_1",
+              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+            },
+            {
+              "register_address": 40002,
+              "channel_name": "Pressure_Sensor_1",
+              "channel_params": { "gain": 0.1, "offset": 5.0, "calibration_params": { "a": 0.001, "b": 0.05, "c": 0.95, "d": 0.2 } }
+            }
+          ]
+        },
+        {
+          "slave_id": 2,
+          "operation_command": 3,
+          "registers": [
+            {
+              "register_address": 40101,
+              "channel_name": "Flow_Rate_1",
+              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "instance_name": "SerialPort2_Modbus",
+      "serial_config": { "port": "/dev/ttyS1", "baudrate": 19200, "databits": 8, "stopbits": 1, "parity": "E" },
+      "read_cycle_ms": 500,
+      "slaves": [
+        {
+          "slave_id": 10,
+          "operation_command": 4,
+          "registers": [
+            {
+              "register_address": 30001,
+              "channel_name": "Valve_Status_1",
+              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "daq_devices": [
+    {
+      "device_id": "dev1",
+      "sample_rate": 10000,
+      "channels": [
+        {
+          "channel_id": 1,
+          "channel_name": "Vibration_X",
+          "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+        },
+        {
+          "channel_id": 2,
+          "channel_name": "Vibration_Y",
+          "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+        },
+        {
+          "channel_id": 5,
+          "channel_name": "Strain_Gauge_1",
+          "channel_params": { "gain": 0.005, "offset": -10.0, "calibration_params": { "a": 0.0, "b": 0.002, "c": 0.98, "d": 0.5 } }
+        },
+        {
+          "channel_id": 6,
+          "channel_name": "Strain_Gauge_2",
+          "channel_params": { "gain": 0.005, "offset": -10.0, "calibration_params": { "a": 0.0, "b": 0.002, "c": 0.98, "d": 0.5 } }
+        },
+        {
+          "channel_id": 7,
+          "channel_name": "Temperature_TC1",
+          "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+        }
+      ]
+    },
+    {
+      "device_id": "dev2",
+      "sample_rate": 5000,
+      "channels": [
+        {
+          "channel_id": 0,
+          "channel_name": "Voltage_Input_1",
+          "channel_params": { "gain": 2.0, "offset": 0.1, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+        }
+      ]
+    }
+  ],
+  "ecu_devices": [
+    {
+      "instance_name": "Engine_ECU",
+      "serial_config": { "port": "/dev/ttyUSB0", "baudrate": 115200, "databits": 8, "stopbits": 1, "parity": "N" },
+      "read_cycle_ms": 100,
+      "channels": {
+        "speed": { "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } } },
+        "throttle_position": { "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } } },
+        "cylinder_temp": { "channel_params": { "gain": 0.5, "offset": -10.0, "calibration_params": { "a": 0.0, "b": 0.01, "c": 0.9, "d": 2.0 } } },
+        "exhaust_temp": { "channel_params": { "gain": 0.5, "offset": -10.0, "calibration_params": { "a": 0.0, "b": 0.01, "c": 0.9, "d": 2.0 } } },
+        "fuel_pressure": { "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } } },
+        "rotor_temp": { "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } } },
+        "intake_temp": { "channel_params": { "gain": 1.0, "offset": -273.15, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } } },
+        "intake_pressure": { "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } } },
+        "supply_voltage": { "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } } }
+      }
+    }
+  ],
+  "virtual_devices": [
+    {
+      "instance_name": "Sine_Wave_Generator",
+      "signal_type": "sine",
+      "amplitude": 5.0,
+      "frequency": 10.0, 
+      "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+    },
+    {
+      "instance_name": "Random_Noise_Source",
+      "signal_type": "random",
+      "amplitude": 1.0, 
+      "frequency": 0.0, 
+      "channel_params": { "gain": 2.0, "offset": 0.5, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+    },
+    {
+      "instance_name": "Square_Wave_Test",
+      "signal_type": "square",
+      "amplitude": 2.5,
+      "frequency": 5.0,
+      "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+    }
+  ]
+}

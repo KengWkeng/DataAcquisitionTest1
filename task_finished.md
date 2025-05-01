@@ -1,0 +1,28 @@
+# 已完成的任务
+
+## 一、项目设置和核心数据结构
+- 创建了项目文件夹结构（Core, Config, Device, Processing, Storage）
+- 实现了Core模块：
+  - 在Constants.h中定义了枚举（DeviceType, StatusCode）
+  - 在DataTypes.h中定义了所有结构体（DeviceConfig, ChannelConfig, RawDataPoint, ProcessedDataPoint, SynchronizedDataFrame等）
+- 更新了CMakeLists.txt以包含新文件
+
+## 二、配置加载
+- 实现了Config模块：
+  - 创建了ConfigManager类，用于读取和解析config.json文件
+  - 实现了loadConfig()方法解析配置文件（目前主要关注虚拟设备部分）
+  - 实现了getter方法获取设备配置和同步间隔
+- 更新了main.cpp以测试配置加载功能
+- 更新了CMakeLists.txt以包含新文件
+
+## 三、基本设备框架和虚拟设备
+- 实现了Device模块：
+  - 创建了AbstractDevice接口，定义了所有设备的通用接口
+  - 实现了VirtualDevice类，用于生成测试数据
+  - 创建了DeviceManager类，用于管理所有设备实例
+- 实现了设备线程管理：
+  - 每个设备在独立的线程中运行
+  - 使用信号和槽机制在线程间通信
+- 更新了mainwindow.cpp以使用DeviceManager
+- 实现了原始数据生成和处理
+- 更新了CMakeLists.txt以包含新文件
