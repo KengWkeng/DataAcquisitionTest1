@@ -3,9 +3,11 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Core/Constants.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Core/DataTypes.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/AbstractDevice.h \
+  C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/DAQDevice.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/DeviceManager.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/ModbusDevice.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/VirtualDevice.h \
+  C:/Users/80911/Documents/QT/DataAcquisitionTest1/Include/Art_DAQ.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/Channel.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataProcessor.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataStorage.h \

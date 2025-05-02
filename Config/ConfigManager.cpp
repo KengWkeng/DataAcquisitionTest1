@@ -369,8 +369,76 @@ void ConfigManager::parseModbusDevices(const QJsonArray& jsonArray)
 
 void ConfigManager::parseDAQDevices(const QJsonArray& jsonArray)
 {
-    // 暂时只记录数量，不实际解析
-    qDebug() << "发现" << jsonArray.size() << "个DAQ设备（暂不解析）";
+    // 遍历DAQ设备数组
+    for (int i = 0; i < jsonArray.size(); ++i) {
+        if (!jsonArray[i].isObject()) {
+            qDebug() << "跳过非对象DAQ设备条目";
+            continue;
+        }
+
+        QJsonObject deviceObj = jsonArray[i].toObject();
+
+        // 提取必要字段
+        QString deviceId = deviceObj["device_id"].toString();
+        int sampleRate = deviceObj["sample_rate"].toInt(10000);
+
+        // 解析通道配置
+        QList<Core::DAQChannelConfig> channels;
+        if (deviceObj.contains("channels") && deviceObj["channels"].isArray()) {
+            QJsonArray channelsArray = deviceObj["channels"].toArray();
+
+            for (int j = 0; j < channelsArray.size(); ++j) {
+                if (!channelsArray[j].isObject()) {
+                    qDebug() << "跳过非对象DAQ通道条目";
+                    continue;
+                }
+
+                QJsonObject channelObj = channelsArray[j].toObject();
+
+                // 提取通道字段
+                int channelId = channelObj["channel_id"].toInt();
+                QString channelName = channelObj["channel_name"].toString();
+
+                // 解析通道参数
+                Core::ChannelParams channelParams;
+                if (channelObj.contains("channel_params") && channelObj["channel_params"].isObject()) {
+                    channelParams = parseChannelParams(channelObj["channel_params"].toObject());
+                }
+
+                // 创建通道配置
+                Core::DAQChannelConfig channelConfig(channelId, channelName, channelParams);
+                channels.append(channelConfig);
+
+                // 创建对应的通道配置（用于数据处理）
+                Core::ChannelConfig procChannelConfig;
+                procChannelConfig.channelId = deviceId + "_" + channelName;
+                procChannelConfig.channelName = channelName;
+                procChannelConfig.deviceId = deviceId;
+                procChannelConfig.hardwareChannel = QString::number(channelId);
+                procChannelConfig.params = channelParams;
+
+                // 添加到通道映射
+                m_channelConfigs[procChannelConfig.channelId] = procChannelConfig;
+
+                qDebug() << "已加载DAQ通道:" << channelName
+                         << "设备ID:" << deviceId
+                         << "通道ID:" << channelId;
+            }
+        }
+
+        // 创建DAQ设备配置
+        Core::DAQDeviceConfig config;
+        config.deviceId = deviceId;
+        config.sampleRate = sampleRate;
+        config.channels = channels;
+
+        // 添加到列表
+        m_daqDeviceConfigs.append(config);
+
+        qDebug() << "已加载DAQ设备:" << deviceId
+                 << "采样率:" << sampleRate
+                 << "通道数量:" << channels.size();
+    }
 }
 
 void ConfigManager::parseECUDevices(const QJsonArray& jsonArray)

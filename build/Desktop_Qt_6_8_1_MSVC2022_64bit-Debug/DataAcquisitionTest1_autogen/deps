@@ -6,12 +6,15 @@ DataAcquisitionTest1_autogen/timestamp: \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Core/DataTypes.h \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/AbstractDevice.cpp \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/AbstractDevice.h \
+	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/DAQDevice.cpp \
+	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/DAQDevice.h \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/DeviceManager.cpp \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/DeviceManager.h \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/ModbusDevice.cpp \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/ModbusDevice.h \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/VirtualDevice.cpp \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/VirtualDevice.h \
+	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Include/Art_DAQ.h \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/Channel.cpp \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/Channel.h \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataProcessor.cpp \

@@ -444,6 +444,12 @@
 			null
 		],
 		[
+			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/DAQDevice.h",
+			"MU",
+			"E4ZSR6OZTY/moc_DAQDevice.cpp",
+			null
+		],
+		[
 			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/DeviceManager.h",
 			"MU",
 			"E4ZSR6OZTY/moc_DeviceManager.cpp",
@@ -520,6 +526,7 @@
 	],
 	"MOC_INCLUDES" : 
 	[
+		"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Include",
 		"D:/Qt/6.8.1/msvc2022_64/include/QtCore",
 		"D:/Qt/6.8.1/msvc2022_64/include",
 		"D:/Qt/6.8.1/msvc2022_64/mkspecs/win32-msvc",
@@ -562,6 +569,11 @@
 		],
 		[
 			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/AbstractDevice.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/DAQDevice.cpp",
 			"MU",
 			null
 		],

@@ -22,6 +22,7 @@ enum class DeviceType {
  */
 enum class StatusCode {
     OK,                 // 正常
+    ERROR,              // 一般错误
     ERROR_CONNECTION,   // 连接错误
     ERROR_TIMEOUT,      // 超时错误
     ERROR_DATA,         // 数据错误
@@ -69,6 +70,7 @@ inline DeviceType stringToDeviceType(const QString& typeStr) {
 inline QString statusCodeToString(StatusCode status) {
     switch (status) {
         case StatusCode::OK: return "OK";
+        case StatusCode::ERROR: return "Error";
         case StatusCode::ERROR_CONNECTION: return "Connection Error";
         case StatusCode::ERROR_TIMEOUT: return "Timeout Error";
         case StatusCode::ERROR_DATA: return "Data Error";

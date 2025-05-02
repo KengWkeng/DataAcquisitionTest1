@@ -7,7 +7,7 @@
 				{
 					"build" : ".",
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-.-Debug-520757cd3603520a93fe.json",
+					"jsonFile" : "directory-.-Debug-b778bf71be0d5ed07c98.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.16"
@@ -44,7 +44,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "DataAcquisitionTest1::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-DataAcquisitionTest1-Debug-6fcbe9a2f855ef5240e7.json",
+					"jsonFile" : "target-DataAcquisitionTest1-Debug-f2f73857202f96d47087.json",
 					"name" : "DataAcquisitionTest1",
 					"projectIndex" : 0
 				},

@@ -81,44 +81,28 @@
   ],
   "daq_devices": [
     {
-      "device_id": "dev1",
+      "device_id": "Dev1",
       "sample_rate": 10000,
       "channels": [
         {
-          "channel_id": 1,
+          "channel_id": 0,
           "channel_name": "Vibration_X",
           "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
         },
         {
-          "channel_id": 2,
+          "channel_id": 1,
           "channel_name": "Vibration_Y",
           "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
         },
         {
-          "channel_id": 5,
+          "channel_id": 2,
           "channel_name": "Strain_Gauge_1",
           "channel_params": { "gain": 0.005, "offset": -10.0, "calibration_params": { "a": 0.0, "b": 0.002, "c": 0.98, "d": 0.5 } }
         },
         {
-          "channel_id": 6,
+          "channel_id": 3,
           "channel_name": "Strain_Gauge_2",
           "channel_params": { "gain": 0.005, "offset": -10.0, "calibration_params": { "a": 0.0, "b": 0.002, "c": 0.98, "d": 0.5 } }
-        },
-        {
-          "channel_id": 7,
-          "channel_name": "Temperature_TC1",
-          "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
-        }
-      ]
-    },
-    {
-      "device_id": "dev2",
-      "sample_rate": 5000,
-      "channels": [
-        {
-          "channel_id": 0,
-          "channel_name": "Voltage_Input_1",
-          "channel_params": { "gain": 2.0, "offset": 0.1, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
         }
       ]
     }

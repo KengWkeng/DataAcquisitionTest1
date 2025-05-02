@@ -242,6 +242,21 @@ void MainWindow::initializeDevices()
     } else {
         qDebug() << "没有Modbus设备配置";
     }
+
+    // 获取DAQ设备配置
+    QList<Core::DAQDeviceConfig> daqDevices = m_configManager->getDAQDeviceConfigs();
+
+    // 创建DAQ设备
+    if (!daqDevices.isEmpty()) {
+        bool success = m_deviceManager->createDAQDevices(daqDevices);
+        if (success) {
+            qDebug() << "成功创建" << daqDevices.size() << "个DAQ设备";
+        } else {
+            qDebug() << "创建DAQ设备失败!";
+        }
+    } else {
+        qDebug() << "没有DAQ设备配置";
+    }
 }
 
 void MainWindow::testConfigManager()

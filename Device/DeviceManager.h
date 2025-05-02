@@ -10,6 +10,7 @@
 #include "AbstractDevice.h"
 #include "VirtualDevice.h"
 #include "ModbusDevice.h"
+#include "DAQDevice.h"
 
 namespace Device {
 
@@ -53,6 +54,13 @@ public:
      * @return 是否成功创建所有Modbus设备
      */
     bool createModbusDevices(const QList<Core::ModbusDeviceConfig>& configs);
+
+    /**
+     * @brief 创建DAQ设备
+     * @param configs DAQ设备配置列表
+     * @return 是否成功创建所有DAQ设备
+     */
+    bool createDAQDevices(const QList<Core::DAQDeviceConfig>& configs);
 
     /**
      * @brief 启动所有设备

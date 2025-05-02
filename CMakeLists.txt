@@ -28,6 +28,8 @@ set(PROJECT_SOURCES
         Device/VirtualDevice.cpp
         Device/ModbusDevice.h
         Device/ModbusDevice.cpp
+        Device/DAQDevice.h
+        Device/DAQDevice.cpp
         Device/DeviceManager.h
         Device/DeviceManager.cpp
         Processing/Channel.h
@@ -68,7 +70,25 @@ target_link_libraries(DataAcquisitionTest1 PRIVATE
     Qt${QT_VERSION_MAJOR}::PrintSupport
     Qt${QT_VERSION_MAJOR}::SerialPort
     Qt${QT_VERSION_MAJOR}::SerialBus
+    ${CMAKE_SOURCE_DIR}/lib/Art_DAQ.lib
 )
+
+# 添加包含目录
+target_include_directories(DataAcquisitionTest1 PRIVATE ${CMAKE_SOURCE_DIR}/Include)
+
+# 复制DAQ动态链接库到输出目录
+add_custom_command(TARGET DataAcquisitionTest1 POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_SOURCE_DIR}/lib/Art_DAQ.dll
+    $<TARGET_FILE_DIR:DataAcquisitionTest1>)
+
+# 如果是64位系统，复制64位版本的DLL
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    add_custom_command(TARGET DataAcquisitionTest1 POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_SOURCE_DIR}/lib/Art_DAQ_64.dll
+        $<TARGET_FILE_DIR:DataAcquisitionTest1>)
+endif()
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

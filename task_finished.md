@@ -1,5 +1,20 @@
 # 已完成的任务
 
+## 九、添加DAQ设备支持
+- 添加了DAQDevice类，实现了AbstractDevice接口
+- 更新了CMakeLists.txt，添加了Art_DAQ库的链接和DLL复制
+- 更新了ConfigManager，实现了DAQ设备配置的解析
+- 更新了DeviceManager，添加了创建和管理DAQ设备的功能
+- 实现了DAQ设备的初始化、连接、数据采集和处理功能
+- 实现了滤波器功能，支持FIR低通滤波
+- 更新了config.json，添加了DAQ设备配置
+- 优化了DAQ设备实现：
+  - 改进了资源管理，确保任务正确停止和清理
+  - 增强了线程安全性，避免主线程阻塞
+  - 优化了缓冲区管理，防止数据积压
+  - 增强了错误处理和异常捕获
+  - 改进了回调函数实现，确保内存正确释放
+
 ## 八、添加硬件测试样例
 - 添加了ModbusDevice类，实现了AbstractDevice接口
 - 更新了CMakeLists.txt，添加了Qt SerialPort和SerialBus模块

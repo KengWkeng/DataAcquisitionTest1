@@ -46,10 +46,13 @@ bool DeviceManager::createDevices(const QList<Core::DeviceConfig*>& configs)
                 }
                 break;
             }
-            case Core::DeviceType::DAQ:
-                // TODO: 实现DAQ设备创建
-                qDebug() << "DAQ设备尚未实现";
+            case Core::DeviceType::DAQ: {
+                auto daqConfig = dynamic_cast<Core::DAQDeviceConfig*>(config);
+                if (daqConfig) {
+                    device = new DAQDevice(*daqConfig, nullptr);
+                }
                 break;
+            }
             case Core::DeviceType::ECU:
                 // TODO: 实现ECU设备创建
                 qDebug() << "ECU设备尚未实现";
@@ -154,6 +157,47 @@ bool DeviceManager::createModbusDevices(const QList<Core::ModbusDeviceConfig>& c
             });
         } else {
             qDebug() << "创建Modbus设备线程失败:" << device->getDeviceId();
+            delete device;
+            success = false;
+        }
+    }
+
+    return success;
+}
+
+bool DeviceManager::createDAQDevices(const QList<Core::DAQDeviceConfig>& configs)
+{
+    bool success = true;
+
+    for (const auto& config : configs) {
+        // 创建DAQ设备（不设置父对象，以便可以移动到线程）
+        DAQDevice* device = new DAQDevice(config, nullptr);
+
+        // 创建设备线程
+        if (createDeviceThread(device)) {
+            // 添加到设备映射
+            m_devices[device->getDeviceId()] = device;
+
+            // 连接设备信号
+            connect(device, &AbstractDevice::rawDataPointReady,
+                    this, &DeviceManager::rawDataPointReady);
+            connect(device, &AbstractDevice::deviceStatusChanged,
+                    this, &DeviceManager::deviceStatusChanged);
+            connect(device, &AbstractDevice::errorOccurred,
+                    this, &DeviceManager::errorOccurred);
+
+            qDebug() << "创建DAQ设备成功:" << device->getDeviceId();
+
+            // 在初始化阶段连接设备
+            QTimer::singleShot(500, [device]() {
+                if (device->connectDevice()) {
+                    qDebug() << "初始化阶段连接DAQ设备成功:" << device->getDeviceId();
+                } else {
+                    qDebug() << "初始化阶段连接DAQ设备失败:" << device->getDeviceId();
+                }
+            });
+        } else {
+            qDebug() << "创建DAQ设备线程失败:" << device->getDeviceId();
             delete device;
             success = false;
         }
