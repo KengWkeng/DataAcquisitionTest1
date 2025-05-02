@@ -3,22 +3,50 @@
   "modbus_devices": [
     {
       "instance_name": "SerialPort1_Modbus",
-      "serial_config": { "port": "/dev/ttyS0", "baudrate": 9600, "databits": 8, "stopbits": 1, "parity": "N" },
-      "read_cycle_ms": 1000,
+      "serial_config": { "port": "COM6", "baudrate": 9600, "databits": 8, "stopbits": 1, "parity": "N" },
+      "read_cycle_ms": 100,
       "slaves": [
         {
           "slave_id": 1,
           "operation_command": 3,
           "registers": [
             {
-              "register_address": 40001,
+              "register_address": 0,
               "channel_name": "Temperature_Sensor_1",
+              "channel_params": { "gain": 0.01, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+            },
+            {
+              "register_address": 1,
+              "channel_name": "Temperature_Sensor_2",
+              "channel_params": { "gain": 0.01, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "instance_name": "SerialPort2_Modbus",
+      "serial_config": { "port": "COM8", "baudrate": 9600, "databits": 8, "stopbits": 1, "parity": "N" },
+      "read_cycle_ms": 100,
+      "slaves": [
+        {
+          "slave_id": 1,
+          "operation_command": 3,
+          "registers": [
+            {
+              "register_address": 0,
+              "channel_name": "Modbus_slave1_seg1",
               "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
             },
             {
-              "register_address": 40002,
-              "channel_name": "Pressure_Sensor_1",
-              "channel_params": { "gain": 0.1, "offset": 5.0, "calibration_params": { "a": 0.001, "b": 0.05, "c": 0.95, "d": 0.2 } }
+              "register_address": 1,
+              "channel_name": "Modbus_slave1_seg2",
+              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+            },
+            {
+              "register_address": 2,
+              "channel_name": "Modbus_slave1_seg3",
+              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
             }
           ]
         },
@@ -27,26 +55,23 @@
           "operation_command": 3,
           "registers": [
             {
-              "register_address": 40101,
-              "channel_name": "Flow_Rate_1",
+              "register_address": 0,
+              "channel_name": "Modbus_slave2_seg1",
               "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "instance_name": "SerialPort2_Modbus",
-      "serial_config": { "port": "/dev/ttyS1", "baudrate": 19200, "databits": 8, "stopbits": 1, "parity": "E" },
-      "read_cycle_ms": 500,
-      "slaves": [
-        {
-          "slave_id": 10,
-          "operation_command": 4,
-          "registers": [
+            },
             {
-              "register_address": 30001,
-              "channel_name": "Valve_Status_1",
+              "register_address": 1,
+              "channel_name": "Modbus_slave2_seg2",
+              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+            },
+            {
+              "register_address": 2,
+              "channel_name": "Modbus_slave2_seg3",
+              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+            },
+            {
+              "register_address": 3,
+              "channel_name": "Modbus_slave2_seg4",
               "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
             }
           ]
@@ -117,26 +142,6 @@
     }
   ],
   "virtual_devices": [
-    {
-      "instance_name": "Sine_Wave_Generator",
-      "signal_type": "sine",
-      "amplitude": 5.0,
-      "frequency": 10.0,
-      "channel_params": { "gain": 2.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
-    },
-    {
-      "instance_name": "Random_Noise_Source",
-      "signal_type": "random",
-      "amplitude": 1.0,
-      "frequency": 0.0,
-      "channel_params": { "gain": 2.0, "offset": 0.5, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
-    },
-    {
-      "instance_name": "Square_Wave_Test",
-      "signal_type": "square",
-      "amplitude": 2.5,
-      "frequency": 5.0,
-      "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
-    }
+
   ]
 }

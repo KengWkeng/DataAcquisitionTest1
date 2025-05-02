@@ -209,7 +209,7 @@ void MainWindow::initializeDevices()
 
     // 检查配置管理器是否已初始化
     if (!m_configManager) {
-        // qDebug() << "配置管理器未初始化，无法创建设备!";
+        qDebug() << "配置管理器未初始化，无法创建设备!";
         return;
     }
 
@@ -220,12 +220,27 @@ void MainWindow::initializeDevices()
     if (!virtualDevices.isEmpty()) {
         bool success = m_deviceManager->createVirtualDevices(virtualDevices);
         if (success) {
-            // qDebug() << "成功创建" << virtualDevices.size() << "个虚拟设备";
+            qDebug() << "成功创建" << virtualDevices.size() << "个虚拟设备";
         } else {
-            // qDebug() << "创建虚拟设备失败!";
+            qDebug() << "创建虚拟设备失败!";
         }
     } else {
-        // qDebug() << "没有虚拟设备配置";
+        qDebug() << "没有虚拟设备配置";
+    }
+
+    // 获取Modbus设备配置
+    QList<Core::ModbusDeviceConfig> modbusDevices = m_configManager->getModbusDeviceConfigs();
+
+    // 创建Modbus设备
+    if (!modbusDevices.isEmpty()) {
+        bool success = m_deviceManager->createModbusDevices(modbusDevices);
+        if (success) {
+            qDebug() << "成功创建" << modbusDevices.size() << "个Modbus设备";
+        } else {
+            qDebug() << "创建Modbus设备失败!";
+        }
+    } else {
+        qDebug() << "没有Modbus设备配置";
     }
 }
 

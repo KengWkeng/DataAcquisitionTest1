@@ -1,5 +1,12 @@
 # 已完成的任务
 
+## 八、添加硬件测试样例
+- 添加了ModbusDevice类，实现了AbstractDevice接口
+- 更新了CMakeLists.txt，添加了Qt SerialPort和SerialBus模块
+- 更新了ConfigManager，实现了Modbus设备配置的解析
+- 更新了DeviceManager，添加了创建和管理Modbus设备的功能
+- 更新了config.json，将串口名称从Linux风格改为Windows风格
+
 ## 一、项目设置和核心数据结构
 - 创建了项目文件夹结构（Core, Config, Device, Processing, Storage）
 - 实现了Core模块：

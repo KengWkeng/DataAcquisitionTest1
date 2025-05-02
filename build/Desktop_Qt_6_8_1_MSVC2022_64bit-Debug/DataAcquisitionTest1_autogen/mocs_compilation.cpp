@@ -2,6 +2,7 @@
 #include "PUA4RWX4XS/moc_ConfigManager.cpp"
 #include "E4ZSR6OZTY/moc_AbstractDevice.cpp"
 #include "E4ZSR6OZTY/moc_DeviceManager.cpp"
+#include "E4ZSR6OZTY/moc_ModbusDevice.cpp"
 #include "E4ZSR6OZTY/moc_VirtualDevice.cpp"
 #include "ZOB7DK4HPL/moc_Channel.cpp"
 #include "ZOB7DK4HPL/moc_DataProcessor.cpp"

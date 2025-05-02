@@ -38,10 +38,13 @@ bool DeviceManager::createDevices(const QList<Core::DeviceConfig*>& configs)
                 }
                 break;
             }
-            case Core::DeviceType::MODBUS:
-                // TODO: 实现Modbus设备创建
-                qDebug() << "Modbus设备尚未实现";
+            case Core::DeviceType::MODBUS: {
+                auto modbusConfig = dynamic_cast<Core::ModbusDeviceConfig*>(config);
+                if (modbusConfig) {
+                    device = new ModbusDevice(*modbusConfig, nullptr);
+                }
                 break;
+            }
             case Core::DeviceType::DAQ:
                 // TODO: 实现DAQ设备创建
                 qDebug() << "DAQ设备尚未实现";
@@ -109,6 +112,38 @@ bool DeviceManager::createVirtualDevices(const QList<Core::VirtualDeviceConfig>&
             qDebug() << "创建虚拟设备成功:" << device->getDeviceId();
         } else {
             qDebug() << "创建虚拟设备线程失败:" << device->getDeviceId();
+            delete device;
+            success = false;
+        }
+    }
+
+    return success;
+}
+
+bool DeviceManager::createModbusDevices(const QList<Core::ModbusDeviceConfig>& configs)
+{
+    bool success = true;
+
+    for (const auto& config : configs) {
+        // 创建Modbus设备（不设置父对象，以便可以移动到线程）
+        ModbusDevice* device = new ModbusDevice(config, nullptr);
+
+        // 创建设备线程
+        if (createDeviceThread(device)) {
+            // 添加到设备映射
+            m_devices[device->getDeviceId()] = device;
+
+            // 连接设备信号
+            connect(device, &AbstractDevice::rawDataPointReady,
+                    this, &DeviceManager::rawDataPointReady);
+            connect(device, &AbstractDevice::deviceStatusChanged,
+                    this, &DeviceManager::deviceStatusChanged);
+            connect(device, &AbstractDevice::errorOccurred,
+                    this, &DeviceManager::errorOccurred);
+
+            qDebug() << "创建Modbus设备成功:" << device->getDeviceId();
+        } else {
+            qDebug() << "创建Modbus设备线程失败:" << device->getDeviceId();
             delete device;
             success = false;
         }
@@ -259,6 +294,13 @@ bool DeviceManager::createDeviceThread(AbstractDevice* device)
 
     // 启动线程
     thread->start();
+
+    // 确保线程已经启动
+    if (!thread->isRunning()) {
+        qDebug() << "线程启动失败，设备ID:" << device->getDeviceId();
+        delete thread;
+        return false;
+    }
 
     // 添加到线程映射
     m_deviceThreads[device->getDeviceId()] = thread;

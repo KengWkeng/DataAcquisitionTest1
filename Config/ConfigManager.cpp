@@ -249,8 +249,122 @@ void ConfigManager::parseVirtualDevices(const QJsonArray& jsonArray)
 
 void ConfigManager::parseModbusDevices(const QJsonArray& jsonArray)
 {
-    // 暂时只记录数量，不实际解析
-    qDebug() << "发现" << jsonArray.size() << "个Modbus设备（暂不解析）";
+    // 遍历Modbus设备数组
+    for (int i = 0; i < jsonArray.size(); ++i) {
+        if (!jsonArray[i].isObject()) {
+            qDebug() << "跳过非对象Modbus设备条目";
+            continue;
+        }
+
+        QJsonObject deviceObj = jsonArray[i].toObject();
+
+        // 提取必要字段
+        QString instanceName = deviceObj["instance_name"].toString();
+        int readCycleMs = deviceObj["read_cycle_ms"].toInt(1000);
+
+        // 解析串口配置
+        Core::SerialConfig serialConfig;
+        if (deviceObj.contains("serial_config") && deviceObj["serial_config"].isObject()) {
+            serialConfig = parseSerialConfig(deviceObj["serial_config"].toObject());
+        }
+
+        // 解析从站配置
+        QList<Core::ModbusSlaveConfig> slaves;
+        if (deviceObj.contains("slaves") && deviceObj["slaves"].isArray()) {
+            QJsonArray slavesArray = deviceObj["slaves"].toArray();
+
+            for (int j = 0; j < slavesArray.size(); ++j) {
+                if (!slavesArray[j].isObject()) {
+                    qDebug() << "跳过非对象从站条目";
+                    continue;
+                }
+
+                QJsonObject slaveObj = slavesArray[j].toObject();
+
+                // 提取从站字段
+                int slaveId = slaveObj["slave_id"].toInt();
+                int operationCommand = slaveObj["operation_command"].toInt(3); // 默认为3（读保持寄存器）
+
+                // 解析寄存器配置
+                QList<Core::ModbusRegisterConfig> registers;
+                if (slaveObj.contains("registers") && slaveObj["registers"].isArray()) {
+                    QJsonArray registersArray = slaveObj["registers"].toArray();
+
+                    for (int k = 0; k < registersArray.size(); ++k) {
+                        if (!registersArray[k].isObject()) {
+                            qDebug() << "跳过非对象寄存器条目";
+                            continue;
+                        }
+
+                        QJsonObject regObj = registersArray[k].toObject();
+
+                        // 提取寄存器字段
+                        int registerAddress = regObj["register_address"].toInt();
+                        QString channelName = regObj["channel_name"].toString();
+
+                        // 解析通道参数
+                        Core::ChannelParams channelParams;
+                        if (regObj.contains("channel_params") && regObj["channel_params"].isObject()) {
+                            channelParams = parseChannelParams(regObj["channel_params"].toObject());
+                        }
+
+                        // 创建寄存器配置
+                        Core::ModbusRegisterConfig regConfig;
+                        regConfig.registerAddress = registerAddress;
+                        regConfig.channelName = channelName;
+                        regConfig.channelParams = channelParams;
+
+                        // 添加到寄存器列表
+                        registers.append(regConfig);
+
+                        // 创建对应的通道配置
+                        Core::ChannelConfig channelConfig;
+                        channelConfig.channelId = instanceName + "_" + channelName;
+                        channelConfig.channelName = channelName;
+                        channelConfig.deviceId = instanceName;
+                        channelConfig.hardwareChannel = QString("%1_%2").arg(slaveId).arg(registerAddress);
+                        channelConfig.params = channelParams;
+
+                        // 添加到通道映射
+                        m_channelConfigs[channelConfig.channelId] = channelConfig;
+
+                        qDebug() << "已加载Modbus寄存器:" << channelName
+                                 << "从站ID:" << slaveId
+                                 << "寄存器地址:" << registerAddress;
+                    }
+                }
+
+                // 创建从站配置
+                Core::ModbusSlaveConfig slaveConfig;
+                slaveConfig.slaveId = slaveId;
+                slaveConfig.operationCommand = operationCommand;
+                slaveConfig.registers = registers;
+
+                // 添加到从站列表
+                slaves.append(slaveConfig);
+
+                qDebug() << "已加载Modbus从站:" << slaveId
+                         << "操作命令:" << operationCommand
+                         << "寄存器数量:" << registers.size();
+            }
+        }
+
+        // 创建Modbus设备配置
+        Core::ModbusDeviceConfig config;
+        config.deviceId = instanceName;
+        config.instanceName = instanceName;
+        config.serialConfig = serialConfig;
+        config.readCycleMs = readCycleMs;
+        config.slaves = slaves;
+
+        // 添加到列表
+        m_modbusDeviceConfigs.append(config);
+
+        qDebug() << "已加载Modbus设备:" << instanceName
+                 << "串口:" << serialConfig.port
+                 << "波特率:" << serialConfig.baudrate
+                 << "从站数量:" << slaves.size();
+    }
 }
 
 void ConfigManager::parseDAQDevices(const QJsonArray& jsonArray)

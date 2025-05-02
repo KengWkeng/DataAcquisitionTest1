@@ -8,6 +8,8 @@ DataAcquisitionTest1_autogen/timestamp: \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/AbstractDevice.h \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/DeviceManager.cpp \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/DeviceManager.h \
+	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/ModbusDevice.cpp \
+	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/ModbusDevice.h \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/VirtualDevice.cpp \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/VirtualDevice.h \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/Channel.cpp \
@@ -477,6 +479,24 @@ DataAcquisitionTest1_autogen/timestamp: \
 	D:/Qt/6.8.1/msvc2022_64/include/QtPrintSupport/qtprintsupportexports.h \
 	D:/Qt/6.8.1/msvc2022_64/include/QtPrintSupport/qtprintsupportglobal.h \
 	D:/Qt/6.8.1/msvc2022_64/include/QtPrintSupport/qtprintsupportversion.h \
+	D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/QModbusDataUnit \
+	D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/QModbusReply \
+	D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/QModbusRtuSerialClient \
+	D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qmodbusclient.h \
+	D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qmodbusdataunit.h \
+	D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qmodbusdevice.h \
+	D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qmodbuspdu.h \
+	D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qmodbusreply.h \
+	D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qmodbusrtuserialclient.h \
+	D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qtserialbus-config.h \
+	D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qtserialbusexports.h \
+	D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qtserialbusglobal.h \
+	D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/QSerialPort \
+	D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/QSerialPortInfo \
+	D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/qserialport.h \
+	D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/qserialportglobal.h \
+	D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/qserialportinfo.h \
+	D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/qtserialportexports.h \
 	D:/Qt/6.8.1/msvc2022_64/include/QtWidgets/QCommonStyle \
 	D:/Qt/6.8.1/msvc2022_64/include/QtWidgets/QLayout \
 	D:/Qt/6.8.1/msvc2022_64/include/QtWidgets/QMainWindow \
@@ -763,6 +783,36 @@ DataAcquisitionTest1_autogen/timestamp: \
 	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6GuiTools/Qt6GuiToolsTargets-relwithdebinfo.cmake \
 	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6GuiTools/Qt6GuiToolsTargets.cmake \
 	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6GuiTools/Qt6GuiToolsVersionlessTargets.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6NetworkAdditionalTargetInfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6NetworkConfig.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6NetworkConfigVersion.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6NetworkConfigVersionImpl.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6NetworkDependencies.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6NetworkPlugins.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6NetworkTargets-debug.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6NetworkTargets-relwithdebinfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6NetworkTargets.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6NetworkVersionlessAliasTargets.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QNLMNIPluginAdditionalTargetInfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QNLMNIPluginConfig.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QNLMNIPluginTargets-debug.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QNLMNIPluginTargets-relwithdebinfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QNLMNIPluginTargets.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QSchannelBackendPluginAdditionalTargetInfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QSchannelBackendPluginConfig.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QSchannelBackendPluginTargets-debug.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QSchannelBackendPluginTargets-relwithdebinfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QSchannelBackendPluginTargets.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QTlsBackendCertOnlyPluginAdditionalTargetInfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QTlsBackendCertOnlyPluginConfig.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QTlsBackendCertOnlyPluginTargets-debug.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QTlsBackendCertOnlyPluginTargets-relwithdebinfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QTlsBackendCertOnlyPluginTargets.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QTlsBackendOpenSSLPluginAdditionalTargetInfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QTlsBackendOpenSSLPluginConfig.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QTlsBackendOpenSSLPluginTargets-debug.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QTlsBackendOpenSSLPluginTargets-relwithdebinfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Network/Qt6QTlsBackendOpenSSLPluginTargets.cmake \
 	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6PrintSupport/Qt6PrintSupportAdditionalTargetInfo.cmake \
 	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6PrintSupport/Qt6PrintSupportConfig.cmake \
 	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6PrintSupport/Qt6PrintSupportConfigVersion.cmake \
@@ -773,6 +823,55 @@ DataAcquisitionTest1_autogen/timestamp: \
 	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6PrintSupport/Qt6PrintSupportTargets-relwithdebinfo.cmake \
 	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6PrintSupport/Qt6PrintSupportTargets.cmake \
 	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6PrintSupport/Qt6PrintSupportVersionlessAliasTargets.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6PassThruCanBusPluginAdditionalTargetInfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6PassThruCanBusPluginConfig.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6PassThruCanBusPluginTargets-debug.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6PassThruCanBusPluginTargets-relwithdebinfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6PassThruCanBusPluginTargets.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6PeakCanBusPluginAdditionalTargetInfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6PeakCanBusPluginConfig.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6PeakCanBusPluginTargets-debug.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6PeakCanBusPluginTargets-relwithdebinfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6PeakCanBusPluginTargets.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6SerialBusAdditionalTargetInfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6SerialBusConfig.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6SerialBusConfigVersion.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6SerialBusConfigVersionImpl.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6SerialBusDependencies.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6SerialBusPlugins.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6SerialBusTargets-debug.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6SerialBusTargets-relwithdebinfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6SerialBusTargets.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6SerialBusVersionlessAliasTargets.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6SystecCanBusPluginAdditionalTargetInfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6SystecCanBusPluginConfig.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6SystecCanBusPluginTargets-debug.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6SystecCanBusPluginTargets-relwithdebinfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6SystecCanBusPluginTargets.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6TinyCanBusPluginAdditionalTargetInfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6TinyCanBusPluginConfig.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6TinyCanBusPluginTargets-debug.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6TinyCanBusPluginTargets-relwithdebinfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6TinyCanBusPluginTargets.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6VectorCanBusPluginAdditionalTargetInfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6VectorCanBusPluginConfig.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6VectorCanBusPluginTargets-debug.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6VectorCanBusPluginTargets-relwithdebinfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6VectorCanBusPluginTargets.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6VirtualCanBusPluginAdditionalTargetInfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6VirtualCanBusPluginConfig.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6VirtualCanBusPluginTargets-debug.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6VirtualCanBusPluginTargets-relwithdebinfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialBus/Qt6VirtualCanBusPluginTargets.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialPort/Qt6SerialPortAdditionalTargetInfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialPort/Qt6SerialPortConfig.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialPort/Qt6SerialPortConfigVersion.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialPort/Qt6SerialPortConfigVersionImpl.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialPort/Qt6SerialPortDependencies.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialPort/Qt6SerialPortTargets-debug.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialPort/Qt6SerialPortTargets-relwithdebinfo.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialPort/Qt6SerialPortTargets.cmake \
+	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6SerialPort/Qt6SerialPortVersionlessAliasTargets.cmake \
 	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Widgets/Qt6QModernWindowsStylePluginAdditionalTargetInfo.cmake \
 	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Widgets/Qt6QModernWindowsStylePluginConfig.cmake \
 	D:/Qt/6.8.1/msvc2022_64/lib/cmake/Qt6Widgets/Qt6QModernWindowsStylePluginTargets-debug.cmake \

@@ -4,6 +4,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Core/DataTypes.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/AbstractDevice.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/DeviceManager.h \
+  C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/ModbusDevice.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/VirtualDevice.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/Channel.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataProcessor.h \
@@ -461,6 +462,24 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtPrintSupport/qtprintsupportexports.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtPrintSupport/qtprintsupportglobal.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtPrintSupport/qtprintsupportversion.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/QModbusDataUnit \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/QModbusReply \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/QModbusRtuSerialClient \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qmodbusclient.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qmodbusdataunit.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qmodbusdevice.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qmodbuspdu.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qmodbusreply.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qmodbusrtuserialclient.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qtserialbus-config.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qtserialbusexports.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qtserialbusglobal.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/QSerialPort \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/QSerialPortInfo \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/qserialport.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/qserialportglobal.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/qserialportinfo.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/qtserialportexports.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtWidgets/QCommonStyle \
   D:/Qt/6.8.1/msvc2022_64/include/QtWidgets/QLayout \
   D:/Qt/6.8.1/msvc2022_64/include/QtWidgets/QMainWindow \

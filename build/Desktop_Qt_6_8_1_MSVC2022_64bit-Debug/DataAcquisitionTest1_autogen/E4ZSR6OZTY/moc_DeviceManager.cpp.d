@@ -2,11 +2,13 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Core/Constants.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Core/DataTypes.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/AbstractDevice.h \
+  C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/ModbusDevice.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/VirtualDevice.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QDateTime \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QDebug \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QList \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QMap \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/QMutex \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QObject \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QRandomGenerator \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QString \
@@ -62,6 +64,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qglobalstatic.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qhash.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qhashfunctions.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/qiodevice.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qiodevicebase.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qiterable.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qiterator.h \
@@ -75,6 +78,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qmetacontainer.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qmetatype.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qminmax.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/qmutex.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qnamespace.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qnumeric.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qobject.h \
@@ -84,6 +88,8 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qoverload.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qpair.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qprocessordetection.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/qproperty.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/qpropertyprivate.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qrandom.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qrefcount.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qscopedpointer.h \
@@ -123,6 +129,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qtnoop.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qtpreprocessorsupport.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qtresource.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/qtsan_impl.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qttranslation.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qttypetraits.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qtversion.h \
@@ -134,4 +141,22 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qvarlengtharray.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qversiontagging.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qxptype_traits.h \
-  D:/Qt/6.8.1/msvc2022_64/include/QtCore/qyieldcpu.h
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/qyieldcpu.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/QModbusDataUnit \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/QModbusReply \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/QModbusRtuSerialClient \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qmodbusclient.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qmodbusdataunit.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qmodbusdevice.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qmodbuspdu.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qmodbusreply.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qmodbusrtuserialclient.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qtserialbus-config.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qtserialbusexports.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialBus/qtserialbusglobal.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/QSerialPort \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/QSerialPortInfo \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/qserialport.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/qserialportglobal.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/qserialportinfo.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/qtserialportexports.h
