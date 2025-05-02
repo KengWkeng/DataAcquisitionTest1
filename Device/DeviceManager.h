@@ -11,6 +11,7 @@
 #include "VirtualDevice.h"
 #include "ModbusDevice.h"
 #include "DAQDevice.h"
+#include "ECUDevice.h"
 
 namespace Device {
 
@@ -61,6 +62,13 @@ public:
      * @return 是否成功创建所有DAQ设备
      */
     bool createDAQDevices(const QList<Core::DAQDeviceConfig>& configs);
+
+    /**
+     * @brief 创建ECU设备
+     * @param configs ECU设备配置列表
+     * @return 是否成功创建所有ECU设备
+     */
+    bool createECUDevices(const QList<Core::ECUDeviceConfig>& configs);
 
     /**
      * @brief 启动所有设备

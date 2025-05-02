@@ -53,10 +53,13 @@ bool DeviceManager::createDevices(const QList<Core::DeviceConfig*>& configs)
                 }
                 break;
             }
-            case Core::DeviceType::ECU:
-                // TODO: 实现ECU设备创建
-                qDebug() << "ECU设备尚未实现";
+            case Core::DeviceType::ECU: {
+                auto ecuConfig = dynamic_cast<Core::ECUDeviceConfig*>(config);
+                if (ecuConfig) {
+                    device = new ECUDevice(*ecuConfig, nullptr);
+                }
                 break;
+            }
             default:
                 qDebug() << "未知设备类型:" << static_cast<int>(config->deviceType);
                 break;
@@ -198,6 +201,55 @@ bool DeviceManager::createDAQDevices(const QList<Core::DAQDeviceConfig>& configs
             });
         } else {
             qDebug() << "创建DAQ设备线程失败:" << device->getDeviceId();
+            delete device;
+            success = false;
+        }
+    }
+
+    return success;
+}
+
+bool DeviceManager::createECUDevices(const QList<Core::ECUDeviceConfig>& configs)
+{
+    bool success = true;
+
+    qDebug() << "[DeviceManager] 开始创建ECU设备，数量:" << configs.size();
+
+    for (const auto& config : configs) {
+        qDebug() << "[DeviceManager] 创建ECU设备:" << config.instanceName
+                 << "串口:" << config.serialConfig.port
+                 << "波特率:" << config.serialConfig.baudrate
+                 << "通道数量:" << config.channels.size();
+
+        // 创建ECU设备（不设置父对象，以便可以移动到线程）
+        ECUDevice* device = new ECUDevice(config, nullptr);
+
+        // 创建设备线程
+        if (createDeviceThread(device)) {
+            // 添加到设备映射
+            m_devices[device->getDeviceId()] = device;
+
+            // 连接设备信号
+            connect(device, &AbstractDevice::rawDataPointReady,
+                    this, &DeviceManager::rawDataPointReady);
+            connect(device, &AbstractDevice::deviceStatusChanged,
+                    this, &DeviceManager::deviceStatusChanged);
+            connect(device, &AbstractDevice::errorOccurred,
+                    this, &DeviceManager::errorOccurred);
+
+            qDebug() << "[DeviceManager] 创建ECU设备成功:" << device->getDeviceId();
+
+            // 在初始化阶段连接设备
+            QTimer::singleShot(500, [device]() {
+                qDebug() << "[DeviceManager] 尝试连接ECU设备:" << device->getDeviceId();
+                if (device->connectDevice()) {
+                    qDebug() << "[DeviceManager] 初始化阶段连接ECU设备成功:" << device->getDeviceId();
+                } else {
+                    qDebug() << "[DeviceManager] 初始化阶段连接ECU设备失败:" << device->getDeviceId();
+                }
+            });
+        } else {
+            qDebug() << "[DeviceManager] 创建ECU设备线程失败:" << device->getDeviceId();
             delete device;
             success = false;
         }

@@ -443,8 +443,87 @@ void ConfigManager::parseDAQDevices(const QJsonArray& jsonArray)
 
 void ConfigManager::parseECUDevices(const QJsonArray& jsonArray)
 {
-    // 暂时只记录数量，不实际解析
-    qDebug() << "发现" << jsonArray.size() << "个ECU设备（暂不解析）";
+    // 遍历ECU设备数组
+    for (int i = 0; i < jsonArray.size(); ++i) {
+        if (!jsonArray[i].isObject()) {
+            qDebug() << "跳过非对象ECU设备条目";
+            continue;
+        }
+
+        QJsonObject deviceObj = jsonArray[i].toObject();
+
+        // 提取必要字段
+        QString instanceName = deviceObj["instance_name"].toString();
+        int readCycleMs = deviceObj["read_cycle_ms"].toInt(100);
+
+        // 解析串口配置
+        Core::SerialConfig serialConfig;
+        if (deviceObj.contains("serial_config") && deviceObj["serial_config"].isObject()) {
+            serialConfig = parseSerialConfig(deviceObj["serial_config"].toObject());
+        }
+
+        // 解析通道配置
+        QMap<QString, Core::ECUChannelConfig> channels;
+        if (deviceObj.contains("channels") && deviceObj["channels"].isObject()) {
+            QJsonObject channelsObj = deviceObj["channels"].toObject();
+
+            // 遍历所有通道
+            for (auto it = channelsObj.begin(); it != channelsObj.end(); ++it) {
+                QString channelName = it.key();
+
+                if (!it.value().isObject()) {
+                    qDebug() << "跳过非对象ECU通道条目:" << channelName;
+                    continue;
+                }
+
+                QJsonObject channelObj = it.value().toObject();
+
+                // 解析通道参数
+                Core::ChannelParams channelParams;
+                if (channelObj.contains("channel_params") && channelObj["channel_params"].isObject()) {
+                    channelParams = parseChannelParams(channelObj["channel_params"].toObject());
+                }
+
+                // 创建ECU通道配置
+                Core::ECUChannelConfig channelConfig;
+                channelConfig.channelName = channelName;
+                channelConfig.channelParams = channelParams;
+
+                // 添加到通道映射
+                channels[channelName] = channelConfig;
+
+                // 创建对应的通道配置（用于数据处理）
+                Core::ChannelConfig procChannelConfig;
+                procChannelConfig.channelId = instanceName + "_" + channelName;
+                procChannelConfig.channelName = channelName;
+                procChannelConfig.deviceId = instanceName;
+                procChannelConfig.hardwareChannel = channelName;
+                procChannelConfig.params = channelParams;
+
+                // 添加到通道映射
+                m_channelConfigs[procChannelConfig.channelId] = procChannelConfig;
+
+                qDebug() << "已加载ECU通道:" << channelName
+                         << "设备:" << instanceName;
+            }
+        }
+
+        // 创建ECU设备配置
+        Core::ECUDeviceConfig config;
+        config.deviceId = instanceName;
+        config.instanceName = instanceName;
+        config.serialConfig = serialConfig;
+        config.readCycleMs = readCycleMs;
+        config.channels = channels;
+
+        // 添加到列表
+        m_ecuDeviceConfigs.append(config);
+
+        qDebug() << "已加载ECU设备:" << instanceName
+                 << "串口:" << serialConfig.port
+                 << "波特率:" << serialConfig.baudrate
+                 << "通道数量:" << channels.size();
+    }
 }
 
 Core::ChannelParams ConfigManager::parseChannelParams(const QJsonObject& jsonObject)

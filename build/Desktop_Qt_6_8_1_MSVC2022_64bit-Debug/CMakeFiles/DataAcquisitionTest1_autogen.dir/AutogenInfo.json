@@ -456,6 +456,12 @@
 			null
 		],
 		[
+			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/ECUDevice.h",
+			"MU",
+			"E4ZSR6OZTY/moc_ECUDevice.cpp",
+			null
+		],
+		[
 			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/ModbusDevice.h",
 			"MU",
 			"E4ZSR6OZTY/moc_ModbusDevice.cpp",
@@ -579,6 +585,11 @@
 		],
 		[
 			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/DeviceManager.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/ECUDevice.cpp",
 			"MU",
 			null
 		],

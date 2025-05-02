@@ -1,5 +1,21 @@
 # 已完成的任务
 
+## 十、添加ECU设备支持
+- 添加了ECUDevice类，实现了AbstractDevice接口
+- 实现了ECU设备的帧解析功能，基于参考代码ECUTest.h和ECUTest.cpp
+- 更新了ConfigManager，实现了ECU设备配置的解析
+- 更新了DeviceManager，添加了创建和管理ECU设备的功能
+- 更新了CMakeLists.txt，添加了ECUDevice.h和ECUDevice.cpp
+- 更新了config.json，将ECU设备串口名称从Linux风格改为Windows风格
+- 实现了ECU设备的初始化、连接、数据采集和处理功能
+- 实现了ECU帧数据的解析和通道映射
+- 修复了ECU设备初始化问题，在mainwindow.cpp中添加了ECU设备的创建代码
+- 添加了详细的调试输出，帮助诊断串口连接和数据接收问题
+- 修复了帧格式问题，使用正确的帧头(0x7F 0x7F)和帧尾(0x0D 0x0A)
+- 实现了校验和验证功能，确保接收到的帧数据完整性
+- 更新了数据类型，使用float类型存储ECU数据，与参考代码保持一致
+- 移除了请求帧发送功能，改为被动接收ECU设备自动发送的数据
+
 ## 九、添加DAQ设备支持
 - 添加了DAQDevice类，实现了AbstractDevice接口
 - 更新了CMakeLists.txt，添加了Art_DAQ库的链接和DLL复制

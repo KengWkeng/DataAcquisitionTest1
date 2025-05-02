@@ -30,6 +30,8 @@ set(PROJECT_SOURCES
         Device/ModbusDevice.cpp
         Device/DAQDevice.h
         Device/DAQDevice.cpp
+        Device/ECUDevice.h
+        Device/ECUDevice.cpp
         Device/DeviceManager.h
         Device/DeviceManager.cpp
         Processing/Channel.h

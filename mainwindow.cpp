@@ -257,6 +257,21 @@ void MainWindow::initializeDevices()
     } else {
         qDebug() << "没有DAQ设备配置";
     }
+
+    // 获取ECU设备配置
+    QList<Core::ECUDeviceConfig> ecuDevices = m_configManager->getECUDeviceConfigs();
+
+    // 创建ECU设备
+    if (!ecuDevices.isEmpty()) {
+        bool success = m_deviceManager->createECUDevices(ecuDevices);
+        if (success) {
+            qDebug() << "成功创建" << ecuDevices.size() << "个ECU设备";
+        } else {
+            qDebug() << "创建ECU设备失败!";
+        }
+    } else {
+        qDebug() << "没有ECU设备配置";
+    }
 }
 
 void MainWindow::testConfigManager()

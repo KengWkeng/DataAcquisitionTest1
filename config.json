@@ -110,8 +110,8 @@
   "ecu_devices": [
     {
       "instance_name": "Engine_ECU",
-      "serial_config": { "port": "/dev/ttyUSB0", "baudrate": 115200, "databits": 8, "stopbits": 1, "parity": "N" },
-      "read_cycle_ms": 100,
+      "serial_config": { "port": "COM10", "baudrate": 115200, "databits": 8, "stopbits": 1, "parity": "N" },
+      "read_cycle_ms": 200,
       "channels": {
         "speed": { "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } } },
         "throttle_position": { "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } } },
