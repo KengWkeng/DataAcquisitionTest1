@@ -4,6 +4,6 @@
 #include "E4ZSR6OZTY/moc_DeviceManager.cpp"
 #include "E4ZSR6OZTY/moc_VirtualDevice.cpp"
 #include "ZOB7DK4HPL/moc_Channel.cpp"
-#include "ZOB7DK4HPL/moc_DataSynchronizer.cpp"
+#include "ZOB7DK4HPL/moc_DataProcessor.cpp"
 #include "EWIEGA46WW/moc_mainwindow.cpp"
 #include "DMHAXLKN4Z/moc_qcustomplot.cpp"

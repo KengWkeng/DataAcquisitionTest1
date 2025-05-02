@@ -143,14 +143,12 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/Config/ConfigManager.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qversiontagging.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qxptype_traits.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qyieldcpu.h
-C:/Users/80911/Documents/QT/DataAcquisitionTest1/mainwindow.cpp
- uic:./ui_mainwindow.h
-C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataSynchronizer.h
+C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataProcessor.h
  mmc:Q_OBJECT
  mdp:C:/Users/80911/Documents/QT/DataAcquisitionTest1/Core/Constants.h
  mdp:C:/Users/80911/Documents/QT/DataAcquisitionTest1/Core/DataTypes.h
  mdp:C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/Channel.h
- mdp:C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataSynchronizer.h
+ mdp:C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataProcessor.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QDateTime
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QDebug
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QList
@@ -158,9 +156,12 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataSynchronizer.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QMutex
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QObject
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QQueue
+ mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QReadWriteLock
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QString
+ mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QThread
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QTimer
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QVariant
+ mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QVector
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/q20functional.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/q20memory.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/q20type_traits.h
@@ -233,6 +234,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataSynchronizer.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qpair.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qprocessordetection.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qqueue.h
+ mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qreadwritelock.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qrefcount.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qscopedpointer.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qscopeguard.h
@@ -265,6 +267,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataSynchronizer.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qtdeprecationmarkers.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qtenvironmentvariables.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qtextstream.h
+ mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qthread.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qtimer.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qtmetamacros.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qtnoop.h
@@ -280,9 +283,11 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataSynchronizer.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qutf8stringview.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qvariant.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qvarlengtharray.h
+ mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qvector.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qversiontagging.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qxptype_traits.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/qyieldcpu.h
+C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataProcessor.cpp
 C:/Users/80911/Documents/QT/DataAcquisitionTest1/mainwindow.h
  mmc:Q_OBJECT
  mdp:C:/Users/80911/Documents/QT/DataAcquisitionTest1/Config/ConfigManager.h
@@ -292,7 +297,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/mainwindow.h
  mdp:C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/DeviceManager.h
  mdp:C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/VirtualDevice.h
  mdp:C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/Channel.h
- mdp:C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataSynchronizer.h
+ mdp:C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataProcessor.h
  mdp:C:/Users/80911/Documents/QT/DataAcquisitionTest1/mainwindow.h
  mdp:C:/Users/80911/Documents/QT/DataAcquisitionTest1/plot/qcustomplot.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QCache
@@ -318,6 +323,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/mainwindow.h
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QPointer
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QQueue
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QRandomGenerator
+ mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QReadWriteLock
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QRect
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QScopedPointer
  mdp:D:/Qt/6.8.1/msvc2022_64/include/QtCore/QSharedPointer
@@ -1993,6 +1999,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/Config/ConfigManager.cpp
 C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/AbstractDevice.cpp
 C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/VirtualDevice.cpp
 C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/Channel.cpp
-C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataSynchronizer.cpp
 C:/Users/80911/Documents/QT/DataAcquisitionTest1/main.cpp
+C:/Users/80911/Documents/QT/DataAcquisitionTest1/mainwindow.cpp
+ uic:./ui_mainwindow.h
 C:/Users/80911/Documents/QT/DataAcquisitionTest1/plot/qcustomplot.cpp

@@ -48,15 +48,15 @@ Runnable: Yes (console application showing raw data from virtual device).
 Goal: Implement the core data synchronization and processing logic for the virtual device data.
 Tasks:
 Implement the Channel helper class (in Processing) to store ChannelConfig and the process() method implementing gain, offset, and cubic calibration.
-Implement DataSynchronizer (QObject-based) in the Processing module:
+Implement DataProcessor (QObject-based) in the Processing module:
 Initialize Channel objects based on ChannelConfig from ConfigManager.
 Implement the latestRawData_ cache (QMap<QPair<QString, int>, RawDataPoint>) with QMutex protection.
 Implement the public slot onRawDataPointReady (ensure Qt::QueuedConnection when connecting across threads) to update the cache.
 Set up the snapshot QTimer using the interval from ConfigManager.
 Implement the takeSnapshot slot: lock mutex, get timestamp, iterate configured channels, retrieve latest raw data from cache, call Channel::process(), create ProcessedDataPoint, build SynchronizedDataFrame, unlock mutex, emit synchronizedFrameReady(SynchronizedDataFrame).
-In main.cpp (or MainWindow later): Create DataSynchronizer, create its dedicated QThread, move DataSynchronizer to the thread, and start the thread.
-Connect AbstractDevice::rawDataPointReady signals (likely via DeviceManager for simplicity) to DataSynchronizer::onRawDataPointReady.
-Testing: Connect DataSynchronizer::synchronizedFrameReady to a lambda that prints the content of the synchronized frame (timestamp and processed values) to the console. Verify that processed data frames are generated at the expected interval.
+In main.cpp (or MainWindow later): Create DataProcessor, create its dedicated QThread, move DataProcessor to the thread, and start the thread.
+Connect AbstractDevice::rawDataPointReady signals (likely via DeviceManager for simplicity) to DataProcessor::onRawDataPointReady.
+Testing: Connect DataProcessor::synchronizedFrameReady to a lambda that prints the content of the synchronized frame (timestamp and processed values) to the console. Verify that processed data frames are generated at the expected interval.
 Runnable: Yes (console application showing processed data frames).
  ## Step 5: Basic UI Display
 
@@ -65,25 +65,16 @@ Tasks:
 Create MainWindow (QMainWindow or QWidget) in the UI module.
 Add basic widgets (e.g., QLabel or QTextEdit) to display the timestamp and a few channel values.
 In MainWindow's constructor or an initialization function:
-Instantiate ConfigManager, DeviceManager, DataSynchronizer (and its thread).
+Instantiate ConfigManager, DeviceManager, DataProcessor (and its thread).
 Perform the necessary connections (Device -> Synchronizer).
-Connect DataSynchronizer::synchronizedFrameReady to a slot in MainWindow.
+Connect DataProcessor::synchronizedFrameReady to a slot in MainWindow.
 The MainWindow slot should update the UI widgets with data from the received SynchronizedDataFrame.
 Modify main.cpp to create and show MainWindow instead of just running console logic.
 Testing: Run the application. Verify that the UI updates periodically with processed data from the virtual device.
 Runnable: Yes (GUI application showing live data from virtual device).
  ## Step 6: Basic Data Storage (CSV)
-
-Goal: Implement saving the processed data frames to a CSV file.
-Tasks:
-Implement AbstractStorageStrategy interface in Storage.
-Implement CsvStorageStrategy inheriting from the abstract strategy: Implement open, write (formatting SynchronizedDataFrame to a CSV line), and close.
-Implement StorageManager (QObject-based) in Storage:
-Internal thread-safe queue (QQueue + QMutex) for SynchronizedDataFrame.
-Slot onSynchronizedFrameReady (ensure Qt::QueuedConnection) to add frames to the queue.
-Internal logic (e.g., triggered by a timer or signal after queueing) to dequeue frames and call CsvStorageStrategy::write. Handle file opening/closing.
-In MainWindow: Create StorageManager, its dedicated QThread, move it to the thread, start it.
-Connect DataSynchronizer::synchronizedFrameReady to StorageManager::onSynchronizedFrameReady.
+Goal: Implement saving the processed data frames to a CSV file directly within the DataProcessor.
+Create a datastorage folder in the directory corresponding to the execution file, and name the file with the timestamp when the collection starts, in csv format.
 Testing: Run the application. Check if a CSV file is created and populated with data rows corresponding to the processed frames. Verify the format.
 Runnable: Yes (GUI application displaying data and saving it to CSV).
  ## Step 7: Integration and Control
@@ -107,7 +98,7 @@ Implement connection logic (connectDevice).
 Implement data reading logic (startAcquisition likely sets up a timer or reads cyclically) based on config (slave ID, register address, command).
 Emit rawDataPointReady for each register read. Handle potential Modbus errors and emit deviceStatusChanged or errorOccurred.
 Update DeviceManager's factory logic to recognize DeviceType::MODBUS and create ModbusDevice instances.
-Update Channel or DataSynchronizer's channel mapping logic to correctly associate Modbus hardware channels (device instance + slave + register) with software channels defined in the config. (This mapping needs careful definition, perhaps using unique channel names from the config).
+Update Channel or DataProcessor's channel mapping logic to correctly associate Modbus hardware channels (device instance + slave + register) with software channels defined in the config. (This mapping needs careful definition, perhaps using unique channel names from the config).
 Testing: Update config.json to include a Modbus device. Use a Modbus simulator (like Modbus Slave or a simple Python script) or real hardware. Run the application and verify:
 Modbus device connects.
 Data is read correctly and appears in the UI and CSV file alongside virtual device data (if still configured).
@@ -123,7 +114,7 @@ This will likely involve using a vendor-specific SDK or a library like NI-DAQmx,
 Implement device initialization, channel configuration (sample rate, ranges), and starting the acquisition task based on the SDK.
 The SDK will likely provide callbacks or polling methods to get data buffers. Process these buffers, extract data for each configured channel, get timestamps (or assign based on sample rate/buffer time), and emit rawDataPointReady for each data point.
 Update DeviceManager factory logic for DeviceType::DAQ.
-Update channel mapping logic in DataSynchronizer for DAQ channels (device ID + hardware channel ID).
+Update channel mapping logic in DataProcessor for DAQ channels (device ID + hardware channel ID).
 Testing: Update config.json with DAQ config. Use real DAQ hardware or a simulator if available. Verify:
 DAQ device initializes and starts acquisition.
 Data from DAQ channels appears correctly in UI/CSV.
@@ -140,7 +131,7 @@ Implement the specific ECU communication protocol (e.g., request specific PIDs/d
 Map received ECU parameters (like "speed", "throttle_position") to hardware channel identifiers.
 Emit rawDataPointReady for each received parameter.
 Update DeviceManager factory logic for DeviceType::ECU.
-Update channel mapping logic in DataSynchronizer.
+Update channel mapping logic in DataProcessor.
 Testing: Update config.json. Use a real ECU, a simulator (like an OBD-II simulator connected via serial/USB adapter), or test data playback. Verify:
 ECU connection and communication work.
 Relevant ECU parameters are displayed and saved.
@@ -153,14 +144,14 @@ Goal: Calculate derived values from primary measurements.
 Tasks:
 Define how secondary channels are specified (e.g., in config.json with formulas referencing primary channel names/IDs).
 Update ConfigManager to parse this.
-Extend DataSynchronizer or add a new processing stage after takeSnapshot. This stage takes the SynchronizedDataFrame (containing all primary values for a timestamp), calculates secondary values based on the formulas, and adds them to the frame (or creates a new frame type).
+Extend DataProcessor or add a new processing stage after takeSnapshot. This stage takes the SynchronizedDataFrame (containing all primary values for a timestamp), calculates secondary values based on the formulas, and adds them to the frame (or creates a new frame type).
 Update StorageManager and MainWindow to handle/display these secondary values.
 Testing: Define test secondary channels in config. Verify calculations are correct in UI and CSV.
  ## Step 12: Implement Filtering
 
 Goal: Add data filtering capabilities.
 Tasks:
-Decide where filtering occurs (in AbstractDevice::applyFilter before emitting raw data, or in DataSynchronizer after synchronization). applyFilter is simpler initially.
+Decide where filtering occurs (in AbstractDevice::applyFilter before emitting raw data, or in DataProcessor after synchronization). applyFilter is simpler initially.
 Add filter configuration options to config.json (e.g., filter type like 'moving_average', parameters like 'window_size').
 Update ConfigManager to parse filter config.
 Implement filter algorithms (e.g., simple moving average) and apply them in the chosen location based on config.

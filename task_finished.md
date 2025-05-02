@@ -59,4 +59,11 @@
 - 优化了UI布局：
   - 使用QVBoxLayout和QHBoxLayout组织控件
   - 设置了合适的窗口大小和标题
+- 优化了数据处理和显示性能：
+  - 在DataProcessor中使用队列存储有限长度的数据（最多1000点）
+  - 使用QCustomPlot的addData方法而不是setData
+  - 使用removeBefore方法限制显示的数据点数量
+  - 启用了QCustomPlot的性能优化选项（自适应采样、禁用抗锯齿等）
+  - 使用QCustomPlot::rpQueuedReplot提高重绘性能
+  - 优化了UI更新频率（50ms）
 - 实现了完整的数据流：从设备采集 -> 通道处理 -> 数据同步 -> 实时显示

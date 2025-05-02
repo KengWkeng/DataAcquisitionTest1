@@ -25,6 +25,8 @@ MainWindow::MainWindow(QWidget *parent)
     , m_isAcquiring(false)
     , m_plotUpdateTimer(nullptr)
     , m_startTimestamp(0)
+    , m_displayPointCount(600)  // 默认显示600个点
+    , m_timeWindow(60.0)        // 默认显示60秒的数据
 {
     ui->setupUi(this);
 
@@ -110,19 +112,19 @@ void MainWindow::initializeConfig()
     QFile buildFile(buildConfigPath);
 
     if (sourceFile.exists() && !buildFile.exists()) {
-        qDebug() << "源配置文件存在，尝试复制到构建目录...";
+        // qDebug() << "源配置文件存在，尝试复制到构建目录...";
         if (QFile::copy(sourceConfigPath, buildConfigPath)) {
-            qDebug() << "配置文件已复制到构建目录";
+            // qDebug() << "配置文件已复制到构建目录";
         } else {
-            qDebug() << "无法复制配置文件到构建目录";
+            // qDebug() << "无法复制配置文件到构建目录";
         }
     }
 
-    qDebug() << "尝试加载配置文件:" << buildConfigPath;
+    // qDebug() << "尝试加载配置文件:" << buildConfigPath;
     bool success = m_configManager->loadConfig(buildConfigPath);
 
     if (!success) {
-        qDebug() << "配置文件加载失败! 尝试创建简化版配置文件...";
+        // qDebug() << "配置文件加载失败! 尝试创建简化版配置文件...";
 
         // 创建简化版配置
         QJsonObject rootObj;
@@ -162,25 +164,25 @@ void MainWindow::initializeConfig()
         if (file.open(QIODevice::WriteOnly)) {
             file.write(jsonDoc.toJson(QJsonDocument::Indented));
             file.close();
-            qDebug() << "简化版配置文件已创建:" << simplifiedConfigPath;
+            // qDebug() << "简化版配置文件已创建:" << simplifiedConfigPath;
 
             // 尝试加载简化版配置
             success = m_configManager->loadConfig(simplifiedConfigPath);
             if (!success) {
-                qDebug() << "简化版配置文件加载失败!";
+                // qDebug() << "简化版配置文件加载失败!";
             } else {
-                qDebug() << "简化版配置文件加载成功!";
+                // qDebug() << "简化版配置文件加载成功!";
             }
         } else {
-            qDebug() << "无法创建简化版配置文件:" << file.errorString();
+            // qDebug() << "无法创建简化版配置文件:" << file.errorString();
         }
     } else {
-        qDebug() << "配置文件加载成功!";
+        // qDebug() << "配置文件加载成功!";
 
         // 尝试保存当前配置到新文件，以确保格式正确
         QString savedConfigPath = QCoreApplication::applicationDirPath() + "/saved_config.json";
         if (m_configManager->saveConfig(savedConfigPath)) {
-            qDebug() << "当前配置已保存到:" << savedConfigPath;
+            // qDebug() << "当前配置已保存到:" << savedConfigPath;
         }
     }
 }
@@ -200,7 +202,7 @@ void MainWindow::initializeDevices()
 
     // 检查配置管理器是否已初始化
     if (!m_configManager) {
-        qDebug() << "配置管理器未初始化，无法创建设备!";
+        // qDebug() << "配置管理器未初始化，无法创建设备!";
         return;
     }
 
@@ -211,85 +213,85 @@ void MainWindow::initializeDevices()
     if (!virtualDevices.isEmpty()) {
         bool success = m_deviceManager->createVirtualDevices(virtualDevices);
         if (success) {
-            qDebug() << "成功创建" << virtualDevices.size() << "个虚拟设备";
+            // qDebug() << "成功创建" << virtualDevices.size() << "个虚拟设备";
         } else {
-            qDebug() << "创建虚拟设备失败!";
+            // qDebug() << "创建虚拟设备失败!";
         }
     } else {
-        qDebug() << "没有虚拟设备配置";
+        // qDebug() << "没有虚拟设备配置";
     }
 }
 
 void MainWindow::testConfigManager()
 {
     if (!m_configManager) {
-        qDebug() << "配置管理器未初始化!";
+        // qDebug() << "配置管理器未初始化!";
         return;
     }
 
     // 获取同步间隔
     int syncInterval = m_configManager->getSynchronizationIntervalMs();
-    qDebug() << "同步间隔:" << syncInterval << "毫秒";
+    // qDebug() << "同步间隔:" << syncInterval << "毫秒";
 
     // 获取虚拟设备配置
     QList<Core::VirtualDeviceConfig> virtualDevices = m_configManager->getVirtualDeviceConfigs();
-    qDebug() << "虚拟设备数量:" << virtualDevices.size();
+    // qDebug() << "虚拟设备数量:" << virtualDevices.size();
 
     // 打印每个虚拟设备的信息
     for (const auto& device : virtualDevices) {
-        qDebug() << "设备ID:" << device.deviceId;
-        qDebug() << "  实例名称:" << device.instanceName;
-        qDebug() << "  信号类型:" << device.signalType;
-        qDebug() << "  振幅:" << device.amplitude;
-        qDebug() << "  频率:" << device.frequency;
-        qDebug() << "  增益:" << device.channelParams.gain;
-        qDebug() << "  偏移:" << device.channelParams.offset;
-        qDebug() << "  校准参数:";
-        qDebug() << "    a:" << device.channelParams.calibrationParams.a;
-        qDebug() << "    b:" << device.channelParams.calibrationParams.b;
-        qDebug() << "    c:" << device.channelParams.calibrationParams.c;
-        qDebug() << "    d:" << device.channelParams.calibrationParams.d;
+        // qDebug() << "设备ID:" << device.deviceId;
+        // qDebug() << "  实例名称:" << device.instanceName;
+        // qDebug() << "  信号类型:" << device.signalType;
+        // qDebug() << "  振幅:" << device.amplitude;
+        // qDebug() << "  频率:" << device.frequency;
+        // qDebug() << "  增益:" << device.channelParams.gain;
+        // qDebug() << "  偏移:" << device.channelParams.offset;
+        // qDebug() << "  校准参数:";
+        // qDebug() << "    a:" << device.channelParams.calibrationParams.a;
+        // qDebug() << "    b:" << device.channelParams.calibrationParams.b;
+        // qDebug() << "    c:" << device.channelParams.calibrationParams.c;
+        // qDebug() << "    d:" << device.channelParams.calibrationParams.d;
     }
 
     // 获取通道配置
     QMap<QString, Core::ChannelConfig> channelConfigs = m_configManager->getChannelConfigs();
-    qDebug() << "通道数量:" << channelConfigs.size();
+    // qDebug() << "通道数量:" << channelConfigs.size();
 
     // 打印每个通道的信息
     for (auto it = channelConfigs.constBegin(); it != channelConfigs.constEnd(); ++it) {
-        qDebug() << "通道ID:" << it.key();
-        qDebug() << "  通道名称:" << it.value().channelName;
-        qDebug() << "  设备ID:" << it.value().deviceId;
-        qDebug() << "  硬件通道:" << it.value().hardwareChannel;
-        qDebug() << "  增益:" << it.value().params.gain;
-        qDebug() << "  偏移:" << it.value().params.offset;
+        // qDebug() << "通道ID:" << it.key();
+        // qDebug() << "  通道名称:" << it.value().channelName;
+        // qDebug() << "  设备ID:" << it.value().deviceId;
+        // qDebug() << "  硬件通道:" << it.value().hardwareChannel;
+        // qDebug() << "  增益:" << it.value().params.gain;
+        // qDebug() << "  偏移:" << it.value().params.offset;
     }
 }
 
 void MainWindow::testDeviceManager()
 {
     if (!m_deviceManager) {
-        qDebug() << "设备管理器未初始化!";
+        // qDebug() << "设备管理器未初始化!";
         return;
     }
 
     // 获取所有设备
     QMap<QString, Device::AbstractDevice*> devices = m_deviceManager->getDevices();
-    qDebug() << "设备数量:" << devices.size();
+    // qDebug() << "设备数量:" << devices.size();
 
     // 打印每个设备的信息
     for (auto it = devices.constBegin(); it != devices.constEnd(); ++it) {
-        qDebug() << "设备ID:" << it.key();
-        qDebug() << "  设备类型:" << Core::deviceTypeToString(it.value()->getDeviceType());
-        qDebug() << "  设备状态:" << Core::statusCodeToString(it.value()->getStatus());
+        // qDebug() << "设备ID:" << it.key();
+        // qDebug() << "  设备类型:" << Core::deviceTypeToString(it.value()->getDeviceType());
+        // qDebug() << "  设备状态:" << Core::statusCodeToString(it.value()->getStatus());
     }
 
     // 启动所有设备
     bool success = m_deviceManager->startAllDevices();
     if (success) {
-        qDebug() << "成功启动所有设备";
+        // qDebug() << "成功启动所有设备";
     } else {
-        qDebug() << "启动设备失败!";
+        // qDebug() << "启动设备失败!";
     }
 }
 
@@ -307,7 +309,7 @@ void MainWindow::initializeProcessing()
 
     // 连接线程启动和结束信号
     connect(m_processorThread, &QThread::started, [this]() {
-        qDebug() << "数据处理器线程已启动，线程ID:" << QThread::currentThreadId();
+        // qDebug() << "数据处理器线程已启动，线程ID:" << QThread::currentThreadId();
     });
 
     connect(m_processorThread, &QThread::finished, m_dataProcessor, &QObject::deleteLater);
@@ -344,28 +346,28 @@ void MainWindow::initializeProcessing()
             }, Qt::BlockingQueuedConnection);
 
             if (success) {
-                qDebug() << "成功创建" << channelConfigs.size() << "个通道";
+                // qDebug() << "成功创建" << channelConfigs.size() << "个通道";
             } else {
-                qDebug() << "创建通道失败!";
+                // qDebug() << "创建通道失败!";
             }
         } else {
-            qDebug() << "没有通道配置";
+            // qDebug() << "没有通道配置";
         }
     }
 
-    qDebug() << "初始化处理模块完成，主线程ID:" << QThread::currentThreadId();
+    // qDebug() << "初始化处理模块完成，主线程ID:" << QThread::currentThreadId();
 }
 
 void MainWindow::testDataSynchronizer()
 {
     if (!m_dataProcessor) {
-        qDebug() << "数据处理器未初始化!";
+        // qDebug() << "数据处理器未初始化!";
         return;
     }
 
     // 获取同步间隔
     int syncInterval = m_dataProcessor->getSyncIntervalMs();
-    qDebug() << "数据处理间隔:" << syncInterval << "毫秒";
+    // qDebug() << "数据处理间隔:" << syncInterval << "毫秒";
 
     // 获取通道（使用QMetaObject::invokeMethod确保在正确的线程中获取通道）
     QMap<QString, Processing::Channel*> channels;
@@ -373,20 +375,20 @@ void MainWindow::testDataSynchronizer()
         channels = m_dataProcessor->getChannels();
     }, Qt::BlockingQueuedConnection);
 
-    qDebug() << "通道数量:" << channels.size();
+    // qDebug() << "通道数量:" << channels.size();
 
     // 打印每个通道的信息
     for (auto it = channels.constBegin(); it != channels.constEnd(); ++it) {
-        qDebug() << "通道ID:" << it.key();
-        qDebug() << "  通道名称:" << it.value()->getChannelName();
-        qDebug() << "  设备ID:" << it.value()->getDeviceId();
-        qDebug() << "  硬件通道:" << it.value()->getHardwareChannel();
-        qDebug() << "  状态:" << Core::statusCodeToString(it.value()->getStatus());
+        // qDebug() << "通道ID:" << it.key();
+        // qDebug() << "  通道名称:" << it.value()->getChannelName();
+        // qDebug() << "  设备ID:" << it.value()->getDeviceId();
+        // qDebug() << "  硬件通道:" << it.value()->getHardwareChannel();
+        // qDebug() << "  状态:" << Core::statusCodeToString(it.value()->getStatus());
     }
 
     // 启动处理
     QMetaObject::invokeMethod(m_dataProcessor, &Processing::DataProcessor::startProcessing, Qt::QueuedConnection);
-    qDebug() << "启动数据处理";
+    // qDebug() << "启动数据处理";
 }
 
 void MainWindow::onRawDataPointReady(QString deviceId, QString hardwareChannel, double rawValue, qint64 timestamp)
@@ -395,14 +397,14 @@ void MainWindow::onRawDataPointReady(QString deviceId, QString hardwareChannel, 
     QString timeStr = QDateTime::fromMSecsSinceEpoch(timestamp).toString("hh:mm:ss.zzz");
 
     // 输出原始数据点信息
-    qDebug() << "原始数据点 [" << timeStr << "] 设备:" << deviceId
+     qDebug() << "原始数据点 [" << timeStr << "] 设备:" << deviceId
              << "通道:" << hardwareChannel << "值:" << rawValue;
 }
 
 void MainWindow::onDeviceStatusChanged(QString deviceId, Core::StatusCode status, QString message)
 {
     // 输出设备状态变化信息
-    qDebug() << "设备状态变化 - 设备:" << deviceId
+     qDebug() << "设备状态变化 - 设备:" << deviceId
              << "状态:" << Core::statusCodeToString(status)
              << "消息:" << message;
 }
@@ -410,7 +412,7 @@ void MainWindow::onDeviceStatusChanged(QString deviceId, Core::StatusCode status
 void MainWindow::onErrorOccurred(QString deviceId, QString errorMsg)
 {
     // 输出设备错误信息
-    qDebug() << "设备错误 - 设备:" << deviceId << "错误:" << errorMsg;
+    // qDebug() << "设备错误 - 设备:" << deviceId << "错误:" << errorMsg;
 }
 
 void MainWindow::onProcessedDataPointReady(QString channelId, Core::ProcessedDataPoint dataPoint)
@@ -419,17 +421,16 @@ void MainWindow::onProcessedDataPointReady(QString channelId, Core::ProcessedDat
     QString timeStr = QDateTime::fromMSecsSinceEpoch(dataPoint.timestamp).toString("hh:mm:ss.zzz");
 
     // 输出处理后数据点信息
-    qDebug() << "处理后数据点 [" << timeStr << "] 通道:" << channelId
+     qDebug() << "处理后数据点 [" << timeStr << "] 通道:" << channelId
              << "值:" << dataPoint.value << dataPoint.unit
              << "状态:" << Core::statusCodeToString(dataPoint.status);
 }
 
-// 旧的onSyncFrameReady方法已被替换为新的实现，位于文件末尾
 
 void MainWindow::onChannelStatusChanged(QString channelId, Core::StatusCode status, QString message)
 {
     // 输出通道状态变化信息
-    qDebug() << "通道状态变化 - 通道:" << channelId
+     qDebug() << "通道状态变化 - 通道:" << channelId
              << "状态:" << Core::statusCodeToString(status)
              << "消息:" << message;
 }
@@ -437,7 +438,7 @@ void MainWindow::onChannelStatusChanged(QString channelId, Core::StatusCode stat
 void MainWindow::onProcessingError(QString errorMsg)
 {
     // 输出处理错误信息
-    qDebug() << "处理错误:" << errorMsg;
+    // qDebug() << "处理错误:" << errorMsg;
 }
 
 void MainWindow::initializeUI()
@@ -476,7 +477,7 @@ void MainWindow::initializeUI()
     // 创建图表更新定时器
     m_plotUpdateTimer = new QTimer(this);
     connect(m_plotUpdateTimer, &QTimer::timeout, this, &MainWindow::updatePlot);
-    m_plotUpdateTimer->setInterval(100); // 100ms更新一次图表
+    m_plotUpdateTimer->setInterval(50); // 50ms更新一次图表，提高刷新率
 }
 
 void MainWindow::setupPlot()
@@ -496,8 +497,16 @@ void MainWindow::setupPlot()
     m_plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 
     // 设置坐标轴范围
-    m_plot->xAxis->setRange(0, 10);
+    m_plot->xAxis->setRange(0, m_timeWindow);
     m_plot->yAxis->setRange(-10, 10);
+
+    // 性能优化设置
+    m_plot->setNoAntialiasingOnDrag(true);  // 拖动时禁用抗锯齿以提高性能
+    m_plot->setNotAntialiasedElements(QCP::aeAll); // 禁用所有元素的抗锯齿
+    m_plot->setPlottingHints(QCP::phFastPolylines | QCP::phImmediateRefresh); // 设置绘图提示
+
+    // 优化刷新
+    m_plot->replot(QCustomPlot::rpQueuedReplot);
 
     // 添加通道到图表
     if (m_dataProcessor) {
@@ -543,21 +552,22 @@ void MainWindow::addChannelToPlot(const QString& channelId, const QString& chann
     pen.setWidth(2);
     graph->setPen(pen);
 
+    // 优化性能设置
+    graph->setAdaptiveSampling(true);  // 启用自适应采样
+    graph->setLineStyle(QCPGraph::lsLine); // 线型
+    graph->setScatterStyle(QCPScatterStyle::ssNone); // 不显示散点，提高性能
+
     // 存储图表对象
     m_channelGraphs[channelId] = graph;
 
-    // 初始化数据容器
-    m_timeData[channelId] = QVector<double>();
-    m_valueData[channelId] = QVector<double>();
-
     // 重绘图表
-    m_plot->replot();
+    m_plot->replot(QCustomPlot::rpQueuedReplot);
 }
 
 void MainWindow::onStartStopButtonClicked()
 {
     if (!m_dataProcessor || !m_deviceManager) {
-        qDebug() << "数据处理器或设备管理器未初始化!";
+        // qDebug() << "数据处理器或设备管理器未初始化!";
         return;
     }
 
@@ -570,15 +580,16 @@ void MainWindow::onStartStopButtonClicked()
         m_startStopButton->setText("开始采集");
         m_isAcquiring = false;
 
-        qDebug() << "停止数据采集";
+        // qDebug() << "停止数据采集";
     } else {
         // 开始采集
         // 清除所有通道的数据
         for (auto it = m_channelGraphs.begin(); it != m_channelGraphs.end(); ++it) {
-            m_timeData[it.key()].clear();
-            m_valueData[it.key()].clear();
             it.value()->data()->clear();
         }
+
+        // 清除处理器中的数据缓冲区
+        QMetaObject::invokeMethod(m_dataProcessor, &Processing::DataProcessor::clearAllBuffers, Qt::QueuedConnection);
 
         // 记录开始时间戳
         m_startTimestamp = QDateTime::currentMSecsSinceEpoch();
@@ -591,14 +602,60 @@ void MainWindow::onStartStopButtonClicked()
         m_startStopButton->setText("停止采集");
         m_isAcquiring = true;
 
-        qDebug() << "开始数据采集";
+        // qDebug() << "开始数据采集";
     }
 }
 
 void MainWindow::updatePlot()
 {
+    if (!m_dataProcessor || !m_isAcquiring) {
+        return;
+    }
+
+    // 获取当前时间
+    double currentTime = (QDateTime::currentMSecsSinceEpoch() - m_startTimestamp) / 1000.0;
+
+    // 获取所有通道的最新数据点
+    QMap<QString, QPair<double, double>> latestPoints;
+    QMetaObject::invokeMethod(m_dataProcessor, [this, &latestPoints]() {
+        latestPoints = m_dataProcessor->getLatestDataPoints();
+    }, Qt::BlockingQueuedConnection);
+
+    // 更新每个通道的图表
+    for (auto it = m_channelGraphs.begin(); it != m_channelGraphs.end(); ++it) {
+        QString channelId = it.key();
+        QCPGraph* graph = it.value();
+
+        if (latestPoints.contains(channelId)) {
+            // 获取最新数据点
+            double timestamp = latestPoints[channelId].first;
+            double value = latestPoints[channelId].second;
+
+            // 计算相对时间戳（秒）
+            double relativeTime = (timestamp - m_startTimestamp) / 1000.0;
+
+            // 添加数据点（使用addData而不是setData）
+            graph->addData(relativeTime, value);
+
+            // 限制数据点数量
+            // 如果数据点超过显示限制，移除旧数据点
+            if (graph->data()->size() > m_displayPointCount) {
+                // 计算需要保留的最早键值（时间戳）
+                double key = relativeTime - m_timeWindow;
+                graph->data()->removeBefore(key);
+            }
+
+            // 自动调整X轴范围以显示最新数据
+            double keyRange = qMin(m_timeWindow, currentTime);
+            m_plot->xAxis->setRange(currentTime - keyRange, currentTime);
+        }
+    }
+
+    // 自动调整Y轴范围
+    m_plot->rescaleAxes();
+
     // 重绘图表
-    m_plot->replot();
+    m_plot->replot(QCustomPlot::rpQueuedReplot);
 }
 
 void MainWindow::onSyncFrameReady(Core::SynchronizedDataFrame frame)
@@ -610,32 +667,8 @@ void MainWindow::onSyncFrameReady(Core::SynchronizedDataFrame frame)
     double relativeTime = (frame.timestamp - m_startTimestamp) / 1000.0;
 
     // 输出同步数据帧信息
-    qDebug() << "同步数据帧 [" << timeStr << "] 通道数量:" << frame.channelData.size();
+    // qDebug() << "同步数据帧 [" << timeStr << "] 通道数量:" << frame.channelData.size();
 
-    // 处理每个通道的数据
-    for (auto it = frame.channelData.constBegin(); it != frame.channelData.constEnd(); ++it) {
-        QString channelId = it.key();
-        double value = it.value().value;
-
-        // 检查通道是否存在于图表中
-        if (m_channelGraphs.contains(channelId)) {
-            // 添加数据点
-            m_timeData[channelId].append(relativeTime);
-            m_valueData[channelId].append(value);
-
-            // 更新图表数据
-            m_channelGraphs[channelId]->setData(m_timeData[channelId], m_valueData[channelId]);
-
-            // 自动调整X轴范围以显示最新数据
-            if (m_timeData[channelId].size() > 0) {
-                double maxTime = m_timeData[channelId].last();
-                m_plot->xAxis->setRange(maxTime - 10, maxTime);
-            }
-
-            qDebug() << "  通道:" << channelId << "值:" << value << it.value().unit;
-        }
-    }
-
-    // 自动调整Y轴范围
-    m_plot->rescaleAxes();
+    // 注意：不再在这里更新图表，而是在updatePlot方法中统一更新
+    // 这样可以减少UI线程的负担，提高性能
 }

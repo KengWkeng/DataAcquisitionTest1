@@ -68,10 +68,10 @@ private:
 
     // 数据和状态
     QMap<QString, QCPGraph*> m_channelGraphs;  // 通道ID -> 图表对象
-    QMap<QString, QVector<double>> m_timeData; // 通道ID -> 时间数据
-    QMap<QString, QVector<double>> m_valueData; // 通道ID -> 值数据
     bool m_isAcquiring;                        // 是否正在采集
     QTimer *m_plotUpdateTimer;                 // 图表更新定时器
     qint64 m_startTimestamp;                   // 采集开始时间戳
+    int m_displayPointCount;                   // 显示点数
+    double m_timeWindow;                       // 时间窗口（秒）
 };
 #endif // MAINWINDOW_H
