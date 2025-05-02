@@ -38,8 +38,9 @@ struct qt_meta_tag_ZN6Device12ModbusDeviceE_t {};
 #ifdef QT_MOC_HAS_STRINGDATA
 static constexpr auto qt_meta_stringdata_ZN6Device12ModbusDeviceE = QtMocHelpers::stringData(
     "Device::ModbusDevice",
-    "readModbusData",
+    "initializeModbusClient",
     "",
+    "readModbusData",
     "processModbusResponse",
     "QModbusReply*",
     "reply"
@@ -54,7 +55,7 @@ Q_CONSTINIT static const uint qt_meta_data_ZN6Device12ModbusDeviceE[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       2,   14, // methods
+       3,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -62,12 +63,14 @@ Q_CONSTINIT static const uint qt_meta_data_ZN6Device12ModbusDeviceE[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,   26,    2, 0x08,    1 /* Private */,
-       3,    1,   27,    2, 0x08,    2 /* Private */,
+       1,    0,   32,    2, 0x08,    1 /* Private */,
+       3,    0,   33,    2, 0x08,    2 /* Private */,
+       4,    1,   34,    2, 0x08,    3 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 4,    5,
+    QMetaType::Void,
+    QMetaType::Void, 0x80000000 | 5,    6,
 
        0        // eod
 };
@@ -81,6 +84,8 @@ Q_CONSTINIT const QMetaObject Device::ModbusDevice::staticMetaObject = { {
     qt_incomplete_metaTypeArray<qt_meta_tag_ZN6Device12ModbusDeviceE_t,
         // Q_OBJECT / Q_GADGET
         QtPrivate::TypeAndForceComplete<ModbusDevice, std::true_type>,
+        // method 'initializeModbusClient'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'readModbusData'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'processModbusResponse'
@@ -95,15 +100,16 @@ void Device::ModbusDevice::qt_static_metacall(QObject *_o, QMetaObject::Call _c,
     auto *_t = static_cast<ModbusDevice *>(_o);
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
-        case 0: _t->readModbusData(); break;
-        case 1: _t->processModbusResponse((*reinterpret_cast< std::add_pointer_t<QModbusReply*>>(_a[1]))); break;
+        case 0: _t->initializeModbusClient(); break;
+        case 1: _t->readModbusData(); break;
+        case 2: _t->processModbusResponse((*reinterpret_cast< std::add_pointer_t<QModbusReply*>>(_a[1]))); break;
         default: ;
         }
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         switch (_id) {
         default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
-        case 1:
+        case 2:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
             case 0:
@@ -133,14 +139,14 @@ int Device::ModbusDevice::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 2)
+        if (_id < 3)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 3;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 2)
+        if (_id < 3)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 3;
     }
     return _id;
 }

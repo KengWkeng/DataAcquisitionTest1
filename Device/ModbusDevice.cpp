@@ -95,10 +95,37 @@ bool ModbusDevice::connectDevice()
         }
     }
 
-    // 如果已经连接，先断开
+    // 如果已经连接，直接返回成功
+    if (m_modbusClient->state() == QModbusDevice::ConnectedState) {
+        qDebug() << "Modbus设备已连接，无需重新连接:" << m_config.instanceName;
+        setStatus(Core::StatusCode::CONNECTED, "Modbus设备已连接");
+        return true;
+    }
+
+    // 如果设备正在连接或关闭中，等待状态变化
+    if (m_modbusClient->state() == QModbusDevice::ConnectingState ||
+        m_modbusClient->state() == QModbusDevice::ClosingState) {
+        qDebug() << "Modbus设备正在状态转换中，等待完成:" << m_config.instanceName
+                 << "当前状态:" << m_modbusClient->state();
+
+        // 等待一段时间让状态转换完成
+        QThread::msleep(100);
+
+        // 如果转换为已连接状态，返回成功
+        if (m_modbusClient->state() == QModbusDevice::ConnectedState) {
+            setStatus(Core::StatusCode::CONNECTED, "Modbus设备已连接");
+            return true;
+        }
+    }
+
+    // 如果设备处于未连接状态以外的其他状态，先断开连接
     if (m_modbusClient->state() != QModbusDevice::UnconnectedState) {
-        qDebug() << "Modbus设备已连接，先断开连接:" << m_config.instanceName;
+        qDebug() << "Modbus设备状态异常，先断开连接:" << m_config.instanceName
+                 << "当前状态:" << m_modbusClient->state();
         m_modbusClient->disconnectDevice();
+
+        // 等待断开连接完成
+        QThread::msleep(100);
     }
 
     // 配置串口参数
@@ -128,10 +155,41 @@ bool ModbusDevice::disconnectDevice()
     // 确保停止采集
     stopAcquisition();
 
-    // 断开连接
-    if (m_modbusClient && m_modbusClient->state() != QModbusDevice::UnconnectedState) {
-        m_modbusClient->disconnectDevice();
+    // 检查客户端是否存在
+    if (!m_modbusClient) {
+        qDebug() << "Modbus客户端为空，无需断开连接:" << m_config.instanceName;
+        setStatus(Core::StatusCode::DISCONNECTED, "Modbus设备已断开连接");
+        return true;
     }
+
+    // 如果已经断开连接，直接返回成功
+    if (m_modbusClient->state() == QModbusDevice::UnconnectedState) {
+        qDebug() << "Modbus设备已断开连接，无需重复操作:" << m_config.instanceName;
+        setStatus(Core::StatusCode::DISCONNECTED, "Modbus设备已断开连接");
+        return true;
+    }
+
+    // 如果设备正在关闭中，等待状态变化
+    if (m_modbusClient->state() == QModbusDevice::ClosingState) {
+        qDebug() << "Modbus设备正在关闭中，等待完成:" << m_config.instanceName;
+
+        // 等待一段时间让状态转换完成
+        QThread::msleep(100);
+
+        // 如果转换为已断开状态，返回成功
+        if (m_modbusClient->state() == QModbusDevice::UnconnectedState) {
+            setStatus(Core::StatusCode::DISCONNECTED, "Modbus设备已断开连接");
+            return true;
+        }
+    }
+
+    // 断开连接
+    qDebug() << "正在断开Modbus设备连接:" << m_config.instanceName
+             << "当前状态:" << m_modbusClient->state();
+    m_modbusClient->disconnectDevice();
+
+    // 等待断开连接完成
+    QThread::msleep(50);
 
     setStatus(Core::StatusCode::DISCONNECTED, "Modbus设备已断开连接");
     return true;
@@ -141,11 +199,23 @@ void ModbusDevice::startAcquisition()
 {
     // 只有在已连接状态下才能开始采集
     if (m_status != Core::StatusCode::CONNECTED && m_status != Core::StatusCode::STOPPED) {
-        emit errorOccurred(getDeviceId(), "无法开始采集：设备未连接");
-        return;
+        qDebug() << "设备未连接，尝试连接设备:" << getDeviceId();
+
+        // 尝试连接设备
+        if (!connectDevice()) {
+            emit errorOccurred(getDeviceId(), "无法开始采集：设备连接失败");
+            return;
+        }
     }
 
     QMutexLocker locker(&m_mutex);
+
+    // 如果已经在采集，不要重复启动
+    if (m_isAcquiring) {
+        qDebug() << "设备已经在采集数据，忽略重复启动:" << getDeviceId();
+        return;
+    }
+
     m_isAcquiring = true;
 
     // 确保定时器在当前线程中启动
@@ -206,17 +276,38 @@ void ModbusDevice::readModbusData()
         }
     }
 
+    // 检查客户端状态，但避免频繁重连
     if (m_modbusClient->state() != QModbusDevice::ConnectedState) {
+        // 如果设备正在关闭或连接中，等待状态变化
+        if (m_modbusClient->state() == QModbusDevice::ClosingState ||
+            m_modbusClient->state() == QModbusDevice::ConnectingState) {
+            qDebug() << "Modbus设备正在状态转换中，等待完成:" << getDeviceId()
+                     << "当前状态:" << m_modbusClient->state();
+            return;
+        }
+
+        // 如果设备已断开，尝试重新连接
         QString errorMsg = QString("Modbus客户端未连接，当前状态: %1").arg(m_modbusClient->state());
         qDebug() << errorMsg << "设备:" << getDeviceId();
         emit errorOccurred(getDeviceId(), errorMsg);
 
-        // 尝试重新连接
-        qDebug() << "尝试重新连接Modbus设备:" << getDeviceId();
-        if (connectDevice()) {
-            qDebug() << "重新连接Modbus设备成功:" << getDeviceId();
+        // 尝试重新连接，但避免频繁重连
+        static QDateTime lastReconnectAttempt;
+        QDateTime now = QDateTime::currentDateTime();
+
+        // 至少间隔5秒再尝试重连
+        if (lastReconnectAttempt.isNull() || lastReconnectAttempt.msecsTo(now) > 5000) {
+            qDebug() << "尝试重新连接Modbus设备:" << getDeviceId();
+            lastReconnectAttempt = now;
+
+            if (connectDevice()) {
+                qDebug() << "重新连接Modbus设备成功:" << getDeviceId();
+            } else {
+                qDebug() << "重新连接Modbus设备失败:" << getDeviceId();
+                return;
+            }
         } else {
-            qDebug() << "重新连接Modbus设备失败:" << getDeviceId();
+            qDebug() << "重连尝试过于频繁，跳过本次重连:" << getDeviceId();
             return;
         }
     }

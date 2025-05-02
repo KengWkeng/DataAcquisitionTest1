@@ -1,5 +1,6 @@
 #include "DeviceManager.h"
 #include <QThread>
+#include <QTimer>
 
 namespace Device {
 
@@ -142,6 +143,15 @@ bool DeviceManager::createModbusDevices(const QList<Core::ModbusDeviceConfig>& c
                     this, &DeviceManager::errorOccurred);
 
             qDebug() << "创建Modbus设备成功:" << device->getDeviceId();
+
+            // 在初始化阶段连接设备
+            QTimer::singleShot(500, [device]() {
+                if (device->connectDevice()) {
+                    qDebug() << "初始化阶段连接Modbus设备成功:" << device->getDeviceId();
+                } else {
+                    qDebug() << "初始化阶段连接Modbus设备失败:" << device->getDeviceId();
+                }
+            });
         } else {
             qDebug() << "创建Modbus设备线程失败:" << device->getDeviceId();
             delete device;
@@ -156,13 +166,7 @@ bool DeviceManager::startAllDevices()
 {
     bool success = true;
 
-    // 首先连接所有设备
-    if (!connectAllDevices()) {
-        qDebug() << "连接设备失败，无法启动采集";
-        return false;
-    }
-
-    // 启动所有设备的采集
+    // 启动所有设备的采集（设备会在需要时自动连接）
     for (auto it = m_devices.begin(); it != m_devices.end(); ++it) {
         AbstractDevice* device = it.value();
         if (device) {
