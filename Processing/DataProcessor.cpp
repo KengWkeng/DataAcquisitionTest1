@@ -8,12 +8,25 @@ DataProcessor::DataProcessor(int syncIntervalMs, QObject *parent)
     , m_processingTimer(new QTimer(this))
     , m_syncIntervalMs(syncIntervalMs)
     , m_isProcessing(false)
+    , m_dataStorage(new DataStorage(this))
 {
     // 连接处理定时器信号
     connect(m_processingTimer, &QTimer::timeout, this, &DataProcessor::performProcessing);
 
     // 设置处理定时器间隔
     m_processingTimer->setInterval(m_syncIntervalMs);
+
+    // 连接数据存储器信号
+    connect(m_dataStorage, &DataStorage::storageStatusChanged,
+            this, &DataProcessor::storageStatusChanged);
+    connect(m_dataStorage, &DataStorage::storageError,
+            this, &DataProcessor::storageError);
+
+    // 连接数据处理信号到数据存储器
+    connect(this, &DataProcessor::syncFrameReady,
+            m_dataStorage, &DataStorage::onSyncFrameReady, Qt::DirectConnection);
+    connect(this, &DataProcessor::processedDataPointReady,
+            m_dataStorage, &DataStorage::onProcessedDataPointReady, Qt::DirectConnection);
 
     qDebug() << "创建数据处理器，同步间隔:" << m_syncIntervalMs << "毫秒，线程ID:" << QThread::currentThreadId();
 }
@@ -220,6 +233,75 @@ void DataProcessor::clearAllBuffers()
     }
 
     qDebug() << "清除所有数据缓冲区";
+}
+
+bool DataProcessor::startDataStorage(qint64 startTimestamp)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if (!m_dataStorage) {
+        qDebug() << "数据存储器未初始化!";
+        return false;
+    }
+
+    bool success = m_dataStorage->startStorage(startTimestamp);
+
+    if (success) {
+        qDebug() << "开始数据存储，时间戳:" << startTimestamp
+                 << "文件:" << m_dataStorage->getCurrentFilePath();
+    } else {
+        qDebug() << "开始数据存储失败!";
+    }
+
+    return success;
+}
+
+void DataProcessor::stopDataStorage()
+{
+    QMutexLocker locker(&m_mutex);
+
+    if (!m_dataStorage) {
+        qDebug() << "数据存储器未初始化!";
+        return;
+    }
+
+    m_dataStorage->stopStorage();
+
+    qDebug() << "停止数据存储";
+}
+
+bool DataProcessor::isStoragingData() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    if (!m_dataStorage) {
+        return false;
+    }
+
+    return m_dataStorage->isStoraging();
+}
+
+QString DataProcessor::getCurrentStorageFilePath() const
+{
+    QMutexLocker locker(&m_mutex);
+
+    if (!m_dataStorage) {
+        return QString();
+    }
+
+    return m_dataStorage->getCurrentFilePath();
+}
+
+void DataProcessor::setStorageDirectory(const QString& dirPath)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if (!m_dataStorage) {
+        qDebug() << "数据存储器未初始化!";
+        return;
+    }
+
+    m_dataStorage->setStorageDirectory(dirPath);
 }
 
 void DataProcessor::onRawDataPointReceived(QString deviceId, QString hardwareChannel, double rawValue, qint64 timestamp)

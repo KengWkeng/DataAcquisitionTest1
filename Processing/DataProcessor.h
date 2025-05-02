@@ -13,6 +13,7 @@
 #include "../Core/Constants.h"
 #include "../Core/DataTypes.h"
 #include "Channel.h"
+#include "DataStorage.h"
 
 namespace Processing {
 
@@ -119,6 +120,36 @@ public:
      */
     void clearAllBuffers();
 
+    /**
+     * @brief 开始数据存储
+     * @param startTimestamp 采集开始的时间戳（毫秒）
+     * @return 是否成功开始存储
+     */
+    bool startDataStorage(qint64 startTimestamp);
+
+    /**
+     * @brief 停止数据存储
+     */
+    void stopDataStorage();
+
+    /**
+     * @brief 是否正在存储数据
+     * @return 是否正在存储
+     */
+    bool isStoragingData() const;
+
+    /**
+     * @brief 获取当前存储文件路径
+     * @return 当前存储文件路径
+     */
+    QString getCurrentStorageFilePath() const;
+
+    /**
+     * @brief 设置存储目录
+     * @param dirPath 存储目录路径
+     */
+    void setStorageDirectory(const QString& dirPath);
+
 public slots:
     /**
      * @brief 处理原始数据点
@@ -164,6 +195,19 @@ signals:
      * @param errorMsg 错误消息
      */
     void errorOccurred(QString errorMsg);
+
+    /**
+     * @brief 存储状态变化信号
+     * @param isStoraging 是否正在存储
+     * @param filePath 存储文件路径
+     */
+    void storageStatusChanged(bool isStoraging, QString filePath);
+
+    /**
+     * @brief 存储错误信号
+     * @param errorMsg 错误消息
+     */
+    void storageError(QString errorMsg);
 
 private slots:
     /**
@@ -235,6 +279,9 @@ private:
 
     // 常量
     static const int MAX_QUEUE_SIZE = 1000;              // 最大队列长度
+
+    // 数据存储
+    DataStorage* m_dataStorage;                          // 数据存储器
 };
 
 } // namespace Processing

@@ -7,6 +7,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Device/VirtualDevice.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/Channel.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataProcessor.h \
+  C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataStorage.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/plot/qcustomplot.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QCache \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QDateTime \
@@ -31,6 +32,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QPointer \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QQueue \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QRandomGenerator \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/QReadWriteLock \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QRect \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QScopedPointer \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QSharedPointer \
@@ -39,6 +41,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QStack \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QString \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QStringList \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/QTextStream \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QThread \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QTimeZone \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QTimer \

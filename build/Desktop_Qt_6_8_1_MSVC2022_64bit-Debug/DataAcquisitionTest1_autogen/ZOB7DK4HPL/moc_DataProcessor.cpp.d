@@ -2,17 +2,22 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Core/Constants.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Core/DataTypes.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/Channel.h \
+  C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataStorage.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QDateTime \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QDebug \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/QFile \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QList \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QMap \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QMutex \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QObject \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QQueue \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/QReadWriteLock \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QString \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/QTextStream \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QThread \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QTimer \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QVariant \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/QVector \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/q20functional.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/q20memory.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/q20type_traits.h \
@@ -51,6 +56,8 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qdebug.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qelapsedtimer.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qexceptionhandling.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/qfile.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/qfiledevice.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qflags.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qfloat16.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qforeach.h \
@@ -61,6 +68,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qglobalstatic.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qhash.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qhashfunctions.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/qiodevice.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qiodevicebase.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qiterable.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qiterator.h \
@@ -85,6 +93,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qpair.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qprocessordetection.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qqueue.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/qreadwritelock.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qrefcount.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qscopedpointer.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qscopeguard.h \
@@ -133,6 +142,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qutf8stringview.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qvariant.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qvarlengtharray.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/qvector.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qversiontagging.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qxptype_traits.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qyieldcpu.h

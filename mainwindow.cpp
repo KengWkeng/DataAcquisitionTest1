@@ -63,6 +63,13 @@ MainWindow::~MainWindow()
 
     // 清理数据处理器和线程
     if (m_dataProcessor) {
+        // 如果正在采集，确保数据被保存
+        if (m_isAcquiring) {
+            // 停止数据存储（确保数据被保存）
+            QMetaObject::invokeMethod(m_dataProcessor, &Processing::DataProcessor::stopDataStorage, Qt::BlockingQueuedConnection);
+            qDebug() << "程序退出时保存数据";
+        }
+
         // 停止处理
         m_dataProcessor->stopProcessing();
     }
@@ -323,6 +330,10 @@ void MainWindow::initializeProcessing()
             this, &MainWindow::onChannelStatusChanged, Qt::QueuedConnection);
     connect(m_dataProcessor, &Processing::DataProcessor::errorOccurred,
             this, &MainWindow::onProcessingError, Qt::QueuedConnection);
+    connect(m_dataProcessor, &Processing::DataProcessor::storageStatusChanged,
+            this, &MainWindow::onStorageStatusChanged, Qt::QueuedConnection);
+    connect(m_dataProcessor, &Processing::DataProcessor::storageError,
+            this, &MainWindow::onStorageError, Qt::QueuedConnection);
 
     // 连接设备管理器信号到数据处理器（使用Qt::QueuedConnection确保线程安全）
     if (m_deviceManager) {
@@ -438,7 +449,20 @@ void MainWindow::onChannelStatusChanged(QString channelId, Core::StatusCode stat
 void MainWindow::onProcessingError(QString errorMsg)
 {
     // 输出处理错误信息
-    // qDebug() << "处理错误:" << errorMsg;
+    qDebug() << "处理错误:" << errorMsg;
+}
+
+void MainWindow::onStorageStatusChanged(bool isStoraging, QString filePath)
+{
+    // 输出存储状态变化信息
+    qDebug() << "存储状态变化 - 是否正在存储:" << isStoraging
+             << "文件路径:" << filePath;
+}
+
+void MainWindow::onStorageError(QString errorMsg)
+{
+    // 输出存储错误信息
+    qDebug() << "存储错误:" << errorMsg;
 }
 
 void MainWindow::initializeUI()
@@ -575,6 +599,10 @@ void MainWindow::onStartStopButtonClicked()
         // 停止采集
         m_deviceManager->stopAllDevices();
         QMetaObject::invokeMethod(m_dataProcessor, &Processing::DataProcessor::stopProcessing, Qt::QueuedConnection);
+
+        // 停止数据存储
+        QMetaObject::invokeMethod(m_dataProcessor, &Processing::DataProcessor::stopDataStorage, Qt::QueuedConnection);
+
         m_plotUpdateTimer->stop();
 
         m_startStopButton->setText("开始采集");
@@ -597,6 +625,13 @@ void MainWindow::onStartStopButtonClicked()
         // 启动设备和处理
         m_deviceManager->startAllDevices();
         QMetaObject::invokeMethod(m_dataProcessor, &Processing::DataProcessor::startProcessing, Qt::QueuedConnection);
+
+        // 开始数据存储
+        QMetaObject::invokeMethod(m_dataProcessor,
+            [this]() {
+                m_dataProcessor->startDataStorage(m_startTimestamp);
+            }, Qt::QueuedConnection);
+
         m_plotUpdateTimer->start();
 
         m_startStopButton->setText("停止采集");

@@ -32,6 +32,8 @@ set(PROJECT_SOURCES
         Processing/Channel.cpp
         Processing/DataProcessor.h
         Processing/DataProcessor.cpp
+        Processing/DataStorage.h
+        Processing/DataStorage.cpp
         plot/qcustomplot.h
         plot/qcustomplot.cpp
 )

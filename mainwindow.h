@@ -36,6 +36,19 @@ public slots:
     void onChannelStatusChanged(QString channelId, Core::StatusCode status, QString message);
     void onProcessingError(QString errorMsg);
 
+    /**
+     * @brief 处理存储状态变化
+     * @param isStoraging 是否正在存储
+     * @param filePath 存储文件路径
+     */
+    void onStorageStatusChanged(bool isStoraging, QString filePath);
+
+    /**
+     * @brief 处理存储错误
+     * @param errorMsg 错误消息
+     */
+    void onStorageError(QString errorMsg);
+
 private slots:
     // 控制采集的槽
     void onStartStopButtonClicked();

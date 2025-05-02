@@ -376,6 +376,12 @@
 			null
 		],
 		[
+			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataStorage.h",
+			"MU",
+			"ZOB7DK4HPL/moc_DataStorage.cpp",
+			null
+		],
+		[
 			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/mainwindow.h",
 			"MU",
 			"EWIEGA46WW/moc_mainwindow.cpp",
@@ -472,6 +478,11 @@
 		],
 		[
 			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataProcessor.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataStorage.cpp",
 			"MU",
 			null
 		],

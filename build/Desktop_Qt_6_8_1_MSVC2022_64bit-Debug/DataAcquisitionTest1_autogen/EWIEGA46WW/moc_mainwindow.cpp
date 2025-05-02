@@ -61,6 +61,10 @@ static constexpr auto qt_meta_stringdata_ZN10MainWindowE = QtMocHelpers::stringD
     "frame",
     "onChannelStatusChanged",
     "onProcessingError",
+    "onStorageStatusChanged",
+    "isStoraging",
+    "filePath",
+    "onStorageError",
     "onStartStopButtonClicked",
     "updatePlot"
 );
@@ -74,7 +78,7 @@ Q_CONSTINIT static const uint qt_meta_data_ZN10MainWindowE[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       9,   14, // methods
+      11,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -82,15 +86,17 @@ Q_CONSTINIT static const uint qt_meta_data_ZN10MainWindowE[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    4,   68,    2, 0x0a,    1 /* Public */,
-       7,    3,   77,    2, 0x0a,    6 /* Public */,
-      11,    2,   84,    2, 0x0a,   10 /* Public */,
-      13,    2,   89,    2, 0x0a,   13 /* Public */,
-      17,    1,   94,    2, 0x0a,   16 /* Public */,
-      20,    3,   97,    2, 0x0a,   18 /* Public */,
-      21,    1,  104,    2, 0x0a,   22 /* Public */,
-      22,    0,  107,    2, 0x08,   24 /* Private */,
-      23,    0,  108,    2, 0x08,   25 /* Private */,
+       1,    4,   80,    2, 0x0a,    1 /* Public */,
+       7,    3,   89,    2, 0x0a,    6 /* Public */,
+      11,    2,   96,    2, 0x0a,   10 /* Public */,
+      13,    2,  101,    2, 0x0a,   13 /* Public */,
+      17,    1,  106,    2, 0x0a,   16 /* Public */,
+      20,    3,  109,    2, 0x0a,   18 /* Public */,
+      21,    1,  116,    2, 0x0a,   22 /* Public */,
+      22,    2,  119,    2, 0x0a,   24 /* Public */,
+      25,    1,  124,    2, 0x0a,   27 /* Public */,
+      26,    0,  127,    2, 0x08,   29 /* Private */,
+      27,    0,  128,    2, 0x08,   30 /* Private */,
 
  // slots: parameters
     QMetaType::Void, QMetaType::QString, QMetaType::QString, QMetaType::Double, QMetaType::LongLong,    3,    4,    5,    6,
@@ -99,6 +105,8 @@ Q_CONSTINIT static const uint qt_meta_data_ZN10MainWindowE[] = {
     QMetaType::Void, QMetaType::QString, 0x80000000 | 15,   14,   16,
     QMetaType::Void, 0x80000000 | 18,   19,
     QMetaType::Void, QMetaType::QString, 0x80000000 | 8, QMetaType::QString,   14,    9,   10,
+    QMetaType::Void, QMetaType::QString,   12,
+    QMetaType::Void, QMetaType::Bool, QMetaType::QString,   23,   24,
     QMetaType::Void, QMetaType::QString,   12,
     QMetaType::Void,
     QMetaType::Void,
@@ -145,6 +153,13 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
         // method 'onProcessingError'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<QString, std::false_type>,
+        // method 'onStorageStatusChanged'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<bool, std::false_type>,
+        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
+        // method 'onStorageError'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
         // method 'onStartStopButtonClicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'updatePlot'
@@ -165,8 +180,10 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 4: _t->onSyncFrameReady((*reinterpret_cast< std::add_pointer_t<Core::SynchronizedDataFrame>>(_a[1]))); break;
         case 5: _t->onChannelStatusChanged((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<Core::StatusCode>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[3]))); break;
         case 6: _t->onProcessingError((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
-        case 7: _t->onStartStopButtonClicked(); break;
-        case 8: _t->updatePlot(); break;
+        case 7: _t->onStorageStatusChanged((*reinterpret_cast< std::add_pointer_t<bool>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2]))); break;
+        case 8: _t->onStorageError((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 9: _t->onStartStopButtonClicked(); break;
+        case 10: _t->updatePlot(); break;
         default: ;
         }
     }
@@ -191,14 +208,14 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 9)
+        if (_id < 11)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 9;
+        _id -= 11;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 9)
+        if (_id < 11)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 9;
+        _id -= 11;
     }
     return _id;
 }
