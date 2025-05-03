@@ -402,12 +402,30 @@ void MainWindow::initializeProcessing()
             }, Qt::BlockingQueuedConnection);
 
             if (success) {
-                // qDebug() << "成功创建" << channelConfigs.size() << "个通道";
+                qDebug() << "成功创建" << channelConfigs.size() << "个通道";
             } else {
-                // qDebug() << "创建通道失败!";
+                qDebug() << "创建通道失败!";
             }
         } else {
-            // qDebug() << "没有通道配置";
+            qDebug() << "没有通道配置";
+        }
+
+        // 创建二次计算仪器
+        QList<Core::SecondaryInstrumentConfig> secondaryInstrumentConfigs = m_configManager->getSecondaryInstrumentConfigs();
+        if (!secondaryInstrumentConfigs.isEmpty()) {
+            // 使用QMetaObject::invokeMethod确保在正确的线程中创建二次计算仪器
+            bool success = false;
+            QMetaObject::invokeMethod(m_dataProcessor, [this, secondaryInstrumentConfigs, &success]() {
+                success = m_dataProcessor->createSecondaryInstruments(secondaryInstrumentConfigs);
+            }, Qt::BlockingQueuedConnection);
+
+            if (success) {
+                qDebug() << "成功创建" << secondaryInstrumentConfigs.size() << "个二次计算仪器";
+            } else {
+                qDebug() << "创建二次计算仪器失败!";
+            }
+        } else {
+            qDebug() << "没有二次计算仪器配置";
         }
     }
 

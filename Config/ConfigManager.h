@@ -75,6 +75,12 @@ public:
     QMap<QString, Core::ChannelConfig> getChannelConfigs() const;
 
     /**
+     * @brief 获取二次计算仪器配置
+     * @return 二次计算仪器配置列表
+     */
+    QList<Core::SecondaryInstrumentConfig> getSecondaryInstrumentConfigs() const;
+
+    /**
      * @brief 获取数据同步间隔（毫秒）
      * @return 同步间隔
      */
@@ -119,6 +125,12 @@ private:
     void parseECUDevices(const QJsonArray& jsonArray);
 
     /**
+     * @brief 解析二次计算仪器配置
+     * @param jsonArray 二次计算仪器JSON数组
+     */
+    void parseSecondaryInstruments(const QJsonArray& jsonArray);
+
+    /**
      * @brief 从JSON对象解析通道参数
      * @param jsonObject 包含通道参数的JSON对象
      * @return 通道参数
@@ -145,6 +157,7 @@ private:
     QList<Core::ModbusDeviceConfig> m_modbusDeviceConfigs;   // Modbus设备配置列表
     QList<Core::DAQDeviceConfig> m_daqDeviceConfigs;         // DAQ设备配置列表
     QList<Core::ECUDeviceConfig> m_ecuDeviceConfigs;         // ECU设备配置列表
+    QList<Core::SecondaryInstrumentConfig> m_secondaryInstrumentConfigs; // 二次计算仪器配置列表
     QMap<QString, Core::ChannelConfig> m_channelConfigs;     // 通道配置映射
     int m_synchronizationIntervalMs;                         // 数据同步间隔（毫秒）
 };

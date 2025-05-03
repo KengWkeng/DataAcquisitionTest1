@@ -12,6 +12,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/Channel.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataProcessor.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataStorage.h \
+  C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/SecondaryInstrument.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/plot/qcustomplot.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QByteArray \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QCache \

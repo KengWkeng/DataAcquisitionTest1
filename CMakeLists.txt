@@ -40,6 +40,8 @@ set(PROJECT_SOURCES
         Processing/DataProcessor.cpp
         Processing/DataStorage.h
         Processing/DataStorage.cpp
+        Processing/SecondaryInstrument.h
+        Processing/SecondaryInstrument.cpp
         plot/qcustomplot.h
         plot/qcustomplot.cpp
 )

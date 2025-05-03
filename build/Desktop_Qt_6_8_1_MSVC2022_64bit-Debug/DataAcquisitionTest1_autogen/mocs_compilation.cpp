@@ -9,5 +9,6 @@
 #include "ZOB7DK4HPL/moc_Channel.cpp"
 #include "ZOB7DK4HPL/moc_DataProcessor.cpp"
 #include "ZOB7DK4HPL/moc_DataStorage.cpp"
+#include "ZOB7DK4HPL/moc_SecondaryInstrument.cpp"
 #include "EWIEGA46WW/moc_mainwindow.cpp"
 #include "DMHAXLKN4Z/moc_qcustomplot.cpp"

@@ -1,5 +1,16 @@
 # 已完成的任务
 
+## 十一、添加二次计算仪器支持
+- 更新了config.json格式，修改ECU设备通道格式为标准通道结构，添加了二次计算仪器配置
+- 创建了SecondaryInstrument类，实现了公式解析和计算功能
+- 更新了Core/DataTypes.h，添加了SecondaryInstrumentConfig结构体
+- 更新了ConfigManager，添加了解析和获取二次计算仪器配置的方法
+- 更新了DataProcessor，添加了创建和管理二次计算仪器的功能
+- 实现了二次计算仪器的数据处理逻辑，支持基本的四则运算和括号优先级
+- 更新了MainWindow，添加了初始化二次计算仪器的代码
+- 更新了CMakeLists.txt，添加了SecondaryInstrument.h和SecondaryInstrument.cpp
+- 实现了完整的二次计算仪器数据流：通道处理 -> 二次计算 -> 数据同步 -> 存储和显示
+
 ## 十、添加ECU设备支持
 - 添加了ECUDevice类，实现了AbstractDevice接口
 - 实现了ECU设备的帧解析功能，基于参考代码ECUTest.h和ECUTest.cpp

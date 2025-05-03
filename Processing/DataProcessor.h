@@ -14,6 +14,7 @@
 #include "../Core/DataTypes.h"
 #include "Channel.h"
 #include "DataStorage.h"
+#include "SecondaryInstrument.h"
 
 namespace Processing {
 
@@ -51,6 +52,20 @@ public:
      * @return 是否成功创建所有通道
      */
     bool createChannels(const QMap<QString, Core::ChannelConfig>& configs);
+
+    /**
+     * @brief 创建二次计算仪器
+     * @param config 二次计算仪器配置
+     * @return 是否成功创建
+     */
+    bool createSecondaryInstrument(const Core::SecondaryInstrumentConfig& config);
+
+    /**
+     * @brief 创建多个二次计算仪器
+     * @param configs 二次计算仪器配置列表
+     * @return 是否成功创建所有二次计算仪器
+     */
+    bool createSecondaryInstruments(const QList<Core::SecondaryInstrumentConfig>& configs);
 
     /**
      * @brief 获取通道
@@ -251,6 +266,7 @@ private:
 private:
     // 通道管理
     QMap<QString, Channel*> m_channels;                  // 通道映射（通道ID -> 通道指针）
+    QMap<QString, SecondaryInstrument*> m_secondaryInstruments; // 二次计算仪器映射（通道ID -> 二次计算仪器指针）
 
     // 原始数据缓存
     struct RawDataPoint {

@@ -70,12 +70,21 @@ bool ConfigManager::loadConfig(const QString& filePath)
         parseDAQDevices(rootObj["daq_devices"].toArray());
     }
 
-    // 解析ECU设备（暂时不实现，但保留接口）
+    // 解析ECU设备
     if (rootObj.contains("ecu_devices") && rootObj["ecu_devices"].isArray()) {
         parseECUDevices(rootObj["ecu_devices"].toArray());
     }
 
-    qDebug() << "配置加载成功，虚拟设备数量:" << m_virtualDeviceConfigs.size();
+    // 解析二次计算仪器
+    if (rootObj.contains("secondary_instruments") && rootObj["secondary_instruments"].isArray()) {
+        parseSecondaryInstruments(rootObj["secondary_instruments"].toArray());
+    }
+
+    qDebug() << "配置加载成功，虚拟设备数量:" << m_virtualDeviceConfigs.size()
+             << "，Modbus设备数量:" << m_modbusDeviceConfigs.size()
+             << "，DAQ设备数量:" << m_daqDeviceConfigs.size()
+             << "，ECU设备数量:" << m_ecuDeviceConfigs.size()
+             << "，二次计算仪器数量:" << m_secondaryInstrumentConfigs.size();
     return true;
 }
 
@@ -129,6 +138,11 @@ QList<Core::ECUDeviceConfig> ConfigManager::getECUDeviceConfigs() const
 QMap<QString, Core::ChannelConfig> ConfigManager::getChannelConfigs() const
 {
     return m_channelConfigs;
+}
+
+QList<Core::SecondaryInstrumentConfig> ConfigManager::getSecondaryInstrumentConfigs() const
+{
+    return m_secondaryInstrumentConfigs;
 }
 
 int ConfigManager::getSynchronizationIntervalMs() const
@@ -464,7 +478,55 @@ void ConfigManager::parseECUDevices(const QJsonArray& jsonArray)
 
         // 解析通道配置
         QMap<QString, Core::ECUChannelConfig> channels;
-        if (deviceObj.contains("channels") && deviceObj["channels"].isObject()) {
+
+        // 检查通道配置格式
+        if (deviceObj.contains("channels") && deviceObj["channels"].isArray()) {
+            // 新格式：通道数组
+            QJsonArray channelsArray = deviceObj["channels"].toArray();
+
+            for (int j = 0; j < channelsArray.size(); ++j) {
+                if (!channelsArray[j].isObject()) {
+                    qDebug() << "跳过非对象ECU通道条目";
+                    continue;
+                }
+
+                QJsonObject channelObj = channelsArray[j].toObject();
+
+                // 提取通道字段
+                QString channelName = channelObj["channel_name"].toString();
+                QString hardwareChannel = channelObj["hardware_channel"].toString();
+
+                // 解析通道参数
+                Core::ChannelParams channelParams;
+                if (channelObj.contains("channel_params") && channelObj["channel_params"].isObject()) {
+                    channelParams = parseChannelParams(channelObj["channel_params"].toObject());
+                }
+
+                // 创建ECU通道配置
+                Core::ECUChannelConfig channelConfig;
+                channelConfig.channelName = hardwareChannel;  // 使用硬件通道名称作为ECU内部通道名
+                channelConfig.channelParams = channelParams;
+
+                // 添加到通道映射
+                channels[hardwareChannel] = channelConfig;
+
+                // 创建对应的通道配置（用于数据处理）
+                Core::ChannelConfig procChannelConfig;
+                procChannelConfig.channelId = channelName;  // 使用指定的通道名称作为通道ID
+                procChannelConfig.channelName = channelName;
+                procChannelConfig.deviceId = instanceName;
+                procChannelConfig.hardwareChannel = hardwareChannel;
+                procChannelConfig.params = channelParams;
+
+                // 添加到通道映射
+                m_channelConfigs[procChannelConfig.channelId] = procChannelConfig;
+
+                qDebug() << "已加载ECU通道:" << channelName
+                         << "硬件通道:" << hardwareChannel
+                         << "设备:" << instanceName;
+            }
+        } else if (deviceObj.contains("channels") && deviceObj["channels"].isObject()) {
+            // 旧格式：通道对象
             QJsonObject channelsObj = deviceObj["channels"].toObject();
 
             // 遍历所有通道
@@ -503,7 +565,7 @@ void ConfigManager::parseECUDevices(const QJsonArray& jsonArray)
                 // 添加到通道映射
                 m_channelConfigs[procChannelConfig.channelId] = procChannelConfig;
 
-                qDebug() << "已加载ECU通道:" << channelName
+                qDebug() << "已加载ECU通道(旧格式):" << channelName
                          << "设备:" << instanceName;
             }
         }
@@ -572,6 +634,71 @@ Core::SerialConfig ConfigManager::parseSerialConfig(const QJsonObject& jsonObjec
     config.parity = jsonObject["parity"].toString("N");
 
     return config;
+}
+
+void ConfigManager::parseSecondaryInstruments(const QJsonArray& jsonArray)
+{
+    // 清空之前的配置
+    m_secondaryInstrumentConfigs.clear();
+
+    // 遍历二次计算仪器数组
+    for (int i = 0; i < jsonArray.size(); ++i) {
+        if (!jsonArray[i].isObject()) {
+            qDebug() << "跳过非对象二次计算仪器条目";
+            continue;
+        }
+
+        QJsonObject instrumentObj = jsonArray[i].toObject();
+
+        // 提取必要字段
+        QString channelName = instrumentObj["channel_name"].toString();
+        QString formula = instrumentObj["formula"].toString();
+
+        // 提取单位（如果存在）
+        QString unit = instrumentObj["unit"].toString("");
+
+        // 提取输入通道列表
+        QStringList inputChannels;
+        if (instrumentObj.contains("input_channels") && instrumentObj["input_channels"].isArray()) {
+            QJsonArray inputChannelsArray = instrumentObj["input_channels"].toArray();
+            for (int j = 0; j < inputChannelsArray.size(); ++j) {
+                inputChannels.append(inputChannelsArray[j].toString());
+            }
+        }
+
+        // 如果没有提供输入通道列表，尝试从公式中提取
+        if (inputChannels.isEmpty()) {
+            // 简单的正则表达式匹配可能的通道名称
+            QRegularExpression re("[a-zA-Z_][a-zA-Z0-9_]*");
+            QRegularExpressionMatchIterator i = re.globalMatch(formula);
+            while (i.hasNext()) {
+                QRegularExpressionMatch match = i.next();
+                QString potentialChannel = match.captured(0);
+                // 排除常见的数学函数名
+                if (potentialChannel != "sin" && potentialChannel != "cos" &&
+                    potentialChannel != "tan" && potentialChannel != "sqrt" &&
+                    potentialChannel != "pow" && potentialChannel != "log" &&
+                    potentialChannel != "exp" && !inputChannels.contains(potentialChannel)) {
+                    inputChannels.append(potentialChannel);
+                }
+            }
+        }
+
+        // 创建二次计算仪器配置
+        Core::SecondaryInstrumentConfig config;
+        config.channelName = channelName;
+        config.formula = formula;
+        config.inputChannels = inputChannels;
+        config.unit = unit;
+
+        // 添加到列表
+        m_secondaryInstrumentConfigs.append(config);
+
+        qDebug() << "已加载二次计算仪器:" << channelName
+                 << "公式:" << formula
+                 << "输入通道:" << inputChannels.join(", ")
+                 << "单位:" << unit;
+    }
 }
 
 } // namespace Config

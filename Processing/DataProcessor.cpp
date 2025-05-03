@@ -42,6 +42,12 @@ DataProcessor::~DataProcessor()
     }
     m_channels.clear();
 
+    // 清理二次计算仪器
+    for (auto it = m_secondaryInstruments.begin(); it != m_secondaryInstruments.end(); ++it) {
+        delete it.value();
+    }
+    m_secondaryInstruments.clear();
+
     qDebug() << "销毁数据处理器，线程ID:" << QThread::currentThreadId();
 }
 
@@ -82,6 +88,53 @@ bool DataProcessor::createChannels(const QMap<QString, Core::ChannelConfig>& con
 
     for (auto it = configs.constBegin(); it != configs.constEnd(); ++it) {
         if (!createChannel(it.value())) {
+            success = false;
+        }
+    }
+
+    return success;
+}
+
+bool DataProcessor::createSecondaryInstrument(const Core::SecondaryInstrumentConfig& config)
+{
+    QMutexLocker locker(&m_mutex);
+
+    // 检查二次计算仪器是否已存在
+    if (m_secondaryInstruments.contains(config.channelName)) {
+        qDebug() << "二次计算仪器已存在:" << config.channelName;
+        return false;
+    }
+
+    // 创建二次计算仪器
+    SecondaryInstrument* instrument = new SecondaryInstrument(config, this);
+
+    // 连接二次计算仪器信号
+    connect(instrument, &SecondaryInstrument::channelStatusChanged,
+            this, &DataProcessor::onChannelStatusChanged, Qt::DirectConnection);
+    connect(instrument, &SecondaryInstrument::errorOccurred,
+            this, &DataProcessor::onChannelError, Qt::DirectConnection);
+
+    // 添加到二次计算仪器映射
+    m_secondaryInstruments[config.channelName] = instrument;
+
+    // 为二次计算仪器创建数据队列
+    ProcessedDataQueue queue;
+    queue.maxSize = MAX_QUEUE_SIZE;
+    m_processedDataQueues[config.channelName] = queue;
+
+    qDebug() << "创建二次计算仪器成功:" << config.channelName
+             << "公式:" << config.formula
+             << "输入通道:" << config.inputChannels.join(", ")
+             << "线程ID:" << QThread::currentThreadId();
+    return true;
+}
+
+bool DataProcessor::createSecondaryInstruments(const QList<Core::SecondaryInstrumentConfig>& configs)
+{
+    bool success = true;
+
+    for (const auto& config : configs) {
+        if (!createSecondaryInstrument(config)) {
             success = false;
         }
     }
@@ -443,6 +496,60 @@ Core::SynchronizedDataFrame DataProcessor::processData()
             qDebug() << "处理通道数据 - 通道:" << channelId
                      << "原始值:" << rawValue
                      << "处理后值:" << processedPoint.value
+                     << "线程ID:" << QThread::currentThreadId();
+
+            // 发送处理后数据点就绪信号
+            emit processedDataPointReady(channelId, processedPoint);
+        }
+    }
+
+    // 处理二次计算仪器数据
+    if (!m_secondaryInstruments.isEmpty()) {
+        // 创建通道值映射，用于二次计算
+        QMap<QString, double> channelValues;
+
+        // 从同步数据帧中提取所有通道的值
+        for (auto it = frame.channelData.constBegin(); it != frame.channelData.constEnd(); ++it) {
+            channelValues[it.key()] = it.value().value;
+        }
+
+        // 处理每个二次计算仪器
+        for (auto it = m_secondaryInstruments.constBegin(); it != m_secondaryInstruments.constEnd(); ++it) {
+            SecondaryInstrument* instrument = it.value();
+            QString channelId = instrument->getChannelId();
+
+            // 计算二次仪器值
+            Core::ProcessedDataPoint processedPoint = instrument->calculate(channelValues, frame.timestamp);
+
+            // 添加到同步数据帧
+            frame.addChannelData(channelId, processedPoint);
+
+            // 添加到数据队列
+            {
+                QWriteLocker dataLocker(&m_dataLock);
+
+                // 确保通道在队列中
+                if (!m_processedDataQueues.contains(channelId)) {
+                    ProcessedDataQueue queue;
+                    queue.maxSize = MAX_QUEUE_SIZE;
+                    m_processedDataQueues[channelId] = queue;
+                }
+
+                ProcessedDataQueue& queue = m_processedDataQueues[channelId];
+
+                // 添加数据点
+                queue.timestamps.enqueue(processedPoint.timestamp);
+                queue.values.enqueue(processedPoint.value);
+
+                // 限制队列长度
+                while (queue.timestamps.size() > queue.maxSize) {
+                    queue.timestamps.dequeue();
+                    queue.values.dequeue();
+                }
+            }
+
+            qDebug() << "处理二次计算仪器数据 - 通道:" << channelId
+                     << "计算值:" << processedPoint.value
                      << "线程ID:" << QThread::currentThreadId();
 
             // 发送处理后数据点就绪信号

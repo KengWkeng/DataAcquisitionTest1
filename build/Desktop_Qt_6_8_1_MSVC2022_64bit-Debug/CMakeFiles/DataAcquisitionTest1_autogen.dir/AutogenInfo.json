@@ -492,6 +492,12 @@
 			null
 		],
 		[
+			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/SecondaryInstrument.h",
+			"MU",
+			"ZOB7DK4HPL/moc_SecondaryInstrument.cpp",
+			null
+		],
+		[
 			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/mainwindow.h",
 			"MU",
 			"EWIEGA46WW/moc_mainwindow.cpp",
@@ -615,6 +621,11 @@
 		],
 		[
 			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataStorage.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/SecondaryInstrument.cpp",
 			"MU",
 			null
 		],

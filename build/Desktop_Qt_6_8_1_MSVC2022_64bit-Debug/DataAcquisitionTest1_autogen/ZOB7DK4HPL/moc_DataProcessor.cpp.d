@@ -3,6 +3,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Core/DataTypes.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/Channel.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataStorage.h \
+  C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/SecondaryInstrument.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QDateTime \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QDebug \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QFile \
@@ -12,6 +13,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QObject \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QQueue \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QReadWriteLock \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/QStack \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QString \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QTextStream \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QThread \
@@ -102,6 +104,7 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qshareddata_impl.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qsharedpointer.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qsharedpointer_impl.h \
+  D:/Qt/6.8.1/msvc2022_64/include/QtCore/qstack.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qstring.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qstringalgorithms.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qstringbuilder.h \

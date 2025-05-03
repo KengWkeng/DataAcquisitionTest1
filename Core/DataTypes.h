@@ -21,10 +21,10 @@ struct CalibrationParams {
     double d = 0.0;  // 常数项
 
     CalibrationParams() = default;
-    
+
     CalibrationParams(double a_, double b_, double c_, double d_)
         : a(a_), b(b_), c(c_), d(d_) {}
-    
+
     /**
      * @brief 应用校准多项式计算校准后的值
      * @param value 输入值
@@ -46,12 +46,12 @@ struct ChannelParams {
     QString unit;                       // 单位
 
     ChannelParams() = default;
-    
-    ChannelParams(double gain_, double offset_, 
-                 const CalibrationParams& calibParams_, 
+
+    ChannelParams(double gain_, double offset_,
+                 const CalibrationParams& calibParams_,
                  const QString& unit_ = "")
         : gain(gain_), offset(offset_), calibrationParams(calibParams_), unit(unit_) {}
-    
+
     /**
      * @brief 应用增益和偏移
      * @param rawValue 原始值
@@ -60,7 +60,7 @@ struct ChannelParams {
     double applyGainOffset(double rawValue) const {
         return rawValue * gain + offset;
     }
-    
+
     /**
      * @brief 应用完整的处理（增益、偏移和校准）
      * @param rawValue 原始值
@@ -79,12 +79,12 @@ struct ChannelParams {
 struct DeviceConfig {
     QString deviceId;       // 设备ID
     DeviceType deviceType;  // 设备类型
-    
+
     DeviceConfig() = default;
-    
+
     DeviceConfig(const QString& id, DeviceType type)
         : deviceId(id), deviceType(type) {}
-    
+
     virtual ~DeviceConfig() = default;
 };
 
@@ -98,12 +98,12 @@ struct VirtualDeviceConfig : public DeviceConfig {
     double amplitude;       // 振幅
     double frequency;       // 频率 (Hz)
     ChannelParams channelParams; // 通道参数
-    
+
     VirtualDeviceConfig() {
         deviceType = DeviceType::VIRTUAL;
     }
-    
-    VirtualDeviceConfig(const QString& id, const QString& name, 
+
+    VirtualDeviceConfig(const QString& id, const QString& name,
                        const QString& type, double amp, double freq,
                        const ChannelParams& params)
         : DeviceConfig(id, DeviceType::VIRTUAL),
@@ -119,9 +119,9 @@ struct ModbusRegisterConfig {
     int registerAddress;     // 寄存器地址
     QString channelName;     // 通道名称
     ChannelParams channelParams; // 通道参数
-    
+
     ModbusRegisterConfig() = default;
-    
+
     ModbusRegisterConfig(int addr, const QString& name, const ChannelParams& params)
         : registerAddress(addr), channelName(name), channelParams(params) {}
 };
@@ -134,9 +134,9 @@ struct ModbusSlaveConfig {
     int slaveId;                        // 从站ID
     int operationCommand;               // 操作命令（功能码）
     QList<ModbusRegisterConfig> registers; // 寄存器列表
-    
+
     ModbusSlaveConfig() = default;
-    
+
     ModbusSlaveConfig(int id, int cmd, const QList<ModbusRegisterConfig>& regs)
         : slaveId(id), operationCommand(cmd), registers(regs) {}
 };
@@ -151,9 +151,9 @@ struct SerialConfig {
     int databits;       // 数据位
     int stopbits;       // 停止位
     QString parity;     // 校验位
-    
+
     SerialConfig() = default;
-    
+
     SerialConfig(const QString& p, int baud, int data, int stop, const QString& par)
         : port(p), baudrate(baud), databits(data), stopbits(stop), parity(par) {}
 };
@@ -167,12 +167,12 @@ struct ModbusDeviceConfig : public DeviceConfig {
     SerialConfig serialConfig;           // 串口配置
     int readCycleMs;                     // 读取周期（毫秒）
     QList<ModbusSlaveConfig> slaves;     // 从站列表
-    
+
     ModbusDeviceConfig() {
         deviceType = DeviceType::MODBUS;
     }
-    
-    ModbusDeviceConfig(const QString& id, const QString& name, 
+
+    ModbusDeviceConfig(const QString& id, const QString& name,
                       const SerialConfig& serial, int cycle,
                       const QList<ModbusSlaveConfig>& slaveList)
         : DeviceConfig(id, DeviceType::MODBUS),
@@ -188,9 +188,9 @@ struct DAQChannelConfig {
     int channelId;           // 通道ID
     QString channelName;     // 通道名称
     ChannelParams channelParams; // 通道参数
-    
+
     DAQChannelConfig() = default;
-    
+
     DAQChannelConfig(int id, const QString& name, const ChannelParams& params)
         : channelId(id), channelName(name), channelParams(params) {}
 };
@@ -202,11 +202,11 @@ struct DAQChannelConfig {
 struct DAQDeviceConfig : public DeviceConfig {
     int sampleRate;                      // 采样率
     QList<DAQChannelConfig> channels;    // 通道列表
-    
+
     DAQDeviceConfig() {
         deviceType = DeviceType::DAQ;
     }
-    
+
     DAQDeviceConfig(const QString& id, int rate, const QList<DAQChannelConfig>& chans)
         : DeviceConfig(id, DeviceType::DAQ),
           sampleRate(rate), channels(chans) {}
@@ -219,9 +219,9 @@ struct DAQDeviceConfig : public DeviceConfig {
 struct ECUChannelConfig {
     QString channelName;     // 通道名称
     ChannelParams channelParams; // 通道参数
-    
+
     ECUChannelConfig() = default;
-    
+
     ECUChannelConfig(const QString& name, const ChannelParams& params)
         : channelName(name), channelParams(params) {}
 };
@@ -235,12 +235,12 @@ struct ECUDeviceConfig : public DeviceConfig {
     SerialConfig serialConfig;                   // 串口配置
     int readCycleMs;                             // 读取周期（毫秒）
     QMap<QString, ECUChannelConfig> channels;    // 通道映射
-    
+
     ECUDeviceConfig() {
         deviceType = DeviceType::ECU;
     }
-    
-    ECUDeviceConfig(const QString& id, const QString& name, 
+
+    ECUDeviceConfig(const QString& id, const QString& name,
                    const SerialConfig& serial, int cycle,
                    const QMap<QString, ECUChannelConfig>& chans)
         : DeviceConfig(id, DeviceType::ECU),
@@ -258,13 +258,13 @@ struct ChannelConfig {
     QString deviceId;        // 关联的设备ID
     QString hardwareChannel; // 硬件通道标识（可能是索引或名称）
     ChannelParams params;    // 通道参数
-    
+
     ChannelConfig() = default;
-    
-    ChannelConfig(const QString& id, const QString& name, 
+
+    ChannelConfig(const QString& id, const QString& name,
                  const QString& devId, const QString& hwChan,
                  const ChannelParams& p)
-        : channelId(id), channelName(name), 
+        : channelId(id), channelName(name),
           deviceId(devId), hardwareChannel(hwChan),
           params(p) {}
 };
@@ -278,9 +278,9 @@ struct RawDataPoint {
     qint64 timestamp;        // 时间戳（毫秒）
     QString deviceId;        // 设备ID
     QString hardwareChannel; // 硬件通道标识
-    
+
     RawDataPoint() = default;
-    
+
     RawDataPoint(double val, qint64 ts, const QString& devId, const QString& hwChan)
         : value(val), timestamp(ts), deviceId(devId), hardwareChannel(hwChan) {}
 };
@@ -295,12 +295,29 @@ struct ProcessedDataPoint {
     QString channelId;       // 通道ID
     StatusCode status;       // 状态码
     QString unit;            // 单位
-    
+
     ProcessedDataPoint() : status(StatusCode::OK) {}
-    
-    ProcessedDataPoint(double val, qint64 ts, const QString& chanId, 
+
+    ProcessedDataPoint(double val, qint64 ts, const QString& chanId,
                       StatusCode stat = StatusCode::OK, const QString& u = "")
         : value(val), timestamp(ts), channelId(chanId), status(stat), unit(u) {}
+};
+
+/**
+ * @brief 二次计算仪器配置
+ * 用于配置二次计算仪器
+ */
+struct SecondaryInstrumentConfig {
+    QString channelName;         // 通道名称
+    QString formula;             // 计算公式
+    QStringList inputChannels;   // 输入通道列表
+    QString unit;                // 单位
+
+    SecondaryInstrumentConfig() = default;
+
+    SecondaryInstrumentConfig(const QString& name, const QString& form,
+                             const QStringList& inputs, const QString& u = "")
+        : channelName(name), formula(form), inputChannels(inputs), unit(u) {}
 };
 
 /**
@@ -310,12 +327,12 @@ struct ProcessedDataPoint {
 struct SynchronizedDataFrame {
     qint64 timestamp;                                    // 时间戳（毫秒）
     QMap<QString, ProcessedDataPoint> channelData;       // 通道数据映射
-    
+
     SynchronizedDataFrame() = default;
-    
+
     SynchronizedDataFrame(qint64 ts)
         : timestamp(ts) {}
-    
+
     /**
      * @brief 添加通道数据
      * @param channelId 通道ID
@@ -324,7 +341,7 @@ struct SynchronizedDataFrame {
     void addChannelData(const QString& channelId, const ProcessedDataPoint& dataPoint) {
         channelData[channelId] = dataPoint;
     }
-    
+
     /**
      * @brief 获取通道数据
      * @param channelId 通道ID
@@ -333,7 +350,7 @@ struct SynchronizedDataFrame {
     ProcessedDataPoint getChannelData(const QString& channelId) const {
         return channelData.value(channelId);
     }
-    
+
     /**
      * @brief 获取通道值
      * @param channelId 通道ID
@@ -347,7 +364,7 @@ struct SynchronizedDataFrame {
         }
         return defaultValue;
     }
-    
+
     /**
      * @brief 获取格式化的时间戳
      * @param format 格式字符串

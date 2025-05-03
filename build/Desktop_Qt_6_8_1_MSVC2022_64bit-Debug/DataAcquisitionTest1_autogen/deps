@@ -23,6 +23,8 @@ DataAcquisitionTest1_autogen/timestamp: \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataProcessor.h \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataStorage.cpp \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataStorage.h \
+	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/SecondaryInstrument.cpp \
+	C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/SecondaryInstrument.h \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022_64bit-Debug/.qtc/package-manager/auto-setup.cmake \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022_64bit-Debug/CMakeFiles/3.29.3/CMakeCXXCompiler.cmake \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022_64bit-Debug/CMakeFiles/3.29.3/CMakeRCCompiler.cmake \
