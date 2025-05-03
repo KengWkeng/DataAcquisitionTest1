@@ -504,6 +504,18 @@
 			null
 		],
 		[
+			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/plot/columnarinstrument.h",
+			"MU",
+			"DMHAXLKN4Z/moc_columnarinstrument.cpp",
+			null
+		],
+		[
+			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/plot/dashboard.h",
+			"MU",
+			"DMHAXLKN4Z/moc_dashboard.cpp",
+			null
+		],
+		[
 			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/plot/qcustomplot.h",
 			"MU",
 			"DMHAXLKN4Z/moc_qcustomplot.cpp",
@@ -636,6 +648,16 @@
 		],
 		[
 			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/mainwindow.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/plot/columnarinstrument.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/Users/80911/Documents/QT/DataAcquisitionTest1/plot/dashboard.cpp",
 			"MU",
 			null
 		],

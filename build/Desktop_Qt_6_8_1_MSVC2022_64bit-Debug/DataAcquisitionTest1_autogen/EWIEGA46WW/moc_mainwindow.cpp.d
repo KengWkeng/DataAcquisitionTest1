@@ -13,6 +13,8 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataProcessor.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/DataStorage.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/Processing/SecondaryInstrument.h \
+  C:/Users/80911/Documents/QT/DataAcquisitionTest1/plot/columnarinstrument.h \
+  C:/Users/80911/Documents/QT/DataAcquisitionTest1/plot/dashboard.h \
   C:/Users/80911/Documents/QT/DataAcquisitionTest1/plot/qcustomplot.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QByteArray \
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/QCache \
@@ -322,7 +324,9 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtCore/qyieldcpu.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtGui/QAction \
   D:/Qt/6.8.1/msvc2022_64/include/QtGui/QActionGroup \
+  D:/Qt/6.8.1/msvc2022_64/include/QtGui/QColor \
   D:/Qt/6.8.1/msvc2022_64/include/QtGui/QFileSystemModel \
+  D:/Qt/6.8.1/msvc2022_64/include/QtGui/QFont \
   D:/Qt/6.8.1/msvc2022_64/include/QtGui/QMatrix4x4 \
   D:/Qt/6.8.1/msvc2022_64/include/QtGui/QMouseEvent \
   D:/Qt/6.8.1/msvc2022_64/include/QtGui/QPaintDevice \

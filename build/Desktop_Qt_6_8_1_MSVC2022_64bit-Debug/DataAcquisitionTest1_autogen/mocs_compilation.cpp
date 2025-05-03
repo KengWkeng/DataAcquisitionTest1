@@ -11,4 +11,6 @@
 #include "ZOB7DK4HPL/moc_DataStorage.cpp"
 #include "ZOB7DK4HPL/moc_SecondaryInstrument.cpp"
 #include "EWIEGA46WW/moc_mainwindow.cpp"
+#include "DMHAXLKN4Z/moc_columnarinstrument.cpp"
+#include "DMHAXLKN4Z/moc_dashboard.cpp"
 #include "DMHAXLKN4Z/moc_qcustomplot.cpp"

@@ -44,6 +44,10 @@ set(PROJECT_SOURCES
         Processing/SecondaryInstrument.cpp
         plot/qcustomplot.h
         plot/qcustomplot.cpp
+        plot/columnarinstrument.h
+        plot/columnarinstrument.cpp
+        plot/dashboard.h
+        plot/dashboard.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

@@ -9,6 +9,8 @@
 #include "Device/DeviceManager.h"
 #include "Processing/DataProcessor.h"
 #include "plot/qcustomplot.h"
+#include "plot/dashboard.h"
+#include "plot/columnarinstrument.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -61,12 +63,27 @@ private:
     void initializeProcessing();
     void initializeUI();
     void setupPlot();
+    void setupDashboards();
+    void setupInstruments();
     void testConfigManager();
     void testDeviceManager();
     void testDataSynchronizer();
 
     // 添加通道到图表
     void addChannelToPlot(const QString& channelId, const QString& channelName, const QColor& color);
+
+    // 分类通道
+    QMap<QString, QList<QString>> classifyChannelsByAcquisitionType();
+
+    // 查找主要采集量
+    QMap<QString, QString> findMainAcquisitionChannels();
+
+    // 创建柱状仪表
+    void createColumnarInstruments(const QMap<QString, QList<QString>>& channelsByType);
+
+    // 更新仪表盘和仪表
+    void updateDashboards();
+    void updateInstruments();
 
     // 窗口大小变化事件处理
     void resizeEvent(QResizeEvent *event) override;
@@ -84,6 +101,18 @@ private:
     // UI 组件
     QPushButton *m_startStopButton;
     QCustomPlot *m_plot;
+
+    // 仪表盘组件
+    Dashboard *m_dashboard1;  // 节气门位置
+    Dashboard *m_dashboard2;  // 发动机转速
+    Dashboard *m_dashboard3;  // 发动机力矩
+    Dashboard *m_dashboard4;  // 发动机功率
+
+    // 柱状仪表组件
+    QMap<QString, QList<ColumnarInstrument*>> m_columnarInstruments;  // 采集类型 -> 仪表列表
+
+    // 主要采集量通道映射
+    QMap<QString, QString> m_mainChannels;  // 采集类型 -> 通道ID
 
     // 数据和状态
     QMap<QString, QCPGraph*> m_channelGraphs;  // 通道ID -> 图表对象

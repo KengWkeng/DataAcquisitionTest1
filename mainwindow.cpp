@@ -24,6 +24,10 @@ MainWindow::MainWindow(QWidget *parent)
     , m_processorThread(nullptr)
     , m_startStopButton(nullptr)
     , m_plot(nullptr)
+    , m_dashboard1(nullptr)
+    , m_dashboard2(nullptr)
+    , m_dashboard3(nullptr)
+    , m_dashboard4(nullptr)
     , m_isAcquiring(false)
     , m_plotUpdateTimer(nullptr)
     , m_startTimestamp(0)
@@ -596,8 +600,17 @@ void MainWindow::initializeUI()
     // 设置plotGroupBox的大小策略
     ui->plotGroupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
+    // 查找主要采集通道
+    m_mainChannels = findMainAcquisitionChannels();
+
     // 设置图表
     setupPlot();
+
+    // 设置仪表盘
+    setupDashboards();
+
+    // 设置仪表
+    setupInstruments();
 
     // 创建图表更新定时器
     m_plotUpdateTimer = new QTimer(this);
@@ -614,7 +627,7 @@ void MainWindow::setupPlot()
 {
     // 设置图表标题
     m_plot->plotLayout()->insertRow(0);
-    m_plot->plotLayout()->addElement(0, 0, new QCPTextElement(m_plot, "通道数据实时显示", QFont("sans", 12, QFont::Bold)));
+    m_plot->plotLayout()->addElement(0, 0, new QCPTextElement(m_plot, "主要采集量实时显示", QFont("sans", 12, QFont::Bold)));
 
     // 设置坐标轴标签
     m_plot->xAxis->setLabel("时间 (秒)");
@@ -646,46 +659,29 @@ void MainWindow::setupPlot()
     // 优化刷新
     m_plot->replot(QCustomPlot::rpQueuedReplot);
 
-    // 添加通道到图表
-    if (m_dataProcessor) {
+    // 添加主要采集量通道到图表
+    if (m_dataProcessor && !m_mainChannels.isEmpty()) {
         // 定义一些颜色
         QVector<QColor> colors = {
-            QColor(255, 0, 0),      // 红色
-            QColor(0, 0, 255),      // 蓝色
-            QColor(0, 128, 0),      // 绿色
-            QColor(128, 0, 128),    // 紫色
-            QColor(255, 165, 0),    // 橙色
-            QColor(0, 128, 128),    // 青色
-            QColor(128, 0, 0),      // 深红色
-            QColor(0, 0, 128)       // 深蓝色
+            QColor(255, 0, 0),      // 红色 - 节气门位置
+            QColor(0, 0, 255),      // 蓝色 - 发动机转速
+            QColor(0, 128, 0),      // 绿色 - 发动机力矩
+            QColor(128, 0, 128)     // 紫色 - 发动机功率
         };
 
-        int colorIndex = 0;
+        // 定义主要采集量类型和对应的颜色索引
+        QMap<QString, int> typeColorIndex = {
+            {"throttle_position", 0},
+            {"engine_speed", 1},
+            {"engine_force", 2},
+            {"engine_power", 3}
+        };
 
-        // 获取主通道（使用QMetaObject::invokeMethod确保在正确的线程中获取通道）
+        // 获取所有通道（使用QMetaObject::invokeMethod确保在正确的线程中获取通道）
         QMap<QString, Processing::Channel*> channels;
         QMetaObject::invokeMethod(m_dataProcessor, [this, &channels]() {
             channels = m_dataProcessor->getChannels();
         }, Qt::BlockingQueuedConnection);
-
-        // 添加主通道到图表
-        for (auto it = channels.constBegin(); it != channels.constEnd(); ++it) {
-            QString channelId = it.key();
-            QString channelName = it.value()->getChannelName();
-            QColor color = colors[colorIndex % colors.size()];
-
-            // 获取通道配置
-            Core::ChannelConfig channelConfig = m_configManager->getChannelConfigs().value(channelId);
-
-            // 输出显示格式信息
-            qDebug() << "添加通道到图表:" << channelId
-                     << "中文标签=" << channelConfig.displayFormat.labelInChinese
-                     << "采集类型=" << channelConfig.displayFormat.acquisitionType
-                     << "单位=" << channelConfig.displayFormat.unit;
-
-            addChannelToPlot(channelId, channelName, color);
-            colorIndex++;
-        }
 
         // 获取二次计算仪器通道
         QMap<QString, Processing::SecondaryInstrument*> secondaryInstruments;
@@ -693,30 +689,62 @@ void MainWindow::setupPlot()
             secondaryInstruments = m_dataProcessor->getSecondaryInstruments();
         }, Qt::BlockingQueuedConnection);
 
-        // 添加二次计算仪器通道到图表
-        for (auto it = secondaryInstruments.constBegin(); it != secondaryInstruments.constEnd(); ++it) {
-            QString channelId = it.value()->getChannelId();
-            QString channelName = it.value()->getChannelName();
+        // 添加主要采集量通道到图表
+        for (auto it = m_mainChannels.constBegin(); it != m_mainChannels.constEnd(); ++it) {
+            QString acquisitionType = it.key();
+            QString channelId = it.value();
+
+            // 获取颜色索引
+            int colorIndex = typeColorIndex.value(acquisitionType, 0);
             QColor color = colors[colorIndex % colors.size()];
 
-            // 获取二次计算仪器配置
-            Core::SecondaryInstrumentConfig instrumentConfig;
-            for (const auto& config : m_configManager->getSecondaryInstrumentConfigs()) {
-                if (config.channelName == channelName) {
-                    instrumentConfig = config;
-                    break;
+            // 获取通道名称
+            QString channelName;
+
+            // 检查是否是主通道
+            if (channels.contains(channelId)) {
+                channelName = channels[channelId]->getChannelName();
+
+                // 获取通道配置
+                Core::ChannelConfig channelConfig = m_configManager->getChannelConfigs().value(channelId);
+
+                // 输出显示格式信息
+                qDebug() << "添加主要采集量通道到图表:" << channelId
+                         << "中文标签=" << channelConfig.displayFormat.labelInChinese
+                         << "采集类型=" << channelConfig.displayFormat.acquisitionType
+                         << "单位=" << channelConfig.displayFormat.unit;
+
+                // 添加通道到图表
+                addChannelToPlot(channelId, channelName, color);
+            }
+            // 检查是否是二次计算仪器通道
+            else {
+                // 查找二次计算仪器
+                for (auto instIt = secondaryInstruments.constBegin(); instIt != secondaryInstruments.constEnd(); ++instIt) {
+                    if (instIt.key() == channelId) {
+                        channelName = instIt.value()->getChannelName();
+
+                        // 获取二次计算仪器配置
+                        Core::SecondaryInstrumentConfig instrumentConfig;
+                        for (const auto& config : m_configManager->getSecondaryInstrumentConfigs()) {
+                            if (config.channelName == channelName) {
+                                instrumentConfig = config;
+                                break;
+                            }
+                        }
+
+                        // 输出显示格式信息
+                        qDebug() << "添加主要采集量二次计算仪器通道到图表:" << channelId << channelName
+                                 << "中文标签=" << instrumentConfig.displayFormat.labelInChinese
+                                 << "采集类型=" << instrumentConfig.displayFormat.acquisitionType
+                                 << "单位=" << instrumentConfig.displayFormat.unit;
+
+                        // 添加二次计算仪器通道到图表
+                        addChannelToPlot(channelId, channelName, color);
+                        break;
+                    }
                 }
             }
-
-            // 输出显示格式信息
-            qDebug() << "添加二次计算仪器通道到图表:" << channelId << channelName
-                     << "中文标签=" << instrumentConfig.displayFormat.labelInChinese
-                     << "采集类型=" << instrumentConfig.displayFormat.acquisitionType
-                     << "单位=" << instrumentConfig.displayFormat.unit;
-
-            // 添加二次计算仪器通道到图表
-            addChannelToPlot(channelId, channelName, color);
-            colorIndex++;
         }
     }
 }
@@ -798,6 +826,301 @@ void MainWindow::onStartStopButtonClicked()
     }
 }
 
+void MainWindow::setupDashboards()
+{
+    // 检查主要采集量通道是否已找到
+    if (m_mainChannels.isEmpty()) {
+        qDebug() << "未找到主要采集量通道，无法设置仪表盘";
+        return;
+    }
+
+    // 定义主要采集量类型和对应的仪表盘索引
+    QMap<QString, int> typeDashboardIndex = {
+        {"throttle_position", 0}, // 节气门位置 -> dashWidget1
+        {"engine_speed", 1},      // 发动机转速 -> dashWidget2
+        {"engine_force", 2},      // 发动机力矩 -> dashWidget3
+        {"engine_power", 3}       // 发动机功率 -> dashWidget4
+    };
+
+    // 获取所有通道配置
+    QMap<QString, Core::ChannelConfig> channelConfigs = m_configManager->getChannelConfigs();
+
+    // 获取二次计算仪器配置
+    QList<Core::SecondaryInstrumentConfig> secondaryInstrumentConfigs = m_configManager->getSecondaryInstrumentConfigs();
+
+    // 创建仪表盘
+    QList<QWidget*> dashWidgets = {
+        ui->dashWidget1,
+        ui->dashWidget2,
+        ui->dashWidget3,
+        ui->dashWidget4
+    };
+
+    // 遍历主要采集量通道
+    for (auto it = m_mainChannels.constBegin(); it != m_mainChannels.constEnd(); ++it) {
+        QString acquisitionType = it.key();
+        QString channelId = it.value();
+
+        // 获取仪表盘索引
+        int dashboardIndex = typeDashboardIndex.value(acquisitionType, -1);
+        if (dashboardIndex < 0 || dashboardIndex >= dashWidgets.size()) {
+            qDebug() << "无效的仪表盘索引:" << dashboardIndex << "，采集类型:" << acquisitionType;
+            continue;
+        }
+
+        // 获取显示格式参数
+        Core::DisplayFormat displayFormat;
+
+        // 检查是否是主通道
+        if (channelConfigs.contains(channelId)) {
+            displayFormat = channelConfigs[channelId].displayFormat;
+        }
+        // 检查是否是二次计算仪器通道
+        else {
+            for (const auto& config : secondaryInstrumentConfigs) {
+                if (config.channelName == channelId) {
+                    displayFormat = config.displayFormat;
+                    break;
+                }
+            }
+        }
+
+        // 创建仪表盘
+        QVBoxLayout* layout = new QVBoxLayout(dashWidgets[dashboardIndex]);
+        layout->setContentsMargins(0, 0, 0, 0);
+
+        // 创建Dashboard实例
+        Dashboard* dashboard = new Dashboard(dashWidgets[dashboardIndex]);
+
+        // 配置仪表盘
+        dashboard->configure(
+            displayFormat.labelInChinese,
+            displayFormat.unit,
+            displayFormat.resolution,
+            displayFormat.minRange,
+            displayFormat.maxRange
+        );
+
+        // 设置仪表盘样式
+        dashboard->setPointerColor(QColor(200, 0, 0));
+        dashboard->setScaleColor(Qt::black);
+        dashboard->setTextColor(Qt::black);
+        dashboard->setForegroundColor(QColor(50, 50, 50));
+        dashboard->setAnimationEnabled(true);
+
+        // 将仪表盘添加到布局
+        layout->addWidget(dashboard);
+
+        // 存储仪表盘
+        switch (dashboardIndex) {
+            case 0: m_dashboard1 = dashboard; break;
+            case 1: m_dashboard2 = dashboard; break;
+            case 2: m_dashboard3 = dashboard; break;
+            case 3: m_dashboard4 = dashboard; break;
+        }
+
+        // 输出调试信息
+        qDebug() << "创建仪表盘:" << dashboardIndex
+                 << "，采集类型:" << acquisitionType
+                 << "，通道ID:" << channelId
+                 << "，中文标签:" << displayFormat.labelInChinese
+                 << "，单位:" << displayFormat.unit
+                 << "，分辨率:" << displayFormat.resolution
+                 << "，最小值:" << displayFormat.minRange
+                 << "，最大值:" << displayFormat.maxRange;
+    }
+}
+
+void MainWindow::setupInstruments()
+{
+    // 按采集类型分类通道
+    QMap<QString, QList<QString>> channelsByType = classifyChannelsByAcquisitionType();
+
+    // 如果没有通道，直接返回
+    if (channelsByType.isEmpty()) {
+        qDebug() << "未找到通道，无法设置仪表";
+        return;
+    }
+
+    // 创建柱状仪表
+    createColumnarInstruments(channelsByType);
+}
+
+void MainWindow::createColumnarInstruments(const QMap<QString, QList<QString>>& channelsByType)
+{
+    // 获取所有通道配置
+    QMap<QString, Core::ChannelConfig> channelConfigs = m_configManager->getChannelConfigs();
+
+    // 获取二次计算仪器配置
+    QList<Core::SecondaryInstrumentConfig> secondaryInstrumentConfigs = m_configManager->getSecondaryInstrumentConfigs();
+
+    // 创建仪表布局
+    QVBoxLayout* instrumentLayout = new QVBoxLayout();
+    instrumentLayout->setContentsMargins(0, 0, 0, 0);
+    instrumentLayout->setSpacing(8);
+
+    // 遍历每种采集类型
+    for (auto it = channelsByType.constBegin(); it != channelsByType.constEnd(); ++it) {
+        QString acquisitionType = it.key();
+        QList<QString> channelIds = it.value();
+
+        // 跳过主要采集量类型（已经在仪表盘中显示）
+        if (m_mainChannels.contains(acquisitionType)) {
+            continue;
+        }
+
+        // 创建该采集类型的行布局
+        QHBoxLayout* rowLayout = new QHBoxLayout();
+        rowLayout->setContentsMargins(0, 0, 0, 0);
+        rowLayout->setSpacing(8);
+
+        // 遍历该采集类型的所有通道
+        for (const QString& channelId : channelIds) {
+            // 获取显示格式参数
+            Core::DisplayFormat displayFormat;
+
+            // 检查是否是主通道
+            if (channelConfigs.contains(channelId)) {
+                displayFormat = channelConfigs[channelId].displayFormat;
+            }
+            // 检查是否是二次计算仪器通道
+            else {
+                for (const auto& config : secondaryInstrumentConfigs) {
+                    if (config.channelName == channelId) {
+                        displayFormat = config.displayFormat;
+                        break;
+                    }
+                }
+            }
+
+            // 创建柱状仪表
+            ColumnarInstrument* instrument = new ColumnarInstrument();
+
+            // 配置仪表
+            instrument->configure(
+                displayFormat.labelInChinese,
+                displayFormat.unit,
+                displayFormat.resolution,
+                displayFormat.minRange,
+                displayFormat.maxRange
+            );
+
+            // 将仪表添加到行布局
+            rowLayout->addWidget(instrument);
+
+            // 存储仪表
+            m_columnarInstruments[acquisitionType].append(instrument);
+
+            // 输出调试信息
+            qDebug() << "创建柱状仪表:"
+                     << "，采集类型:" << acquisitionType
+                     << "，通道ID:" << channelId
+                     << "，中文标签:" << displayFormat.labelInChinese
+                     << "，单位:" << displayFormat.unit
+                     << "，分辨率:" << displayFormat.resolution
+                     << "，最小值:" << displayFormat.minRange
+                     << "，最大值:" << displayFormat.maxRange;
+        }
+
+        // 添加弹簧，确保仪表均匀分布
+        rowLayout->addStretch();
+
+        // 将行布局添加到主布局
+        instrumentLayout->addLayout(rowLayout);
+    }
+
+    // 添加弹簧，确保行布局向上对齐
+    instrumentLayout->addStretch();
+
+    // 将主布局添加到instrumentGroupBox
+    QWidget* instrumentWidget = new QWidget();
+    instrumentWidget->setLayout(instrumentLayout);
+    ui->instrumentGroupBox->layout()->addWidget(instrumentWidget);
+}
+
+void MainWindow::updateDashboards()
+{
+    if (!m_dataProcessor || !m_isAcquiring) {
+        return;
+    }
+
+    // 获取所有通道的最新数据点
+    QMap<QString, QPair<double, double>> latestPoints;
+    QMetaObject::invokeMethod(m_dataProcessor, [this, &latestPoints]() {
+        latestPoints = m_dataProcessor->getLatestDataPoints();
+    }, Qt::BlockingQueuedConnection);
+
+    // 更新仪表盘
+    for (auto it = m_mainChannels.constBegin(); it != m_mainChannels.constEnd(); ++it) {
+        QString acquisitionType = it.key();
+        QString channelId = it.value();
+
+        if (latestPoints.contains(channelId)) {
+            double value = latestPoints[channelId].second;
+
+            // 根据采集类型更新对应的仪表盘
+            if (acquisitionType == "throttle_position" && m_dashboard1) {
+                m_dashboard1->setValue(value);
+            }
+            else if (acquisitionType == "engine_speed" && m_dashboard2) {
+                m_dashboard2->setValue(value);
+            }
+            else if (acquisitionType == "engine_force" && m_dashboard3) {
+                m_dashboard3->setValue(value);
+            }
+            else if (acquisitionType == "engine_power" && m_dashboard4) {
+                m_dashboard4->setValue(value);
+            }
+        }
+    }
+}
+
+void MainWindow::updateInstruments()
+{
+    if (!m_dataProcessor || !m_isAcquiring) {
+        return;
+    }
+
+    // 获取所有通道的最新数据点
+    QMap<QString, QPair<double, double>> latestPoints;
+    QMetaObject::invokeMethod(m_dataProcessor, [this, &latestPoints]() {
+        latestPoints = m_dataProcessor->getLatestDataPoints();
+    }, Qt::BlockingQueuedConnection);
+
+    // 按采集类型分类通道
+    QMap<QString, QList<QString>> channelsByType = classifyChannelsByAcquisitionType();
+
+    // 更新柱状仪表
+    for (auto typeIt = channelsByType.constBegin(); typeIt != channelsByType.constEnd(); ++typeIt) {
+        QString acquisitionType = typeIt.key();
+        QList<QString> channelIds = typeIt.value();
+
+        // 跳过主要采集量类型（已经在仪表盘中显示）
+        if (m_mainChannels.contains(acquisitionType)) {
+            continue;
+        }
+
+        // 检查该采集类型是否有仪表
+        if (!m_columnarInstruments.contains(acquisitionType) || m_columnarInstruments[acquisitionType].isEmpty()) {
+            continue;
+        }
+
+        // 获取该采集类型的仪表列表
+        QList<ColumnarInstrument*> instruments = m_columnarInstruments[acquisitionType];
+
+        // 遍历该采集类型的所有通道
+        for (int i = 0; i < channelIds.size() && i < instruments.size(); ++i) {
+            QString channelId = channelIds[i];
+            ColumnarInstrument* instrument = instruments[i];
+
+            if (latestPoints.contains(channelId)) {
+                double value = latestPoints[channelId].second;
+                instrument->setValue(value);
+            }
+        }
+    }
+}
+
 void MainWindow::updatePlot()
 {
     if (!m_dataProcessor || !m_isAcquiring) {
@@ -848,6 +1171,12 @@ void MainWindow::updatePlot()
 
     // 重绘图表
     m_plot->replot(QCustomPlot::rpQueuedReplot);
+
+    // 更新仪表盘
+    updateDashboards();
+
+    // 更新仪表
+    updateInstruments();
 }
 
 void MainWindow::onSyncFrameReady(Core::SynchronizedDataFrame frame)
@@ -908,6 +1237,93 @@ void MainWindow::resizeEvent(QResizeEvent *event)
                  << "，左分割器大小:" << ui->leftSplitter->sizes()
                  << "，右分割器大小:" << ui->rightSplitter->sizes();
     }
+}
+
+QMap<QString, QList<QString>> MainWindow::classifyChannelsByAcquisitionType()
+{
+    QMap<QString, QList<QString>> channelsByType;
+
+    // 获取所有通道配置
+    QMap<QString, Core::ChannelConfig> channelConfigs = m_configManager->getChannelConfigs();
+
+    // 遍历所有通道配置，按采集类型分类
+    for (auto it = channelConfigs.constBegin(); it != channelConfigs.constEnd(); ++it) {
+        QString channelId = it.key();
+        QString acquisitionType = it.value().displayFormat.acquisitionType;
+
+        // 如果采集类型不为空，添加到对应的列表中
+        if (!acquisitionType.isEmpty()) {
+            channelsByType[acquisitionType].append(channelId);
+        }
+    }
+
+    // 获取二次计算仪器配置
+    QList<Core::SecondaryInstrumentConfig> secondaryInstrumentConfigs = m_configManager->getSecondaryInstrumentConfigs();
+
+    // 遍历所有二次计算仪器配置，按采集类型分类
+    for (const auto& config : secondaryInstrumentConfigs) {
+        QString channelName = config.channelName;
+        QString acquisitionType = config.displayFormat.acquisitionType;
+
+        // 如果采集类型不为空，添加到对应的列表中
+        if (!acquisitionType.isEmpty()) {
+            // 使用通道名称作为ID（二次计算仪器的ID与名称相同）
+            channelsByType[acquisitionType].append(channelName);
+        }
+    }
+
+    // 输出调试信息
+    qDebug() << "按采集类型分类的通道:";
+    for (auto it = channelsByType.constBegin(); it != channelsByType.constEnd(); ++it) {
+        qDebug() << "  采集类型:" << it.key() << "，通道数量:" << it.value().size() << "，通道列表:" << it.value();
+    }
+
+    return channelsByType;
+}
+
+QMap<QString, QString> MainWindow::findMainAcquisitionChannels()
+{
+    QMap<QString, QString> mainChannels;
+
+    // 定义主要采集量类型
+    QStringList mainTypes = {"throttle_position", "engine_speed", "engine_force", "engine_power"};
+
+    // 获取所有通道配置
+    QMap<QString, Core::ChannelConfig> channelConfigs = m_configManager->getChannelConfigs();
+
+    // 遍历所有通道配置，查找主要采集量
+    for (auto it = channelConfigs.constBegin(); it != channelConfigs.constEnd(); ++it) {
+        QString channelId = it.key();
+        QString acquisitionType = it.value().displayFormat.acquisitionType;
+
+        // 如果是主要采集量类型，添加到结果中
+        if (mainTypes.contains(acquisitionType) && !mainChannels.contains(acquisitionType)) {
+            mainChannels[acquisitionType] = channelId;
+        }
+    }
+
+    // 获取二次计算仪器配置
+    QList<Core::SecondaryInstrumentConfig> secondaryInstrumentConfigs = m_configManager->getSecondaryInstrumentConfigs();
+
+    // 遍历所有二次计算仪器配置，查找主要采集量
+    for (const auto& config : secondaryInstrumentConfigs) {
+        QString channelName = config.channelName;
+        QString acquisitionType = config.displayFormat.acquisitionType;
+
+        // 如果是主要采集量类型，添加到结果中
+        if (mainTypes.contains(acquisitionType) && !mainChannels.contains(acquisitionType)) {
+            // 使用通道名称作为ID（二次计算仪器的ID与名称相同）
+            mainChannels[acquisitionType] = channelName;
+        }
+    }
+
+    // 输出调试信息
+    qDebug() << "主要采集量通道:";
+    for (auto it = mainChannels.constBegin(); it != mainChannels.constEnd(); ++it) {
+        qDebug() << "  采集类型:" << it.key() << "，通道ID:" << it.value();
+    }
+
+    return mainChannels;
 }
 
 void MainWindow::lockSplitters()

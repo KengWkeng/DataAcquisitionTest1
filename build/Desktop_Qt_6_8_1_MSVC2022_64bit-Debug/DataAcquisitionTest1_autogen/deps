@@ -32,6 +32,10 @@ DataAcquisitionTest1_autogen/timestamp: \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/main.cpp \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/mainwindow.cpp \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/mainwindow.h \
+	C:/Users/80911/Documents/QT/DataAcquisitionTest1/plot/columnarinstrument.cpp \
+	C:/Users/80911/Documents/QT/DataAcquisitionTest1/plot/columnarinstrument.h \
+	C:/Users/80911/Documents/QT/DataAcquisitionTest1/plot/dashboard.cpp \
+	C:/Users/80911/Documents/QT/DataAcquisitionTest1/plot/dashboard.h \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/plot/qcustomplot.cpp \
 	C:/Users/80911/Documents/QT/DataAcquisitionTest1/plot/qcustomplot.h \
 	D:/Qt/6.8.1/msvc2022_64/include/QtCore/QByteArray \
@@ -342,7 +346,9 @@ DataAcquisitionTest1_autogen/timestamp: \
 	D:/Qt/6.8.1/msvc2022_64/include/QtCore/qyieldcpu.h \
 	D:/Qt/6.8.1/msvc2022_64/include/QtGui/QAction \
 	D:/Qt/6.8.1/msvc2022_64/include/QtGui/QActionGroup \
+	D:/Qt/6.8.1/msvc2022_64/include/QtGui/QColor \
 	D:/Qt/6.8.1/msvc2022_64/include/QtGui/QFileSystemModel \
+	D:/Qt/6.8.1/msvc2022_64/include/QtGui/QFont \
 	D:/Qt/6.8.1/msvc2022_64/include/QtGui/QMatrix4x4 \
 	D:/Qt/6.8.1/msvc2022_64/include/QtGui/QMouseEvent \
 	D:/Qt/6.8.1/msvc2022_64/include/QtGui/QPaintDevice \
