@@ -81,6 +81,12 @@ public:
     QMap<QString, Channel*> getChannels() const;
 
     /**
+     * @brief 获取所有二次计算仪器
+     * @return 二次计算仪器映射（通道ID -> 二次计算仪器指针）
+     */
+    QMap<QString, SecondaryInstrument*> getSecondaryInstruments() const;
+
+    /**
      * @brief 获取同步间隔（毫秒）
      * @return 同步间隔
      */

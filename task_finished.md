@@ -1,5 +1,10 @@
 # 已完成的任务
 
+## 十二、修复二次计算仪器通道未在QCustomPlot中显示的问题
+- 在DataProcessor类中添加了getSecondaryInstruments方法，用于获取所有二次计算仪器
+- 修改了MainWindow::setupPlot方法，使其同时添加主通道和二次计算仪器通道到图表
+- 确保二次计算仪器的数据能够正确地显示在QCustomPlot中
+
 ## 十一、添加二次计算仪器支持
 - 更新了config.json格式，修改ECU设备通道格式为标准通道结构，添加了二次计算仪器配置
 - 创建了SecondaryInstrument类，实现了公式解析和计算功能

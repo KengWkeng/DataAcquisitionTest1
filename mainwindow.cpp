@@ -597,12 +597,6 @@ void MainWindow::setupPlot()
 
     // 添加通道到图表
     if (m_dataProcessor) {
-        // 获取通道（使用QMetaObject::invokeMethod确保在正确的线程中获取通道）
-        QMap<QString, Processing::Channel*> channels;
-        QMetaObject::invokeMethod(m_dataProcessor, [this, &channels]() {
-            channels = m_dataProcessor->getChannels();
-        }, Qt::BlockingQueuedConnection);
-
         // 定义一些颜色
         QVector<QColor> colors = {
             QColor(255, 0, 0),      // 红色
@@ -616,6 +610,14 @@ void MainWindow::setupPlot()
         };
 
         int colorIndex = 0;
+
+        // 获取主通道（使用QMetaObject::invokeMethod确保在正确的线程中获取通道）
+        QMap<QString, Processing::Channel*> channels;
+        QMetaObject::invokeMethod(m_dataProcessor, [this, &channels]() {
+            channels = m_dataProcessor->getChannels();
+        }, Qt::BlockingQueuedConnection);
+
+        // 添加主通道到图表
         for (auto it = channels.constBegin(); it != channels.constEnd(); ++it) {
             QString channelId = it.key();
             QString channelName = it.value()->getChannelName();
@@ -623,6 +625,25 @@ void MainWindow::setupPlot()
 
             addChannelToPlot(channelId, channelName, color);
             colorIndex++;
+        }
+
+        // 获取二次计算仪器通道
+        QMap<QString, Processing::SecondaryInstrument*> secondaryInstruments;
+        QMetaObject::invokeMethod(m_dataProcessor, [this, &secondaryInstruments]() {
+            secondaryInstruments = m_dataProcessor->getSecondaryInstruments();
+        }, Qt::BlockingQueuedConnection);
+
+        // 添加二次计算仪器通道到图表
+        for (auto it = secondaryInstruments.constBegin(); it != secondaryInstruments.constEnd(); ++it) {
+            QString channelId = it.value()->getChannelId();
+            QString channelName = it.value()->getChannelName();
+            QColor color = colors[colorIndex % colors.size()];
+
+            // 添加二次计算仪器通道到图表
+            addChannelToPlot(channelId, channelName, color);
+            colorIndex++;
+
+            qDebug() << "添加二次计算仪器通道到图表:" << channelId << channelName;
         }
     }
 }

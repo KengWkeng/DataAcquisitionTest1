@@ -154,6 +154,12 @@ QMap<QString, Channel*> DataProcessor::getChannels() const
     return m_channels;
 }
 
+QMap<QString, SecondaryInstrument*> DataProcessor::getSecondaryInstruments() const
+{
+    QMutexLocker locker(&m_mutex);
+    return m_secondaryInstruments;
+}
+
 int DataProcessor::getSyncIntervalMs() const
 {
     return m_syncIntervalMs;
