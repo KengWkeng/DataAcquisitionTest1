@@ -68,19 +68,19 @@
        </property>
        <layout class="QVBoxLayout" name="leftWidgetLayout">
         <property name="spacing">
-         <number>4</number>
+         <number>8</number>
         </property>
         <property name="leftMargin">
-         <number>0</number>
+         <number>4</number>
         </property>
         <property name="topMargin">
-         <number>0</number>
+         <number>4</number>
         </property>
         <property name="rightMargin">
-         <number>0</number>
+         <number>4</number>
         </property>
         <property name="bottomMargin">
-         <number>0</number>
+         <number>4</number>
         </property>
         <item>
          <widget class="QSplitter" name="leftSplitter">
@@ -97,13 +97,13 @@
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
              <horstretch>0</horstretch>
-             <verstretch>7</verstretch>
+             <verstretch>3</verstretch>
             </sizepolicy>
            </property>
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>770</height>
+             <height>750</height>
             </size>
            </property>
            <layout class="QVBoxLayout" name="plotWidgetLayout">
@@ -167,19 +167,19 @@ QGroupBox::title {
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
-             <verstretch>2</verstretch>
+             <verstretch>1</verstretch>
             </sizepolicy>
            </property>
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>220</height>
+             <height>250</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>220</height>
+             <height>250</height>
             </size>
            </property>
            <layout class="QVBoxLayout" name="dashboardsWidgetLayout">
@@ -299,19 +299,19 @@ border-radius: 4px;</string>
        </property>
        <layout class="QVBoxLayout" name="rightWidgetLayout">
         <property name="spacing">
-         <number>4</number>
+         <number>8</number>
         </property>
         <property name="leftMargin">
-         <number>0</number>
+         <number>4</number>
         </property>
         <property name="topMargin">
-         <number>0</number>
+         <number>4</number>
         </property>
         <property name="rightMargin">
-         <number>0</number>
+         <number>4</number>
         </property>
         <property name="bottomMargin">
-         <number>0</number>
+         <number>4</number>
         </property>
         <item>
          <widget class="QSplitter" name="rightSplitter">
@@ -328,13 +328,13 @@ border-radius: 4px;</string>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
              <horstretch>0</horstretch>
-             <verstretch>7</verstretch>
+             <verstretch>3</verstretch>
             </sizepolicy>
            </property>
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>770</height>
+             <height>750</height>
             </size>
            </property>
            <layout class="QVBoxLayout" name="instrumentWidgetLayout">
@@ -398,19 +398,19 @@ QGroupBox::title {
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
-             <verstretch>2</verstretch>
+             <verstretch>1</verstretch>
             </sizepolicy>
            </property>
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>220</height>
+             <height>250</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>220</height>
+             <height>250</height>
             </size>
            </property>
            <layout class="QVBoxLayout" name="optionWidgetLayout">

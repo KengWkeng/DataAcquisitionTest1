@@ -539,11 +539,11 @@ void MainWindow::initializeUI()
     // 设置水平分割器（左右布局）的比例为1:1
     ui->mainSplitter->setSizes(QList<int>() << 960 << 960);
 
-    // 设置左侧垂直分割器（上下布局）的比例为7:2
-    ui->leftSplitter->setSizes(QList<int>() << 770 << 220);
+    // 设置左侧垂直分割器（上下布局）的比例为3:1
+    ui->leftSplitter->setSizes(QList<int>() << 750 << 250);
 
-    // 设置右侧垂直分割器（上下布局）的比例为7:2
-    ui->rightSplitter->setSizes(QList<int>() << 770 << 220);
+    // 设置右侧垂直分割器（上下布局）的比例为3:1
+    ui->rightSplitter->setSizes(QList<int>() << 750 << 250);
 
     // 锁定分割器，防止用户改变比例
     lockSplitters();
@@ -552,8 +552,8 @@ void MainWindow::initializeUI()
     QTimer::singleShot(100, this, [this]() {
         // 重新设置分割器大小，确保比例正确
         ui->mainSplitter->setSizes(QList<int>() << 960 << 960);
-        ui->leftSplitter->setSizes(QList<int>() << 770 << 220);
-        ui->rightSplitter->setSizes(QList<int>() << 770 << 220);
+        ui->leftSplitter->setSizes(QList<int>() << 750 << 250);
+        ui->rightSplitter->setSizes(QList<int>() << 750 << 250);
 
         // 输出调试信息
         qDebug() << "分割器大小已重置，主分割器大小:" << ui->mainSplitter->sizes()
@@ -881,13 +881,13 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
     // 计算左右两侧的高度（减去菜单栏和状态栏的高度）
     int availableHeight = newSize.height() - ui->menubar->height() - ui->statusbar->height();
-    int topHeight = (availableHeight * 7) / 9;
-    int bottomHeight = (availableHeight * 2) / 9;
+    int topHeight = (availableHeight * 3) / 4;
+    int bottomHeight = (availableHeight * 1) / 4;
 
-    // 重新设置左侧分割器的比例为7:2
+    // 重新设置左侧分割器的比例为3:1
     ui->leftSplitter->setSizes(QList<int>() << topHeight << bottomHeight);
 
-    // 重新设置右侧分割器的比例为7:2
+    // 重新设置右侧分割器的比例为3:1
     ui->rightSplitter->setSizes(QList<int>() << topHeight << bottomHeight);
 
     // 确保分割器保持锁定
