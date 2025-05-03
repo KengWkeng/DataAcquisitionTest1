@@ -25,6 +25,14 @@ SecondaryInstrument::SecondaryInstrument(const Core::SecondaryInstrumentConfig& 
              << "公式:" << m_config.formula
              << "输入通道数量:" << m_config.inputChannels.size()
              << "线程ID:" << QThread::currentThreadId();
+
+    // 添加显示格式调试输出
+    qDebug() << "二次计算仪器显示格式:" << m_config.channelName
+             << "中文标签=" << m_config.displayFormat.labelInChinese
+             << "采集类型=" << m_config.displayFormat.acquisitionType
+             << "单位=" << m_config.displayFormat.unit
+             << "分辨率=" << m_config.displayFormat.resolution
+             << "范围=[" << m_config.displayFormat.minRange << "," << m_config.displayFormat.maxRange << "]";
 }
 
 SecondaryInstrument::~SecondaryInstrument()
@@ -274,7 +282,7 @@ double SecondaryInstrument::applyOperator(const QChar& op, double a, double b) c
     case '+': return a + b;
     case '-': return a - b;
     case '*': return a * b;
-    case '/': 
+    case '/':
         if (b == 0.0) {
             qDebug() << "除零错误";
             return 0.0;

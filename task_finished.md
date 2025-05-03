@@ -1,5 +1,14 @@
 # 已完成的任务
 
+## 十三、添加显示格式配置支持
+- 在Core/DataTypes.h中添加了DisplayFormat结构体，用于存储通道的显示相关参数
+- 更新了各种设备和通道配置结构体，添加了displayFormat字段
+- 更新了ConfigManager，添加了parseDisplayFormat方法解析显示格式配置
+- 修改了各种设备的解析方法，支持从配置文件中读取显示格式信息
+- 为没有显示格式配置的通道创建默认显示格式
+- 更新了config.json，为虚拟设备添加了显示格式配置
+- 确保所有通道的显示格式信息能够正确传递到MainWindow
+
 ## 十二、修复二次计算仪器通道未在QCustomPlot中显示的问题
 - 在DataProcessor类中添加了getSecondaryInstruments方法，用于获取所有二次计算仪器
 - 修改了MainWindow::setupPlot方法，使其同时添加主通道和二次计算仪器通道到图表

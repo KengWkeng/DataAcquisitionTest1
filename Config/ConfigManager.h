@@ -151,6 +151,13 @@ private:
      */
     Core::SerialConfig parseSerialConfig(const QJsonObject& jsonObject);
 
+    /**
+     * @brief 从JSON对象解析显示格式
+     * @param jsonObject 包含显示格式的JSON对象
+     * @return 显示格式
+     */
+    Core::DisplayFormat parseDisplayFormat(const QJsonObject& jsonObject);
+
 private:
     QString m_configFilePath;                                // 配置文件路径
     QList<Core::VirtualDeviceConfig> m_virtualDeviceConfigs; // 虚拟设备配置列表

@@ -623,6 +623,15 @@ void MainWindow::setupPlot()
             QString channelName = it.value()->getChannelName();
             QColor color = colors[colorIndex % colors.size()];
 
+            // 获取通道配置
+            Core::ChannelConfig channelConfig = m_configManager->getChannelConfigs().value(channelId);
+
+            // 输出显示格式信息
+            qDebug() << "添加通道到图表:" << channelId
+                     << "中文标签=" << channelConfig.displayFormat.labelInChinese
+                     << "采集类型=" << channelConfig.displayFormat.acquisitionType
+                     << "单位=" << channelConfig.displayFormat.unit;
+
             addChannelToPlot(channelId, channelName, color);
             colorIndex++;
         }
@@ -639,11 +648,24 @@ void MainWindow::setupPlot()
             QString channelName = it.value()->getChannelName();
             QColor color = colors[colorIndex % colors.size()];
 
+            // 获取二次计算仪器配置
+            Core::SecondaryInstrumentConfig instrumentConfig;
+            for (const auto& config : m_configManager->getSecondaryInstrumentConfigs()) {
+                if (config.channelName == channelName) {
+                    instrumentConfig = config;
+                    break;
+                }
+            }
+
+            // 输出显示格式信息
+            qDebug() << "添加二次计算仪器通道到图表:" << channelId << channelName
+                     << "中文标签=" << instrumentConfig.displayFormat.labelInChinese
+                     << "采集类型=" << instrumentConfig.displayFormat.acquisitionType
+                     << "单位=" << instrumentConfig.displayFormat.unit;
+
             // 添加二次计算仪器通道到图表
             addChannelToPlot(channelId, channelName, color);
             colorIndex++;
-
-            qDebug() << "添加二次计算仪器通道到图表:" << channelId << channelName;
         }
     }
 }

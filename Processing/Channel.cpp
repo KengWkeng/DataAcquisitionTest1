@@ -20,6 +20,14 @@ Channel::Channel(const Core::ChannelConfig& config, QObject *parent)
              << "设备:" << m_config.deviceId
              << "硬件通道:" << m_config.hardwareChannel
              << "线程ID:" << QThread::currentThreadId();
+
+    // 添加显示格式调试输出
+    qDebug() << "通道显示格式:" << m_config.channelId
+             << "中文标签=" << m_config.displayFormat.labelInChinese
+             << "采集类型=" << m_config.displayFormat.acquisitionType
+             << "单位=" << m_config.displayFormat.unit
+             << "分辨率=" << m_config.displayFormat.resolution
+             << "范围=[" << m_config.displayFormat.minRange << "," << m_config.displayFormat.maxRange << "]";
 }
 
 Channel::~Channel()

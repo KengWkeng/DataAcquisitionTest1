@@ -36,6 +36,26 @@ struct CalibrationParams {
 };
 
 /**
+ * @brief 显示格式结构体
+ * 存储通道的显示相关参数
+ */
+struct DisplayFormat {
+    QString labelInChinese;     // 中文标签
+    QString acquisitionType;    // 采集类型
+    QString unit;               // 单位
+    double resolution = 0.01;   // 分辨率
+    double minRange = 0.0;      // 最小范围值
+    double maxRange = 100.0;    // 最大范围值
+
+    DisplayFormat() = default;
+
+    DisplayFormat(const QString& label, const QString& type, const QString& u,
+                 double res, double min, double max)
+        : labelInChinese(label), acquisitionType(type), unit(u),
+          resolution(res), minRange(min), maxRange(max) {}
+};
+
+/**
  * @brief 通道参数结构体
  * 存储通道的增益、偏移和校准参数
  */
@@ -98,6 +118,7 @@ struct VirtualDeviceConfig : public DeviceConfig {
     double amplitude;       // 振幅
     double frequency;       // 频率 (Hz)
     ChannelParams channelParams; // 通道参数
+    DisplayFormat displayFormat; // 显示格式
 
     VirtualDeviceConfig() {
         deviceType = DeviceType::VIRTUAL;
@@ -109,6 +130,13 @@ struct VirtualDeviceConfig : public DeviceConfig {
         : DeviceConfig(id, DeviceType::VIRTUAL),
           instanceName(name), signalType(type),
           amplitude(amp), frequency(freq), channelParams(params) {}
+
+    VirtualDeviceConfig(const QString& id, const QString& name,
+                       const QString& type, double amp, double freq,
+                       const ChannelParams& params, const DisplayFormat& df)
+        : DeviceConfig(id, DeviceType::VIRTUAL),
+          instanceName(name), signalType(type),
+          amplitude(amp), frequency(freq), channelParams(params), displayFormat(df) {}
 };
 
 /**
@@ -119,11 +147,15 @@ struct ModbusRegisterConfig {
     int registerAddress;     // 寄存器地址
     QString channelName;     // 通道名称
     ChannelParams channelParams; // 通道参数
+    DisplayFormat displayFormat; // 显示格式
 
     ModbusRegisterConfig() = default;
 
     ModbusRegisterConfig(int addr, const QString& name, const ChannelParams& params)
         : registerAddress(addr), channelName(name), channelParams(params) {}
+
+    ModbusRegisterConfig(int addr, const QString& name, const ChannelParams& params, const DisplayFormat& df)
+        : registerAddress(addr), channelName(name), channelParams(params), displayFormat(df) {}
 };
 
 /**
@@ -188,11 +220,15 @@ struct DAQChannelConfig {
     int channelId;           // 通道ID
     QString channelName;     // 通道名称
     ChannelParams channelParams; // 通道参数
+    DisplayFormat displayFormat; // 显示格式
 
     DAQChannelConfig() = default;
 
     DAQChannelConfig(int id, const QString& name, const ChannelParams& params)
         : channelId(id), channelName(name), channelParams(params) {}
+
+    DAQChannelConfig(int id, const QString& name, const ChannelParams& params, const DisplayFormat& df)
+        : channelId(id), channelName(name), channelParams(params), displayFormat(df) {}
 };
 
 /**
@@ -219,11 +255,15 @@ struct DAQDeviceConfig : public DeviceConfig {
 struct ECUChannelConfig {
     QString channelName;     // 通道名称
     ChannelParams channelParams; // 通道参数
+    DisplayFormat displayFormat; // 显示格式
 
     ECUChannelConfig() = default;
 
     ECUChannelConfig(const QString& name, const ChannelParams& params)
         : channelName(name), channelParams(params) {}
+
+    ECUChannelConfig(const QString& name, const ChannelParams& params, const DisplayFormat& df)
+        : channelName(name), channelParams(params), displayFormat(df) {}
 };
 
 /**
@@ -258,6 +298,7 @@ struct ChannelConfig {
     QString deviceId;        // 关联的设备ID
     QString hardwareChannel; // 硬件通道标识（可能是索引或名称）
     ChannelParams params;    // 通道参数
+    DisplayFormat displayFormat; // 显示格式
 
     ChannelConfig() = default;
 
@@ -267,6 +308,13 @@ struct ChannelConfig {
         : channelId(id), channelName(name),
           deviceId(devId), hardwareChannel(hwChan),
           params(p) {}
+
+    ChannelConfig(const QString& id, const QString& name,
+                 const QString& devId, const QString& hwChan,
+                 const ChannelParams& p, const DisplayFormat& df)
+        : channelId(id), channelName(name),
+          deviceId(devId), hardwareChannel(hwChan),
+          params(p), displayFormat(df) {}
 };
 
 /**
@@ -312,12 +360,19 @@ struct SecondaryInstrumentConfig {
     QString formula;             // 计算公式
     QStringList inputChannels;   // 输入通道列表
     QString unit;                // 单位
+    DisplayFormat displayFormat; // 显示格式
 
     SecondaryInstrumentConfig() = default;
 
     SecondaryInstrumentConfig(const QString& name, const QString& form,
                              const QStringList& inputs, const QString& u = "")
         : channelName(name), formula(form), inputChannels(inputs), unit(u) {}
+
+    SecondaryInstrumentConfig(const QString& name, const QString& form,
+                             const QStringList& inputs, const QString& u,
+                             const DisplayFormat& df)
+        : channelName(name), formula(form), inputChannels(inputs), unit(u),
+          displayFormat(df) {}
 };
 
 /**

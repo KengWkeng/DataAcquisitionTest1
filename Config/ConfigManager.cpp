@@ -233,6 +233,20 @@ void ConfigManager::parseVirtualDevices(const QJsonArray& jsonArray)
             channelParams = parseChannelParams(deviceObj["channel_params"].toObject());
         }
 
+        // 解析显示格式
+        Core::DisplayFormat displayFormat;
+        if (deviceObj.contains("display_format") && deviceObj["display_format"].isObject()) {
+            displayFormat = parseDisplayFormat(deviceObj["display_format"].toObject());
+        } else {
+            // 创建默认显示格式
+            displayFormat.labelInChinese = instanceName;
+            displayFormat.acquisitionType = signalType;
+            displayFormat.unit = channelParams.unit;
+            displayFormat.resolution = 0.01;
+            displayFormat.minRange = -amplitude;
+            displayFormat.maxRange = amplitude;
+        }
+
         // 创建虚拟设备配置
         Core::VirtualDeviceConfig config;
         config.deviceId = instanceName; // 使用实例名称作为设备ID
@@ -241,9 +255,16 @@ void ConfigManager::parseVirtualDevices(const QJsonArray& jsonArray)
         config.amplitude = amplitude;
         config.frequency = frequency;
         config.channelParams = channelParams;
+        config.displayFormat = displayFormat;
 
         // 添加到列表
         m_virtualDeviceConfigs.append(config);
+
+        // 添加调试输出
+        qDebug() << "虚拟设备显示格式:" << instanceName
+                 << "中文标签=" << displayFormat.labelInChinese
+                 << "采集类型=" << displayFormat.acquisitionType
+                 << "单位=" << displayFormat.unit;
 
         // 创建对应的通道配置
         Core::ChannelConfig channelConfig;
@@ -252,6 +273,7 @@ void ConfigManager::parseVirtualDevices(const QJsonArray& jsonArray)
         channelConfig.deviceId = instanceName;
         channelConfig.hardwareChannel = "0"; // 虚拟设备只有一个通道
         channelConfig.params = channelParams;
+        channelConfig.displayFormat = displayFormat;
 
         // 添加到通道映射
         m_channelConfigs[channelConfig.channelId] = channelConfig;
@@ -322,14 +344,35 @@ void ConfigManager::parseModbusDevices(const QJsonArray& jsonArray)
                             channelParams = parseChannelParams(regObj["channel_params"].toObject());
                         }
 
+                        // 解析显示格式
+                        Core::DisplayFormat displayFormat;
+                        if (regObj.contains("display_format") && regObj["display_format"].isObject()) {
+                            displayFormat = parseDisplayFormat(regObj["display_format"].toObject());
+                        } else {
+                            // 创建默认显示格式
+                            displayFormat.labelInChinese = channelName;
+                            displayFormat.acquisitionType = "modbus";
+                            displayFormat.unit = channelParams.unit;
+                            displayFormat.resolution = 0.01;
+                            displayFormat.minRange = 0;
+                            displayFormat.maxRange = 100;
+                        }
+
                         // 创建寄存器配置
                         Core::ModbusRegisterConfig regConfig;
                         regConfig.registerAddress = registerAddress;
                         regConfig.channelName = channelName;
                         regConfig.channelParams = channelParams;
+                        regConfig.displayFormat = displayFormat;
 
                         // 添加到寄存器列表
                         registers.append(regConfig);
+
+                        // 添加调试输出
+                        qDebug() << "Modbus寄存器显示格式:" << channelName
+                                 << "中文标签=" << displayFormat.labelInChinese
+                                 << "采集类型=" << displayFormat.acquisitionType
+                                 << "单位=" << displayFormat.unit;
 
                         // 创建对应的通道配置
                         Core::ChannelConfig channelConfig;
@@ -338,6 +381,7 @@ void ConfigManager::parseModbusDevices(const QJsonArray& jsonArray)
                         channelConfig.deviceId = instanceName;
                         channelConfig.hardwareChannel = QString("%1_%2").arg(slaveId).arg(registerAddress);
                         channelConfig.params = channelParams;
+                        channelConfig.displayFormat = displayFormat;
 
                         // 添加到通道映射
                         m_channelConfigs[channelConfig.channelId] = channelConfig;
@@ -419,9 +463,30 @@ void ConfigManager::parseDAQDevices(const QJsonArray& jsonArray)
                     channelParams = parseChannelParams(channelObj["channel_params"].toObject());
                 }
 
+                // 解析显示格式
+                Core::DisplayFormat displayFormat;
+                if (channelObj.contains("display_format") && channelObj["display_format"].isObject()) {
+                    displayFormat = parseDisplayFormat(channelObj["display_format"].toObject());
+                } else {
+                    // 创建默认显示格式
+                    displayFormat.labelInChinese = channelName;
+                    displayFormat.acquisitionType = "daq";
+                    displayFormat.unit = channelParams.unit;
+                    displayFormat.resolution = 0.01;
+                    displayFormat.minRange = -10;
+                    displayFormat.maxRange = 10;
+                }
+
                 // 创建通道配置
                 Core::DAQChannelConfig channelConfig(channelId, channelName, channelParams);
+                channelConfig.displayFormat = displayFormat;
                 channels.append(channelConfig);
+
+                // 添加调试输出
+                qDebug() << "DAQ通道显示格式:" << channelName
+                         << "中文标签=" << displayFormat.labelInChinese
+                         << "采集类型=" << displayFormat.acquisitionType
+                         << "单位=" << displayFormat.unit;
 
                 // 创建对应的通道配置（用于数据处理）
                 Core::ChannelConfig procChannelConfig;
@@ -430,6 +495,7 @@ void ConfigManager::parseDAQDevices(const QJsonArray& jsonArray)
                 procChannelConfig.deviceId = deviceId;
                 procChannelConfig.hardwareChannel = QString::number(channelId);
                 procChannelConfig.params = channelParams;
+                procChannelConfig.displayFormat = displayFormat;
 
                 // 添加到通道映射
                 m_channelConfigs[procChannelConfig.channelId] = procChannelConfig;
@@ -502,10 +568,31 @@ void ConfigManager::parseECUDevices(const QJsonArray& jsonArray)
                     channelParams = parseChannelParams(channelObj["channel_params"].toObject());
                 }
 
+                // 解析显示格式
+                Core::DisplayFormat displayFormat;
+                if (channelObj.contains("display_format") && channelObj["display_format"].isObject()) {
+                    displayFormat = parseDisplayFormat(channelObj["display_format"].toObject());
+                } else {
+                    // 创建默认显示格式
+                    displayFormat.labelInChinese = channelName;
+                    displayFormat.acquisitionType = "ecu";
+                    displayFormat.unit = channelParams.unit;
+                    displayFormat.resolution = 0.01;
+                    displayFormat.minRange = 0;
+                    displayFormat.maxRange = 100;
+                }
+
                 // 创建ECU通道配置
                 Core::ECUChannelConfig channelConfig;
                 channelConfig.channelName = hardwareChannel;  // 使用硬件通道名称作为ECU内部通道名
                 channelConfig.channelParams = channelParams;
+                channelConfig.displayFormat = displayFormat;
+
+                // 添加调试输出
+                qDebug() << "ECU通道显示格式:" << channelName
+                         << "中文标签=" << displayFormat.labelInChinese
+                         << "采集类型=" << displayFormat.acquisitionType
+                         << "单位=" << displayFormat.unit;
 
                 // 添加到通道映射
                 channels[hardwareChannel] = channelConfig;
@@ -517,6 +604,7 @@ void ConfigManager::parseECUDevices(const QJsonArray& jsonArray)
                 procChannelConfig.deviceId = instanceName;
                 procChannelConfig.hardwareChannel = hardwareChannel;
                 procChannelConfig.params = channelParams;
+                procChannelConfig.displayFormat = displayFormat;
 
                 // 添加到通道映射
                 m_channelConfigs[procChannelConfig.channelId] = procChannelConfig;
@@ -546,10 +634,31 @@ void ConfigManager::parseECUDevices(const QJsonArray& jsonArray)
                     channelParams = parseChannelParams(channelObj["channel_params"].toObject());
                 }
 
+                // 解析显示格式
+                Core::DisplayFormat displayFormat;
+                if (channelObj.contains("display_format") && channelObj["display_format"].isObject()) {
+                    displayFormat = parseDisplayFormat(channelObj["display_format"].toObject());
+                } else {
+                    // 创建默认显示格式
+                    displayFormat.labelInChinese = channelName;
+                    displayFormat.acquisitionType = "ecu";
+                    displayFormat.unit = channelParams.unit;
+                    displayFormat.resolution = 0.01;
+                    displayFormat.minRange = 0;
+                    displayFormat.maxRange = 100;
+                }
+
                 // 创建ECU通道配置
                 Core::ECUChannelConfig channelConfig;
                 channelConfig.channelName = channelName;
                 channelConfig.channelParams = channelParams;
+                channelConfig.displayFormat = displayFormat;
+
+                // 添加调试输出
+                qDebug() << "ECU通道显示格式(旧格式):" << channelName
+                         << "中文标签=" << displayFormat.labelInChinese
+                         << "采集类型=" << displayFormat.acquisitionType
+                         << "单位=" << displayFormat.unit;
 
                 // 添加到通道映射
                 channels[channelName] = channelConfig;
@@ -561,6 +670,7 @@ void ConfigManager::parseECUDevices(const QJsonArray& jsonArray)
                 procChannelConfig.deviceId = instanceName;
                 procChannelConfig.hardwareChannel = channelName;
                 procChannelConfig.params = channelParams;
+                procChannelConfig.displayFormat = displayFormat;
 
                 // 添加到通道映射
                 m_channelConfigs[procChannelConfig.channelId] = procChannelConfig;
@@ -636,6 +746,30 @@ Core::SerialConfig ConfigManager::parseSerialConfig(const QJsonObject& jsonObjec
     return config;
 }
 
+Core::DisplayFormat ConfigManager::parseDisplayFormat(const QJsonObject& jsonObject)
+{
+    Core::DisplayFormat format;
+
+    // 提取显示格式参数
+    format.labelInChinese = jsonObject["LabelInChinese"].toString("");
+    format.acquisitionType = jsonObject["acquisition_type"].toString("");
+    format.unit = jsonObject["unit"].toString("");
+    format.resolution = jsonObject["resolution"].toDouble(0.01);
+    format.minRange = jsonObject["min_range"].toDouble(0.0);
+    format.maxRange = jsonObject["max_range"].toDouble(100.0);
+
+    // 添加调试输出
+    qDebug() << "解析显示格式:"
+             << "中文标签=" << format.labelInChinese
+             << "采集类型=" << format.acquisitionType
+             << "单位=" << format.unit
+             << "分辨率=" << format.resolution
+             << "最小值=" << format.minRange
+             << "最大值=" << format.maxRange;
+
+    return format;
+}
+
 void ConfigManager::parseSecondaryInstruments(const QJsonArray& jsonArray)
 {
     // 清空之前的配置
@@ -684,12 +818,27 @@ void ConfigManager::parseSecondaryInstruments(const QJsonArray& jsonArray)
             }
         }
 
+        // 解析显示格式
+        Core::DisplayFormat displayFormat;
+        if (instrumentObj.contains("display_format") && instrumentObj["display_format"].isObject()) {
+            displayFormat = parseDisplayFormat(instrumentObj["display_format"].toObject());
+        } else {
+            // 创建默认显示格式
+            displayFormat.labelInChinese = channelName;
+            displayFormat.acquisitionType = "secondary";
+            displayFormat.unit = unit;
+            displayFormat.resolution = 0.01;
+            displayFormat.minRange = 0;
+            displayFormat.maxRange = 100;
+        }
+
         // 创建二次计算仪器配置
         Core::SecondaryInstrumentConfig config;
         config.channelName = channelName;
         config.formula = formula;
         config.inputChannels = inputChannels;
         config.unit = unit;
+        config.displayFormat = displayFormat;
 
         // 添加到列表
         m_secondaryInstrumentConfigs.append(config);
@@ -698,6 +847,14 @@ void ConfigManager::parseSecondaryInstruments(const QJsonArray& jsonArray)
                  << "公式:" << formula
                  << "输入通道:" << inputChannels.join(", ")
                  << "单位:" << unit;
+
+        // 添加显示格式调试输出
+        qDebug() << "二次计算仪器显示格式:" << channelName
+                 << "中文标签=" << displayFormat.labelInChinese
+                 << "采集类型=" << displayFormat.acquisitionType
+                 << "单位=" << displayFormat.unit
+                 << "分辨率=" << displayFormat.resolution
+                 << "范围=[" << displayFormat.minRange << "," << displayFormat.maxRange << "]";
     }
 }
 

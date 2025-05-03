@@ -13,17 +13,20 @@
             {
               "register_address": 0,
               "channel_name": "Temperature_Sensor_1",
-              "channel_params": { "gain": 0.01, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+              "channel_params": { "gain": 0.01, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+              "display_format": { "LabelInChinese": "温度传感器1", "acquisition_type": "temperature1", "unit": "°C", "resolution": 0.1, "min_range": 0, "max_range": 100 }
             },
             {
               "register_address": 1,
               "channel_name": "Temperature_Sensor_2",
-              "channel_params": { "gain": 0.01, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+              "channel_params": { "gain": 0.01, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+              "display_format": { "LabelInChinese": "温度传感器2", "acquisition_type": "temperature1", "unit": "°C", "resolution": 0.1, "min_range": 0, "max_range": 100 }
             },
             {
               "register_address": 2,
               "channel_name": "Temperature_Sensor_3",
-              "channel_params": { "gain": 0.01, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+              "channel_params": { "gain": 0.01, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+              "display_format": { "LabelInChinese": "温度传感器3", "acquisition_type": "temperature1", "unit": "°C", "resolution": 0.1, "min_range": 0, "max_range": 100 }
             }
           ]
         }
@@ -41,17 +44,20 @@
             {
               "register_address": 0,
               "channel_name": "Modbus_slave1_seg1",
-              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+              "display_format": { "LabelInChinese": "Modbus从站1段1", "acquisition_type": "temperature2", "unit": "°C", "resolution": 0.01, "min_range": -10, "max_range": 10 }
             },
             {
               "register_address": 1,
               "channel_name": "Modbus_slave1_seg2",
-              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+              "display_format": { "LabelInChinese": "Modbus从站1段2", "acquisition_type": "temperature2", "unit": "°C", "resolution": 0.01, "min_range": -10, "max_range": 10 }
             },
             {
               "register_address": 2,
               "channel_name": "Modbus_slave1_seg3",
-              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+              "display_format": { "LabelInChinese": "Modbus从站1段3", "acquisition_type": "temperature2", "unit": "°C", "resolution": 0.01, "min_range": -10, "max_range": 10 }
             }
           ]
         },
@@ -62,22 +68,26 @@
             {
               "register_address": 0,
               "channel_name": "Modbus_slave2_seg1",
-              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+              "display_format": { "LabelInChinese": "Modbus从站2段1", "acquisition_type": "temperature3", "unit": "°C", "resolution": 0.01, "min_range": -10, "max_range": 10 }
             },
             {
               "register_address": 1,
               "channel_name": "Modbus_slave2_seg2",
-              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+              "display_format": { "LabelInChinese": "Modbus从站2段2", "acquisition_type": "temperature3", "unit": "°C", "resolution": 0.01, "min_range": -10, "max_range": 10 }
             },
             {
               "register_address": 2,
               "channel_name": "Modbus_slave2_seg3",
-              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+              "display_format": { "LabelInChinese": "Modbus从站2段3", "acquisition_type": "temperature3", "unit": "°C", "resolution": 0.01, "min_range": -10, "max_range": 10 }
             },
             {
               "register_address": 3,
               "channel_name": "Modbus_slave2_seg4",
-              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+              "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+              "display_format": { "LabelInChinese": "Modbus从站2段4", "acquisition_type": "temperature3", "unit": "°C", "resolution": 0.01, "min_range": -10, "max_range": 10 }
             }
           ]
         }
@@ -92,22 +102,26 @@
         {
           "channel_id": 0,
           "channel_name": "Force_1",
-          "channel_params": { "gain": 20.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+          "channel_params": { "gain": 20.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+          "display_format": { "LabelInChinese": "力传感器1", "acquisition_type": "Force", "unit": "N", "resolution": 0.1, "min_range": 0, "max_range": 1000 }
         },
         {
           "channel_id": 1,
           "channel_name": "Force_2",
-          "channel_params": { "gain": 20.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+          "channel_params": { "gain": 20.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+          "display_format": { "LabelInChinese": "力传感器2", "acquisition_type": "Force", "unit": "N", "resolution": 0.1, "min_range": 0, "max_range": 1000 }
         },
         {
           "channel_id": 2,
           "channel_name": "Force_3",
-          "channel_params": { "gain": 20.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+          "channel_params": { "gain": 20.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+          "display_format": { "LabelInChinese": "力传感器3", "acquisition_type": "Force", "unit": "N", "resolution": 0.1, "min_range": 0, "max_range": 1000 }
         },
         {
           "channel_id": 3,
           "channel_name": "Force_4",
-          "channel_params": { "gain": 20.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+          "channel_params": { "gain": 20.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+          "display_format": { "LabelInChinese": "力传感器4", "acquisition_type": "Force", "unit": "N", "resolution": 0.1, "min_range": 0, "max_range": 1000 }
         }
       ]
     }
@@ -121,47 +135,56 @@
         {
           "channel_name": "ECU_Speed",
           "hardware_channel": "speed",
-          "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+          "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+          "display_format": { "LabelInChinese": "发动机转速", "acquisition_type": "speed", "unit": "RPM", "resolution": 1, "min_range": 0, "max_range": 10000 }
         },
         {
           "channel_name": "ECU_ThrottlePosition",
           "hardware_channel": "throttle_position",
-          "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+          "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+          "display_format": { "LabelInChinese": "节气门位置", "acquisition_type": "throttle_position", "unit": "%", "resolution": 0.1, "min_range": 0, "max_range": 100 }
         },
         {
           "channel_name": "ECU_CylinderTemp",
           "hardware_channel": "cylinder_temp",
-          "channel_params": { "gain": 1.0, "offset": -10.0, "calibration_params": { "a": 0.0, "b": 0.01, "c": 0.9, "d": 2.0 } }
+          "channel_params": { "gain": 1.0, "offset": -10.0, "calibration_params": { "a": 0.0, "b": 0.01, "c": 0.9, "d": 2.0 } },
+          "display_format": { "LabelInChinese": "气缸温度", "acquisition_type": "cylinder_temp", "unit": "°C", "resolution": 0.1, "min_range": 0, "max_range": 200 }
         },
         {
           "channel_name": "ECU_ExhaustTemp",
           "hardware_channel": "exhaust_temp",
-          "channel_params": { "gain": 1.0, "offset": -10.0, "calibration_params": { "a": 0.0, "b": 0.01, "c": 0.9, "d": 2.0 } }
+          "channel_params": { "gain": 1.0, "offset": -10.0, "calibration_params": { "a": 0.0, "b": 0.01, "c": 0.9, "d": 2.0 } },
+          "display_format": { "LabelInChinese": "排气温度", "acquisition_type": "exhaust_temp", "unit": "°C", "resolution": 0.1, "min_range": 0, "max_range": 800 }
         },
         {
           "channel_name": "ECU_FuelPressure",
           "hardware_channel": "fuel_pressure",
-          "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+          "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+          "display_format": { "LabelInChinese": "燃油压力", "acquisition_type": "fuel_pressure", "unit": "kPa", "resolution": 0.1, "min_range": 0, "max_range": 500 }
         },
         {
           "channel_name": "ECU_RotorTemp",
           "hardware_channel": "rotor_temp",
-          "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+          "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+          "display_format": { "LabelInChinese": "转子温度", "acquisition_type": "rotor_temp", "unit": "°C", "resolution": 0.1, "min_range": 0, "max_range": 300 }
         },
         {
           "channel_name": "ECU_IntakeTemp",
           "hardware_channel": "intake_temp",
-          "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+          "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+          "display_format": { "LabelInChinese": "进气温度", "acquisition_type": "intake_temp", "unit": "°C", "resolution": 0.1, "min_range": -20, "max_range": 80 }
         },
         {
           "channel_name": "ECU_IntakePressure",
           "hardware_channel": "intake_pressure",
-          "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+          "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+          "display_format": { "LabelInChinese": "进气压力", "acquisition_type": "intake_pressure", "unit": "kPa", "resolution": 0.1, "min_range": 80, "max_range": 120 }
         },
         {
           "channel_name": "ECU_SupplyVoltage",
           "hardware_channel": "supply_voltage",
-          "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } }
+          "channel_params": { "gain": 1.0, "offset": 0.0, "calibration_params": { "a": 0.0, "b": 0.0, "c": 1.0, "d": 0.0 } },
+          "display_format": { "LabelInChinese": "供电电压", "acquisition_type": "supply_voltage", "unit": "V", "resolution": 0.01, "min_range": 10, "max_range": 15 }
         }
       ]
     }
@@ -170,20 +193,22 @@
     {
       "channel_name": "TotalTemperature",
       "formula": "(ECU_CylinderTemp + ECU_ExhaustTemp) / 2",
-      "input_channels": ["ECU_CylinderTemp", "ECU_ExhaustTemp"]
+      "input_channels": ["ECU_CylinderTemp", "ECU_ExhaustTemp"],
+      "display_format": { "LabelInChinese": "平均温度", "acquisition_type": "Temperature4", "unit": "°C", "resolution": 0.1, "min_range": 0, "max_range": 500 }
     },
     {
       "channel_name": "PowerEstimate",
       "formula": "ECU_Speed * ECU_ThrottlePosition / 100",
-      "input_channels": ["ECU_Speed", "ECU_ThrottlePosition"]
+      "input_channels": ["ECU_Speed", "ECU_ThrottlePosition"],
+      "display_format": { "LabelInChinese": "功率估计", "acquisition_type": "Power3", "unit": "kW", "resolution": 0.01, "min_range": 0, "max_range": 100 }
     },
     {
       "channel_name": "EfficiencyFactor",
       "formula": "ECU_Speed / (ECU_FuelPressure + 1)",
-      "input_channels": ["ECU_Speed", "ECU_FuelPressure"]
+      "input_channels": ["ECU_Speed", "ECU_FuelPressure"],
+      "display_format": { "LabelInChinese": "效率因子", "acquisition_type": "Efficiency1", "unit": "", "resolution": 0.01, "min_range": 0, "max_range": 50 }
     }
   ],
   "virtual_devices": [
-
   ]
 }
