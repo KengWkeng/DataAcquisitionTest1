@@ -68,6 +68,12 @@ private:
     // 添加通道到图表
     void addChannelToPlot(const QString& channelId, const QString& channelName, const QColor& color);
 
+    // 窗口大小变化事件处理
+    void resizeEvent(QResizeEvent *event) override;
+
+    // 锁定分割器，防止用户改变比例
+    void lockSplitters();
+
 private:
     Ui::MainWindow *ui;
     Config::ConfigManager *m_configManager;

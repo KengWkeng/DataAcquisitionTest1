@@ -12,6 +12,8 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QRandomGenerator>
+#include <QResizeEvent>
+#include <QSplitterHandle>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -533,12 +535,35 @@ void MainWindow::initializeUI()
     // 设置窗口标题
     setWindowTitle("数据采集系统");
 
-    // 创建中央部件和布局
-    QWidget* centralWidget = new QWidget(this);
-    QVBoxLayout* mainLayout = new QVBoxLayout(centralWidget);
+    // 设置QSplitter的初始大小比例
+    // 设置水平分割器（左右布局）的比例为1:1
+    ui->mainSplitter->setSizes(QList<int>() << 960 << 960);
 
-    // 创建控制面板
+    // 设置左侧垂直分割器（上下布局）的比例为7:2
+    ui->leftSplitter->setSizes(QList<int>() << 770 << 220);
+
+    // 设置右侧垂直分割器（上下布局）的比例为7:2
+    ui->rightSplitter->setSizes(QList<int>() << 770 << 220);
+
+    // 锁定分割器，防止用户改变比例
+    lockSplitters();
+
+    // 强制设置分割器位置，确保比例正确
+    QTimer::singleShot(100, this, [this]() {
+        // 重新设置分割器大小，确保比例正确
+        ui->mainSplitter->setSizes(QList<int>() << 960 << 960);
+        ui->leftSplitter->setSizes(QList<int>() << 770 << 220);
+        ui->rightSplitter->setSizes(QList<int>() << 770 << 220);
+
+        // 输出调试信息
+        qDebug() << "分割器大小已重置，主分割器大小:" << ui->mainSplitter->sizes()
+                 << "，左分割器大小:" << ui->leftSplitter->sizes()
+                 << "，右分割器大小:" << ui->rightSplitter->sizes();
+    });
+
+    // 创建控制面板 - 放在optionLayout中
     QHBoxLayout* controlLayout = new QHBoxLayout();
+    controlLayout->setContentsMargins(4, 4, 4, 4);
 
     // 创建开始/停止按钮
     m_startStopButton = new QPushButton("开始采集", this);
@@ -548,15 +573,27 @@ void MainWindow::initializeUI()
     // 添加弹簧
     controlLayout->addStretch();
 
-    // 添加控制面板到主布局
-    mainLayout->addLayout(controlLayout);
+    // 将控制面板添加到optionLayout
+    QWidget* optionControlWidget = new QWidget();
+    optionControlWidget->setLayout(controlLayout);
+    ui->optionLayout->addWidget(optionControlWidget, 0, 0);
 
-    // 创建图表
+    // 确保optionLayout可以扩展
+    ui->optionLayout->setColumnStretch(0, 1);
+    ui->optionLayout->setRowStretch(0, 1);
+
+    // 创建图表并添加到plotLayout
     m_plot = new QCustomPlot(this);
-    mainLayout->addWidget(m_plot);
 
-    // 设置中央部件
-    setCentralWidget(centralWidget);
+    // 设置QCustomPlot的大小策略，使其能够动态填充plotLayout
+    m_plot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    // 将QCustomPlot直接添加到plotLayout
+    ui->plotLayout->addWidget(m_plot, 0, 0);
+
+    // 确保plotLayout可以扩展
+    ui->plotLayout->setColumnStretch(0, 1);
+    ui->plotLayout->setRowStretch(0, 1);
 
     // 设置图表
     setupPlot();
@@ -565,6 +602,11 @@ void MainWindow::initializeUI()
     m_plotUpdateTimer = new QTimer(this);
     connect(m_plotUpdateTimer, &QTimer::timeout, this, &MainWindow::updatePlot);
     m_plotUpdateTimer->setInterval(50); // 50ms更新一次图表，提高刷新率
+
+    // 输出调试信息
+    qDebug() << "UI初始化完成，主分割器大小:" << ui->mainSplitter->sizes()
+             << "，左分割器大小:" << ui->leftSplitter->sizes()
+             << "，右分割器大小:" << ui->rightSplitter->sizes();
 }
 
 void MainWindow::setupPlot()
@@ -591,6 +633,14 @@ void MainWindow::setupPlot()
     m_plot->setNoAntialiasingOnDrag(true);  // 拖动时禁用抗锯齿以提高性能
     m_plot->setNotAntialiasedElements(QCP::aeAll); // 禁用所有元素的抗锯齿
     m_plot->setPlottingHints(QCP::phFastPolylines | QCP::phImmediateRefresh); // 设置绘图提示
+
+    // 设置自动调整大小
+    m_plot->plotLayout()->setAutoMargins(QCP::msAll); // 自动调整所有边距
+
+    // 设置图表布局填充整个可用空间
+    QCPLayoutGrid* plotLayout = m_plot->plotLayout();
+    plotLayout->setRowStretchFactor(1, 1); // 让图表区域可以拉伸
+    plotLayout->setColumnStretchFactor(0, 1);
 
     // 优化刷新
     m_plot->replot(QCustomPlot::rpQueuedReplot);
@@ -812,4 +862,78 @@ void MainWindow::onSyncFrameReady(Core::SynchronizedDataFrame frame)
 
     // 注意：不再在这里更新图表，而是在updatePlot方法中统一更新
     // 这样可以减少UI线程的负担，提高性能
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    // 调用父类的resizeEvent
+    QMainWindow::resizeEvent(event);
+
+    // 保持分割器的比例
+    QSize newSize = event->size();
+
+    // 计算新的分割器大小
+    int halfWidth = newSize.width() / 2;
+
+    // 重新设置主分割器的比例为1:1
+    ui->mainSplitter->setSizes(QList<int>() << halfWidth << halfWidth);
+
+    // 计算左右两侧的高度（减去菜单栏和状态栏的高度）
+    int availableHeight = newSize.height() - ui->menubar->height() - ui->statusbar->height();
+    int topHeight = (availableHeight * 7) / 9;
+    int bottomHeight = (availableHeight * 2) / 9;
+
+    // 重新设置左侧分割器的比例为7:2
+    ui->leftSplitter->setSizes(QList<int>() << topHeight << bottomHeight);
+
+    // 重新设置右侧分割器的比例为7:2
+    ui->rightSplitter->setSizes(QList<int>() << topHeight << bottomHeight);
+
+    // 确保分割器保持锁定
+    lockSplitters();
+
+    // 如果图表存在，重新绘制以适应新的大小
+    if (m_plot) {
+        // 重新绘制图表
+        m_plot->replot(QCustomPlot::rpQueuedReplot);
+
+        // 输出调试信息
+        qDebug() << "窗口大小已调整，新大小:" << event->size()
+                 << "，可用高度:" << availableHeight
+                 << "，上部高度:" << topHeight
+                 << "，下部高度:" << bottomHeight
+                 << "，图表大小:" << m_plot->size()
+                 << "，主分割器大小:" << ui->mainSplitter->sizes()
+                 << "，左分割器大小:" << ui->leftSplitter->sizes()
+                 << "，右分割器大小:" << ui->rightSplitter->sizes();
+    }
+}
+
+void MainWindow::lockSplitters()
+{
+    // 禁止用户移动分割器
+    ui->mainSplitter->setHandleWidth(1);  // 设置为1，保持可见但最小化
+    ui->leftSplitter->setHandleWidth(1);
+    ui->rightSplitter->setHandleWidth(1);
+
+    // 禁用分割器交互
+    ui->mainSplitter->setChildrenCollapsible(false);
+    ui->leftSplitter->setChildrenCollapsible(false);
+    ui->rightSplitter->setChildrenCollapsible(false);
+
+    // 设置不透明调整，提高性能
+    ui->mainSplitter->setOpaqueResize(false);
+    ui->leftSplitter->setOpaqueResize(false);
+    ui->rightSplitter->setOpaqueResize(false);
+
+    // 禁用分割器移动
+    for (auto handle : ui->mainSplitter->findChildren<QSplitterHandle*>()) {
+        handle->setEnabled(false);
+    }
+    for (auto handle : ui->leftSplitter->findChildren<QSplitterHandle*>()) {
+        handle->setEnabled(false);
+    }
+    for (auto handle : ui->rightSplitter->findChildren<QSplitterHandle*>()) {
+        handle->setEnabled(false);
+    }
 }
