@@ -10,17 +10,17 @@
     <height>1080</height>
    </rect>
   </property>
-  <property name="minimumSize">
-   <size>
-    <width>1920</width>
-    <height>1080</height>
-   </size>
-  </property>
   <property name="sizePolicy">
    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>16</horstretch>
     <verstretch>9</verstretch>
    </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1920</width>
+    <height>1080</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>数据采集系统</string>
@@ -45,13 +45,13 @@
     <item>
      <widget class="QSplitter" name="mainSplitter">
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="childrenCollapsible">
-       <bool>false</bool>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
       <property name="handleWidth">
        <number>0</number>
+      </property>
+      <property name="childrenCollapsible">
+       <bool>false</bool>
       </property>
       <widget class="QWidget" name="leftWidget">
        <property name="sizePolicy">
@@ -85,13 +85,13 @@
         <item>
          <widget class="QSplitter" name="leftSplitter">
           <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="childrenCollapsible">
-           <bool>false</bool>
+           <enum>Qt::Orientation::Vertical</enum>
           </property>
           <property name="handleWidth">
            <number>0</number>
+          </property>
+          <property name="childrenCollapsible">
+           <bool>false</bool>
           </property>
           <widget class="QWidget" name="plotWidget">
            <property name="sizePolicy">
@@ -124,9 +124,41 @@
             </property>
             <item>
              <layout class="QGridLayout" name="plotLayout">
-              <property name="objectName">
-               <string>plotLayout</string>
-              </property>
+              <item row="0" column="0">
+               <widget class="QGroupBox" name="plotGroupBox">
+                <property name="title">
+                 <string>监控曲线</string>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QGroupBox {
+    background-color: white;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    margin-top: 8px;
+    font-weight: bold;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 10px;
+    padding: 0 3px 0 3px;
+}</string>
+                </property>
+                <layout class="QVBoxLayout" name="plotGroupBoxLayout">
+                 <property name="leftMargin">
+                  <number>8</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>16</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>8</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>8</number>
+                 </property>
+                </layout>
+               </widget>
+              </item>
              </layout>
             </item>
            </layout>
@@ -167,21 +199,82 @@
              <number>0</number>
             </property>
             <item>
-             <layout class="QHBoxLayout" name="dashboardsLayout" stretch="1,1,1,1">
-              <property name="objectName">
-               <string>dashboardsLayout</string>
-              </property>
+             <layout class="QHBoxLayout" name="dashboardsLayout" stretch="0">
               <item>
-               <layout class="QGridLayout" name="dash1Layout"/>
-              </item>
-              <item>
-               <layout class="QGridLayout" name="dash2Layout"/>
-              </item>
-              <item>
-               <layout class="QGridLayout" name="dash3Layout"/>
-              </item>
-              <item>
-               <layout class="QGridLayout" name="dash4Layout"/>
+               <widget class="QGroupBox" name="dashboardGroupBox">
+                <property name="title">
+                 <string>仪表盘</string>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QGroupBox {
+    background-color: white;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    margin-top: 8px;
+    font-weight: bold;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 10px;
+    padding: 0 3px 0 3px;
+}</string>
+                </property>
+                <layout class="QHBoxLayout" name="dashboardGroupBoxLayout" stretch="1,1,1,1">
+                 <property name="spacing">
+                  <number>8</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>8</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>16</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>8</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>8</number>
+                 </property>
+                 <item>
+                  <widget class="QWidget" name="dashWidget1" native="true">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">background-color: #f5f5f5;
+border-radius: 4px;</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QWidget" name="dashWidget2" native="true">
+                   <property name="styleSheet">
+                    <string notr="true">background-color: #f5f5f5;
+border-radius: 4px;</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QWidget" name="dashWidget3" native="true">
+                   <property name="styleSheet">
+                    <string notr="true">background-color: #f5f5f5;
+border-radius: 4px;</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QWidget" name="dashWidget4" native="true">
+                   <property name="styleSheet">
+                    <string notr="true">background-color: #f5f5f5;
+border-radius: 4px;</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
               </item>
              </layout>
             </item>
@@ -223,13 +316,13 @@
         <item>
          <widget class="QSplitter" name="rightSplitter">
           <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="childrenCollapsible">
-           <bool>false</bool>
+           <enum>Qt::Orientation::Vertical</enum>
           </property>
           <property name="handleWidth">
            <number>0</number>
+          </property>
+          <property name="childrenCollapsible">
+           <bool>false</bool>
           </property>
           <widget class="QWidget" name="instrumentWidget">
            <property name="sizePolicy">
@@ -262,9 +355,41 @@
             </property>
             <item>
              <layout class="QGridLayout" name="instrumentLayout">
-              <property name="objectName">
-               <string>instrumentLayout</string>
-              </property>
+              <item row="0" column="0">
+               <widget class="QGroupBox" name="instrumentGroupBox">
+                <property name="title">
+                 <string>数据可视化</string>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QGroupBox {
+    background-color: white;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    margin-top: 8px;
+    font-weight: bold;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 10px;
+    padding: 0 3px 0 3px;
+}</string>
+                </property>
+                <layout class="QVBoxLayout" name="instrumentGroupBoxLayout">
+                 <property name="leftMargin">
+                  <number>8</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>16</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>8</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>8</number>
+                 </property>
+                </layout>
+               </widget>
+              </item>
              </layout>
             </item>
            </layout>
@@ -306,9 +431,41 @@
             </property>
             <item>
              <layout class="QGridLayout" name="optionLayout">
-              <property name="objectName">
-               <string>optionLayout</string>
-              </property>
+              <item row="0" column="0">
+               <widget class="QGroupBox" name="optionGroupBox">
+                <property name="title">
+                 <string>操作区</string>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QGroupBox {
+    background-color: white;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    margin-top: 8px;
+    font-weight: bold;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 10px;
+    padding: 0 3px 0 3px;
+}</string>
+                </property>
+                <layout class="QVBoxLayout" name="optionGroupBoxLayout">
+                 <property name="leftMargin">
+                  <number>8</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>16</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>8</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>8</number>
+                 </property>
+                </layout>
+               </widget>
+              </item>
              </layout>
             </item>
            </layout>

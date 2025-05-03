@@ -573,27 +573,28 @@ void MainWindow::initializeUI()
     // 添加弹簧
     controlLayout->addStretch();
 
-    // 将控制面板添加到optionLayout
+    // 将控制面板添加到optionGroupBox
     QWidget* optionControlWidget = new QWidget();
     optionControlWidget->setLayout(controlLayout);
-    ui->optionLayout->addWidget(optionControlWidget, 0, 0);
+    ui->optionGroupBox->layout()->addWidget(optionControlWidget);
 
-    // 确保optionLayout可以扩展
-    ui->optionLayout->setColumnStretch(0, 1);
-    ui->optionLayout->setRowStretch(0, 1);
+    // 设置optionGroupBox的大小策略
+    ui->optionGroupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
-    // 创建图表并添加到plotLayout
+    // 创建图表并添加到plotGroupBox
     m_plot = new QCustomPlot(this);
 
-    // 设置QCustomPlot的大小策略，使其能够动态填充plotLayout
+    // 设置QCustomPlot的大小策略，使其能够动态填充plotGroupBox
     m_plot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    // 将QCustomPlot直接添加到plotLayout
-    ui->plotLayout->addWidget(m_plot, 0, 0);
+    // 将QCustomPlot添加到plotGroupBox的布局中
+    ui->plotGroupBox->layout()->addWidget(m_plot);
 
-    // 确保plotLayout可以扩展
-    ui->plotLayout->setColumnStretch(0, 1);
-    ui->plotLayout->setRowStretch(0, 1);
+    // 确保QCustomPlot能够正确显示
+    m_plot->setMinimumHeight(700);
+
+    // 设置plotGroupBox的大小策略
+    ui->plotGroupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     // 设置图表
     setupPlot();

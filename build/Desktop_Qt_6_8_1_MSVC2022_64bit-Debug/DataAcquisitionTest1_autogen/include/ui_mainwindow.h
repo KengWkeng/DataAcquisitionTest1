@@ -13,6 +13,7 @@
 #include <QtGui/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGridLayout>
+#include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
@@ -38,22 +39,30 @@ public:
     QWidget *plotWidget;
     QVBoxLayout *plotWidgetLayout;
     QGridLayout *plotLayout;
+    QGroupBox *plotGroupBox;
+    QVBoxLayout *plotGroupBoxLayout;
     QWidget *dashboardsWidget;
     QVBoxLayout *dashboardsWidgetLayout;
     QHBoxLayout *dashboardsLayout;
-    QGridLayout *dash1Layout;
-    QGridLayout *dash2Layout;
-    QGridLayout *dash3Layout;
-    QGridLayout *dash4Layout;
+    QGroupBox *dashboardGroupBox;
+    QHBoxLayout *dashboardGroupBoxLayout;
+    QWidget *dashWidget1;
+    QWidget *dashWidget2;
+    QWidget *dashWidget3;
+    QWidget *dashWidget4;
     QWidget *rightWidget;
     QVBoxLayout *rightWidgetLayout;
     QSplitter *rightSplitter;
     QWidget *instrumentWidget;
     QVBoxLayout *instrumentWidgetLayout;
     QGridLayout *instrumentLayout;
+    QGroupBox *instrumentGroupBox;
+    QVBoxLayout *instrumentGroupBoxLayout;
     QWidget *optionWidget;
     QVBoxLayout *optionWidgetLayout;
     QGridLayout *optionLayout;
+    QGroupBox *optionGroupBox;
+    QVBoxLayout *optionGroupBoxLayout;
     QMenuBar *menubar;
     QMenu *menu_File;
     QMenu *menu_Help;
@@ -64,12 +73,12 @@ public:
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName("MainWindow");
         MainWindow->resize(1920, 1080);
-        MainWindow->setMinimumSize(QSize(1920, 1080));
         QSizePolicy sizePolicy(QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Preferred);
         sizePolicy.setHorizontalStretch(16);
         sizePolicy.setVerticalStretch(9);
         sizePolicy.setHeightForWidth(MainWindow->sizePolicy().hasHeightForWidth());
         MainWindow->setSizePolicy(sizePolicy);
+        MainWindow->setMinimumSize(QSize(1920, 1080));
         action_Exit = new QAction(MainWindow);
         action_Exit->setObjectName("action_Exit");
         action_About = new QAction(MainWindow);
@@ -82,9 +91,9 @@ public:
         verticalLayout->setContentsMargins(4, 4, 4, 4);
         mainSplitter = new QSplitter(centralwidget);
         mainSplitter->setObjectName("mainSplitter");
-        mainSplitter->setOrientation(Qt::Horizontal);
-        mainSplitter->setChildrenCollapsible(false);
+        mainSplitter->setOrientation(Qt::Orientation::Horizontal);
         mainSplitter->setHandleWidth(0);
+        mainSplitter->setChildrenCollapsible(false);
         leftWidget = new QWidget(mainSplitter);
         leftWidget->setObjectName("leftWidget");
         QSizePolicy sizePolicy1(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Preferred);
@@ -99,9 +108,9 @@ public:
         leftWidgetLayout->setContentsMargins(0, 0, 0, 0);
         leftSplitter = new QSplitter(leftWidget);
         leftSplitter->setObjectName("leftSplitter");
-        leftSplitter->setOrientation(Qt::Vertical);
-        leftSplitter->setChildrenCollapsible(false);
+        leftSplitter->setOrientation(Qt::Orientation::Vertical);
         leftSplitter->setHandleWidth(0);
+        leftSplitter->setChildrenCollapsible(false);
         plotWidget = new QWidget(leftSplitter);
         plotWidget->setObjectName("plotWidget");
         QSizePolicy sizePolicy2(QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Expanding);
@@ -116,6 +125,26 @@ public:
         plotWidgetLayout->setContentsMargins(0, 0, 0, 0);
         plotLayout = new QGridLayout();
         plotLayout->setObjectName("plotLayout");
+        plotGroupBox = new QGroupBox(plotWidget);
+        plotGroupBox->setObjectName("plotGroupBox");
+        plotGroupBox->setStyleSheet(QString::fromUtf8("QGroupBox {\n"
+"    background-color: white;\n"
+"    border: 1px solid #cccccc;\n"
+"    border-radius: 8px;\n"
+"    margin-top: 8px;\n"
+"    font-weight: bold;\n"
+"}\n"
+"QGroupBox::title {\n"
+"    subcontrol-origin: margin;\n"
+"    left: 10px;\n"
+"    padding: 0 3px 0 3px;\n"
+"}"));
+        plotGroupBoxLayout = new QVBoxLayout(plotGroupBox);
+        plotGroupBoxLayout->setObjectName("plotGroupBoxLayout");
+        plotGroupBoxLayout->setContentsMargins(8, 16, 8, 8);
+
+        plotLayout->addWidget(plotGroupBox, 0, 0, 1, 1);
+
 
         plotWidgetLayout->addLayout(plotLayout);
 
@@ -135,30 +164,60 @@ public:
         dashboardsWidgetLayout->setContentsMargins(0, 0, 0, 0);
         dashboardsLayout = new QHBoxLayout();
         dashboardsLayout->setObjectName("dashboardsLayout");
-        dash1Layout = new QGridLayout();
-        dash1Layout->setObjectName("dash1Layout");
+        dashboardGroupBox = new QGroupBox(dashboardsWidget);
+        dashboardGroupBox->setObjectName("dashboardGroupBox");
+        dashboardGroupBox->setStyleSheet(QString::fromUtf8("QGroupBox {\n"
+"    background-color: white;\n"
+"    border: 1px solid #cccccc;\n"
+"    border-radius: 8px;\n"
+"    margin-top: 8px;\n"
+"    font-weight: bold;\n"
+"}\n"
+"QGroupBox::title {\n"
+"    subcontrol-origin: margin;\n"
+"    left: 10px;\n"
+"    padding: 0 3px 0 3px;\n"
+"}"));
+        dashboardGroupBoxLayout = new QHBoxLayout(dashboardGroupBox);
+        dashboardGroupBoxLayout->setSpacing(8);
+        dashboardGroupBoxLayout->setObjectName("dashboardGroupBoxLayout");
+        dashboardGroupBoxLayout->setContentsMargins(8, 16, 8, 8);
+        dashWidget1 = new QWidget(dashboardGroupBox);
+        dashWidget1->setObjectName("dashWidget1");
+        dashWidget1->setMinimumSize(QSize(0, 0));
+        dashWidget1->setStyleSheet(QString::fromUtf8("background-color: #f5f5f5;\n"
+"border-radius: 4px;"));
 
-        dashboardsLayout->addLayout(dash1Layout);
+        dashboardGroupBoxLayout->addWidget(dashWidget1);
 
-        dash2Layout = new QGridLayout();
-        dash2Layout->setObjectName("dash2Layout");
+        dashWidget2 = new QWidget(dashboardGroupBox);
+        dashWidget2->setObjectName("dashWidget2");
+        dashWidget2->setStyleSheet(QString::fromUtf8("background-color: #f5f5f5;\n"
+"border-radius: 4px;"));
 
-        dashboardsLayout->addLayout(dash2Layout);
+        dashboardGroupBoxLayout->addWidget(dashWidget2);
 
-        dash3Layout = new QGridLayout();
-        dash3Layout->setObjectName("dash3Layout");
+        dashWidget3 = new QWidget(dashboardGroupBox);
+        dashWidget3->setObjectName("dashWidget3");
+        dashWidget3->setStyleSheet(QString::fromUtf8("background-color: #f5f5f5;\n"
+"border-radius: 4px;"));
 
-        dashboardsLayout->addLayout(dash3Layout);
+        dashboardGroupBoxLayout->addWidget(dashWidget3);
 
-        dash4Layout = new QGridLayout();
-        dash4Layout->setObjectName("dash4Layout");
+        dashWidget4 = new QWidget(dashboardGroupBox);
+        dashWidget4->setObjectName("dashWidget4");
+        dashWidget4->setStyleSheet(QString::fromUtf8("background-color: #f5f5f5;\n"
+"border-radius: 4px;"));
 
-        dashboardsLayout->addLayout(dash4Layout);
+        dashboardGroupBoxLayout->addWidget(dashWidget4);
 
-        dashboardsLayout->setStretch(0, 1);
-        dashboardsLayout->setStretch(1, 1);
-        dashboardsLayout->setStretch(2, 1);
-        dashboardsLayout->setStretch(3, 1);
+        dashboardGroupBoxLayout->setStretch(0, 1);
+        dashboardGroupBoxLayout->setStretch(1, 1);
+        dashboardGroupBoxLayout->setStretch(2, 1);
+        dashboardGroupBoxLayout->setStretch(3, 1);
+
+        dashboardsLayout->addWidget(dashboardGroupBox);
+
 
         dashboardsWidgetLayout->addLayout(dashboardsLayout);
 
@@ -178,9 +237,9 @@ public:
         rightWidgetLayout->setContentsMargins(0, 0, 0, 0);
         rightSplitter = new QSplitter(rightWidget);
         rightSplitter->setObjectName("rightSplitter");
-        rightSplitter->setOrientation(Qt::Vertical);
-        rightSplitter->setChildrenCollapsible(false);
+        rightSplitter->setOrientation(Qt::Orientation::Vertical);
         rightSplitter->setHandleWidth(0);
+        rightSplitter->setChildrenCollapsible(false);
         instrumentWidget = new QWidget(rightSplitter);
         instrumentWidget->setObjectName("instrumentWidget");
         sizePolicy2.setHeightForWidth(instrumentWidget->sizePolicy().hasHeightForWidth());
@@ -192,6 +251,26 @@ public:
         instrumentWidgetLayout->setContentsMargins(0, 0, 0, 0);
         instrumentLayout = new QGridLayout();
         instrumentLayout->setObjectName("instrumentLayout");
+        instrumentGroupBox = new QGroupBox(instrumentWidget);
+        instrumentGroupBox->setObjectName("instrumentGroupBox");
+        instrumentGroupBox->setStyleSheet(QString::fromUtf8("QGroupBox {\n"
+"    background-color: white;\n"
+"    border: 1px solid #cccccc;\n"
+"    border-radius: 8px;\n"
+"    margin-top: 8px;\n"
+"    font-weight: bold;\n"
+"}\n"
+"QGroupBox::title {\n"
+"    subcontrol-origin: margin;\n"
+"    left: 10px;\n"
+"    padding: 0 3px 0 3px;\n"
+"}"));
+        instrumentGroupBoxLayout = new QVBoxLayout(instrumentGroupBox);
+        instrumentGroupBoxLayout->setObjectName("instrumentGroupBoxLayout");
+        instrumentGroupBoxLayout->setContentsMargins(8, 16, 8, 8);
+
+        instrumentLayout->addWidget(instrumentGroupBox, 0, 0, 1, 1);
+
 
         instrumentWidgetLayout->addLayout(instrumentLayout);
 
@@ -208,6 +287,26 @@ public:
         optionWidgetLayout->setContentsMargins(0, 0, 0, 0);
         optionLayout = new QGridLayout();
         optionLayout->setObjectName("optionLayout");
+        optionGroupBox = new QGroupBox(optionWidget);
+        optionGroupBox->setObjectName("optionGroupBox");
+        optionGroupBox->setStyleSheet(QString::fromUtf8("QGroupBox {\n"
+"    background-color: white;\n"
+"    border: 1px solid #cccccc;\n"
+"    border-radius: 8px;\n"
+"    margin-top: 8px;\n"
+"    font-weight: bold;\n"
+"}\n"
+"QGroupBox::title {\n"
+"    subcontrol-origin: margin;\n"
+"    left: 10px;\n"
+"    padding: 0 3px 0 3px;\n"
+"}"));
+        optionGroupBoxLayout = new QVBoxLayout(optionGroupBox);
+        optionGroupBoxLayout->setObjectName("optionGroupBoxLayout");
+        optionGroupBoxLayout->setContentsMargins(8, 16, 8, 8);
+
+        optionLayout->addWidget(optionGroupBox, 0, 0, 1, 1);
+
 
         optionWidgetLayout->addLayout(optionLayout);
 
@@ -247,6 +346,10 @@ public:
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "\346\225\260\346\215\256\351\207\207\351\233\206\347\263\273\347\273\237", nullptr));
         action_Exit->setText(QCoreApplication::translate("MainWindow", "\351\200\200\345\207\272", nullptr));
         action_About->setText(QCoreApplication::translate("MainWindow", "\345\205\263\344\272\216", nullptr));
+        plotGroupBox->setTitle(QCoreApplication::translate("MainWindow", "\347\233\221\346\216\247\346\233\262\347\272\277", nullptr));
+        dashboardGroupBox->setTitle(QCoreApplication::translate("MainWindow", "\344\273\252\350\241\250\347\233\230", nullptr));
+        instrumentGroupBox->setTitle(QCoreApplication::translate("MainWindow", "\346\225\260\346\215\256\345\217\257\350\247\206\345\214\226", nullptr));
+        optionGroupBox->setTitle(QCoreApplication::translate("MainWindow", "\346\223\215\344\275\234\345\214\272", nullptr));
         menu_File->setTitle(QCoreApplication::translate("MainWindow", "\346\226\207\344\273\266", nullptr));
         menu_Help->setTitle(QCoreApplication::translate("MainWindow", "\345\270\256\345\212\251", nullptr));
     } // retranslateUi
