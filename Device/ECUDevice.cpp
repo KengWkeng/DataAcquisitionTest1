@@ -10,6 +10,7 @@ ECUDevice::ECUDevice(const Core::ECUDeviceConfig& config, QObject *parent)
     , m_serialPort(nullptr)
     , m_timer(nullptr)
     , m_isAcquiring(false)
+    , m_lastDataTime(0)
 {
     qDebug() << "[ECUDevice] 构造函数开始，设备:" << config.instanceName
              << "线程ID:" << QThread::currentThreadId();
@@ -38,6 +39,16 @@ ECUDevice::ECUDevice(const Core::ECUDeviceConfig& config, QObject *parent)
     // 连接线程启动信号，确保在正确的线程中创建QSerialPort
     connect(QThread::currentThread(), &QThread::started, this, &ECUDevice::initializeSerialPort);
     qDebug() << "[ECUDevice] 已连接线程启动信号到initializeSerialPort槽";
+
+    // 在初始化后延迟连接设备
+    // 使用QTimer::singleShot确保在线程事件循环启动后执行
+    QTimer::singleShot(500, this, [this]() {
+        if (connectDevice()) {
+            qDebug() << "[ECUDevice] 初始化阶段连接ECU设备成功:" << getDeviceId();
+        } else {
+            qDebug() << "[ECUDevice] 初始化阶段连接ECU设备失败:" << getDeviceId();
+        }
+    });
 
     qDebug() << "[ECUDevice] 创建ECU设备完成:" << m_config.instanceName
              << "串口:" << m_config.serialConfig.port
@@ -275,9 +286,10 @@ void ECUDevice::startAcquisition()
              << "线程ID:" << QThread::currentThreadId()
              << "当前状态:" << Core::statusCodeToString(m_status);
 
-    // 只有在已连接状态下才能开始采集
-    if (m_status != Core::StatusCode::CONNECTED && m_status != Core::StatusCode::STOPPED) {
-        qDebug() << "[ECUDevice] 设备未连接，尝试连接设备:" << getDeviceId();
+    // 检查串口连接状态，如果未连接则尝试连接
+    // 但不会在每次开始采集时都重新连接，只在必要时连接
+    if (!m_serialPort || !m_serialPort->isOpen()) {
+        qDebug() << "[ECUDevice] 串口未连接，尝试连接设备:" << getDeviceId();
 
         // 尝试连接设备
         if (!connectDevice()) {
@@ -327,11 +339,23 @@ void ECUDevice::startAcquisition()
     setStatus(Core::StatusCode::ACQUIRING, "ECU设备正在采集数据");
     qDebug() << "[ECUDevice] ECU设备" << m_config.instanceName << "开始采集数据，状态已更新为:" << Core::statusCodeToString(m_status);
 
-    // ECU设备会自动发送数据，不需要发送请求帧
+    // 验证串口状态
     if (m_serialPort && m_serialPort->isOpen()) {
-        qDebug() << "[ECUDevice] 串口已打开，等待设备自动发送数据...";
+        // 清空串口缓冲区，确保获取最新数据
+        m_serialPort->clear();
+        qDebug() << "[ECUDevice] 串口已打开，已清空串口缓冲区，等待设备自动发送数据...";
     } else {
         qDebug() << "[ECUDevice] 警告：串口未打开，无法接收数据";
+        // 尝试重新打开串口
+        if (m_serialPort) {
+            if (m_serialPort->open(QIODevice::ReadWrite)) {
+                qDebug() << "[ECUDevice] 成功重新打开串口";
+            } else {
+                QString errorMsg = QString("无法打开串口: %1 - %2").arg(m_config.serialConfig.port).arg(m_serialPort->errorString());
+                qDebug() << "[ECUDevice] " << errorMsg;
+                emit errorOccurred(getDeviceId(), errorMsg);
+            }
+        }
     }
 }
 
@@ -349,9 +373,10 @@ void ECUDevice::stopAcquisition()
         m_timer->stop();
     }
 
+    // 只更改采集状态，不断开设备连接
     m_isAcquiring = false;
     setStatus(Core::StatusCode::STOPPED, "ECU设备已停止采集");
-    qDebug() << "ECU设备" << m_config.instanceName << "停止采集数据";
+    qDebug() << "ECU设备" << m_config.instanceName << "停止采集数据（保持连接）";
 }
 
 QString ECUDevice::getDeviceId() const
@@ -366,27 +391,79 @@ Core::DeviceType ECUDevice::getDeviceType() const
 
 void ECUDevice::readECUData()
 {
-    qDebug() << "[ECUDevice] 定时器触发读取ECU数据，设备:" << getDeviceId() << "线程ID:" << QThread::currentThreadId();
+    // 减少日志输出频率，使用静态计数器
+    static int logCounter = 0;
+    bool shouldLog = (++logCounter % 100 == 0);
 
-    // 如果串口未打开，尝试连接
-    if (!m_serialPort || !m_serialPort->isOpen()) {
-        qDebug() << "[ECUDevice] 串口未打开，尝试连接...";
-        if (!connectDevice()) {
-            qDebug() << "[ECUDevice] 无法读取ECU数据：设备未连接";
-            return;
+    if (shouldLog) {
+        qDebug() << "[ECUDevice] 定时器触发读取ECU数据，设备:" << getDeviceId()
+                 << "线程ID:" << QThread::currentThreadId()
+                 << "状态:" << Core::statusCodeToString(m_status);
+    }
+
+    // 如果不在采集状态，直接返回
+    if (!m_isAcquiring) {
+        if (shouldLog) {
+            qDebug() << "[ECUDevice] 设备不在采集状态，跳过数据读取";
         }
-        qDebug() << "[ECUDevice] 串口连接成功";
+        return;
+    }
+
+    // 如果串口未打开，尝试重新打开而不是重新连接
+    if (!m_serialPort || !m_serialPort->isOpen()) {
+        qDebug() << "[ECUDevice] 警告：串口未打开，尝试重新打开...";
+
+        if (m_serialPort) {
+            // 尝试重新打开串口
+            if (m_serialPort->open(QIODevice::ReadWrite)) {
+                qDebug() << "[ECUDevice] 成功重新打开串口";
+                // 清空串口缓冲区
+                m_serialPort->clear();
+            } else {
+                QString errorMsg = QString("无法打开串口: %1 - %2").arg(m_config.serialConfig.port).arg(m_serialPort->errorString());
+                qDebug() << "[ECUDevice] " << errorMsg;
+
+                // 限制错误报告频率，避免日志刷屏
+                static QDateTime lastErrorTime;
+                QDateTime now = QDateTime::currentDateTime();
+                if (lastErrorTime.isNull() || lastErrorTime.msecsTo(now) > 5000) { // 至少间隔5秒
+                    emit errorOccurred(getDeviceId(), errorMsg);
+                    lastErrorTime = now;
+
+                    // 如果设备状态是ACQUIRING但串口未打开，更新状态为错误
+                    if (m_status == Core::StatusCode::ACQUIRING) {
+                        setStatus(Core::StatusCode::ERROR_CONNECTION, "ECU设备串口未打开");
+                    }
+                }
+            }
+        }
+
+        return;
     }
 
     // 检查是否有数据可读
     qint64 bytesAvailable = m_serialPort->bytesAvailable();
-    qDebug() << "[ECUDevice] 串口可读字节数:" << bytesAvailable;
+
+    // 减少日志输出频率，只在有数据或应该记录日志时输出
+    if (bytesAvailable > 0 || shouldLog) {
+        qDebug() << "[ECUDevice] 串口可读字节数:" << bytesAvailable;
+    }
 
     if (bytesAvailable > 0) {
         qDebug() << "[ECUDevice] 有数据可读，处理数据...";
         handleSerialData();
-    } else {
+    } else if (shouldLog) {
         qDebug() << "[ECUDevice] 没有数据可读，等待设备自动发送数据...";
+
+        // 检查自上次收到数据以来的时间
+        qint64 currentTime = QDateTime::currentMSecsSinceEpoch();
+
+        // 如果超过10秒没有收到数据，尝试清空缓冲区
+        if (m_lastDataTime > 0 && (currentTime - m_lastDataTime) > 10000) {
+            qDebug() << "[ECUDevice] 超过10秒未收到数据，清空串口缓冲区";
+            m_serialPort->clear();
+            // 不更新m_lastDataTime，只在实际收到数据时更新
+        }
     }
 }
 
@@ -399,6 +476,9 @@ void ECUDevice::handleSerialData()
     if (data.isEmpty()) {
         return;
     }
+
+    // 更新最后接收数据的时间
+    m_lastDataTime = QDateTime::currentMSecsSinceEpoch();
 
     // 打印接收到的原始数据（十六进制格式）
     QString hexData;

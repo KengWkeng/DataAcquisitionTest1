@@ -184,6 +184,23 @@ void DAQDevice::startAcquisition()
         return;
     }
 
+    // 检查任务句柄是否有效，如果无效则初始化任务
+    if (m_taskHandle == 0) {
+        qDebug() << "[DAQDevice] 任务句柄无效，初始化DAQ任务";
+        locker.unlock(); // 解锁以避免死锁
+        if (!connectDevice()) {
+            emit errorOccurred(getDeviceId(), "无法初始化DAQ任务");
+            return;
+        }
+        locker.relock();
+
+        // 再次检查任务句柄
+        if (m_taskHandle == 0) {
+            emit errorOccurred(getDeviceId(), "初始化DAQ任务失败");
+            return;
+        }
+    }
+
     // 启动任务
     int error = 0;
     ArtDAQErrChk(ArtDAQ_StartTask(m_taskHandle));
@@ -200,7 +217,7 @@ Error:
     emit errorOccurred(getDeviceId(), errorMsg);
     qDebug() << errorMsg;
 
-    // 清理任务
+    // 如果启动失败，清理任务以便下次重新创建
     if (m_taskHandle != 0) {
         ArtDAQ_ClearTask(m_taskHandle);
         m_taskHandle = 0;
@@ -221,7 +238,8 @@ void DAQDevice::stopAcquisition()
     // 先更新状态，防止回调函数继续处理数据
     isAcquiring = false;
 
-    // 停止任务
+    // 停止任务，但不清理任务
+    // 这样可以在下次开始采集时重用任务，避免重新创建任务的开销
     if (m_taskHandle != 0) {
         char errBuff[2048] = {'\0'};
         int32 error = ArtDAQ_StopTask(m_taskHandle);
@@ -229,32 +247,18 @@ void DAQDevice::stopAcquisition()
             ArtDAQ_GetExtendedErrorInfo(errBuff, 2048);
             qDebug() << "[DAQDevice] 停止任务失败:" << errBuff;
 
-            // 即使停止失败，也要尝试清理任务
-            error = ArtDAQ_ClearTask(m_taskHandle);
-            if (error < 0) {
-                ArtDAQ_GetExtendedErrorInfo(errBuff, 2048);
-                qDebug() << "[DAQDevice] 清理任务失败:" << errBuff;
-            } else {
-                qDebug() << "[DAQDevice] 任务已成功清理";
-                m_taskHandle = 0;
-            }
+            // 如果停止失败，记录错误但不清理任务
+            // 在析构函数中会确保任务被清理
+            setStatus(Core::StatusCode::ERROR_CONNECTION, QString("停止任务失败: %1").arg(errBuff));
         } else {
-            qDebug() << "[DAQDevice] 任务已成功停止";
-
-            // 停止成功后，清理任务
-            error = ArtDAQ_ClearTask(m_taskHandle);
-            if (error < 0) {
-                ArtDAQ_GetExtendedErrorInfo(errBuff, 2048);
-                qDebug() << "[DAQDevice] 清理任务失败:" << errBuff;
-            } else {
-                qDebug() << "[DAQDevice] 任务已成功清理";
-                m_taskHandle = 0;
-            }
+            qDebug() << "[DAQDevice] 任务已成功停止（保持任务句柄）";
+            setStatus(Core::StatusCode::STOPPED, "DAQ设备已停止采集");
         }
+    } else {
+        setStatus(Core::StatusCode::STOPPED, "DAQ设备已停止采集");
     }
 
-    setStatus(Core::StatusCode::STOPPED, "DAQ设备已停止采集");
-    qDebug() << "[DAQDevice] 设备" << getDeviceId() << "停止采集数据";
+    qDebug() << "[DAQDevice] 设备" << getDeviceId() << "停止采集数据（保持任务句柄）";
 }
 
 QString DAQDevice::getDeviceId() const
@@ -576,14 +580,13 @@ int32 ART_CALLBACK EveryNCallbackDAQ(TaskHandle taskHandle, int32 everyNsamplesE
             ArtDAQ_GetExtendedErrorInfo(errBuff, 2048);
             qDebug() << "[DAQCallback] 读取数据失败: " << errBuff;
 
-            // 发生错误时，停止任务并清理资源
+            // 发生错误时，停止任务但不清理资源
             g_daqDevice->isAcquiring = false;
             g_daqDevice->m_mutex.unlock();
 
-            // 停止和清理任务
+            // 只停止任务，不清理任务句柄
+            // 这样可以在下次开始采集时重用任务
             ArtDAQ_StopTask(taskHandle);
-            ArtDAQ_ClearTask(taskHandle);
-            g_daqDevice->m_taskHandle = 0;
 
             emit g_daqDevice->errorOccurred(g_daqDevice->getDeviceId(), QString("读取数据失败: %1").arg(errBuff));
 
@@ -638,10 +641,10 @@ int32 ART_CALLBACK DoneCallbackDAQ(TaskHandle taskHandle, int32 status, void *ca
     // 检查全局指针是否有效
     if (!g_daqDevice) {
         qDebug() << "[DAQCallback] DoneCallback: g_daqDevice无效";
-        // 如果全局指针无效，但任务句柄有效，则清理任务
+        // 如果全局指针无效，但任务句柄有效，则记录但不清理任务
+        // 任务将在程序退出时由系统清理
         if (taskHandle != 0) {
-            ArtDAQ_ClearTask(taskHandle);
-            qDebug() << "[DAQCallback] 已清理无主任务";
+            qDebug() << "[DAQCallback] 检测到无主任务，但不清理以避免影响后续采集";
         }
         return 0;
     }
@@ -649,11 +652,6 @@ int32 ART_CALLBACK DoneCallbackDAQ(TaskHandle taskHandle, int32 status, void *ca
     // 使用互斥锁保护访问，但设置超时，避免长时间阻塞
     if (!g_daqDevice->m_mutex.tryLock(100)) { // 100ms超时
         qDebug() << "[DAQCallback] DoneCallback: 无法获取互斥锁";
-        // 即使无法获取锁，也要尝试清理任务
-        if (taskHandle != 0) {
-            ArtDAQ_ClearTask(taskHandle);
-            qDebug() << "[DAQCallback] 已清理任务（无锁）";
-        }
         return 0;
     }
 
@@ -665,9 +663,20 @@ int32 ART_CALLBACK DoneCallbackDAQ(TaskHandle taskHandle, int32 status, void *ca
         // 更新设备状态
         g_daqDevice->isAcquiring = false;
 
-        // 清理任务句柄
-        if (taskHandle != 0 && taskHandle == g_daqDevice->m_taskHandle) {
-            g_daqDevice->m_taskHandle = 0;
+        // 不清理任务句柄，保留以便后续重用
+        // 只在明确的错误情况下才清理任务
+        if (status == -200279) { // DAQmx Error: Task cannot be started because it has been stopped.
+            qDebug() << "[DAQCallback] 任务已被停止，需要重新创建";
+            if (taskHandle != 0 && taskHandle == g_daqDevice->m_taskHandle) {
+                error = ArtDAQ_ClearTask(taskHandle);
+                if (error < 0) {
+                    ArtDAQ_GetExtendedErrorInfo(errBuff, 2048);
+                    qDebug() << "[DAQCallback] 清理任务失败:" << errBuff;
+                } else {
+                    qDebug() << "[DAQCallback] 任务已成功清理";
+                    g_daqDevice->m_taskHandle = 0;
+                }
+            }
         }
 
         // 解锁后再发送信号，避免死锁
@@ -679,15 +688,10 @@ int32 ART_CALLBACK DoneCallbackDAQ(TaskHandle taskHandle, int32 status, void *ca
     } else {
         qDebug() << "[DAQCallback] 任务正常完成";
 
-        // 如果任务正常完成，但设备仍处于采集状态，则需要清理资源
+        // 如果任务正常完成，但设备仍处于采集状态，则更新状态但不清理任务
         if (g_daqDevice->isAcquiring) {
-            qDebug() << "[DAQCallback] 任务完成但设备仍在采集状态，执行清理";
+            qDebug() << "[DAQCallback] 任务完成但设备仍在采集状态，更新状态但保留任务句柄";
             g_daqDevice->isAcquiring = false;
-
-            // 清理任务句柄
-            if (taskHandle != 0 && taskHandle == g_daqDevice->m_taskHandle) {
-                g_daqDevice->m_taskHandle = 0;
-            }
 
             // 解锁后再发送信号，避免死锁
             g_daqDevice->m_mutex.unlock();
@@ -698,12 +702,6 @@ int32 ART_CALLBACK DoneCallbackDAQ(TaskHandle taskHandle, int32 status, void *ca
         } else {
             g_daqDevice->m_mutex.unlock();
         }
-    }
-
-    // 确保任务被清理
-    if (taskHandle != 0) {
-        ArtDAQ_ClearTask(taskHandle);
-        qDebug() << "[DAQCallback] DoneCallback: 已清理任务";
     }
 
     return 0;

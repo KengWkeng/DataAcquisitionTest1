@@ -138,6 +138,7 @@ private:
     bool m_isAcquiring;              // 是否正在采集
     QMutex m_mutex;                  // 互斥锁
     QMap<QString, Core::ChannelParams> m_channelParams; // 通道参数映射
+    qint64 m_lastDataTime;           // 最后接收数据的时间戳
 };
 
 } // namespace Device
