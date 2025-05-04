@@ -543,11 +543,11 @@ void MainWindow::initializeUI()
     // 设置水平分割器（左右布局）的比例为1:1
     ui->mainSplitter->setSizes(QList<int>() << 960 << 960);
 
-    // 设置左侧垂直分割器（上下布局）的比例为3:1
-    ui->leftSplitter->setSizes(QList<int>() << 750 << 250);
+    // 设置左侧垂直分割器（上下布局）的比例为3:2
+    ui->leftSplitter->setSizes(QList<int>() << 600 << 400);
 
-    // 设置右侧垂直分割器（上下布局）的比例为3:1
-    ui->rightSplitter->setSizes(QList<int>() << 750 << 250);
+    // 设置右侧垂直分割器（上下布局）的比例为3:2
+    ui->rightSplitter->setSizes(QList<int>() << 600 << 400);
 
     // 锁定分割器，防止用户改变比例
     lockSplitters();
@@ -556,8 +556,8 @@ void MainWindow::initializeUI()
     QTimer::singleShot(100, this, [this]() {
         // 重新设置分割器大小，确保比例正确
         ui->mainSplitter->setSizes(QList<int>() << 960 << 960);
-        ui->leftSplitter->setSizes(QList<int>() << 750 << 250);
-        ui->rightSplitter->setSizes(QList<int>() << 750 << 250);
+        ui->leftSplitter->setSizes(QList<int>() << 600 << 400);
+        ui->rightSplitter->setSizes(QList<int>() << 600 << 400);
 
         // 输出调试信息
         qDebug() << "分割器大小已重置，主分割器大小:" << ui->mainSplitter->sizes()
@@ -594,8 +594,8 @@ void MainWindow::initializeUI()
     // 将QCustomPlot添加到plotGroupBox的布局中
     ui->plotGroupBox->layout()->addWidget(m_plot);
 
-    // 确保QCustomPlot能够正确显示
-    m_plot->setMinimumHeight(700);
+    // 确保QCustomPlot能够正确显示，调整高度以适应3:2的比例
+    m_plot->setMinimumHeight(600);
 
     // 设置plotGroupBox的大小策略
     ui->plotGroupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -834,6 +834,16 @@ void MainWindow::setupDashboards()
         return;
     }
 
+    // 调整仪表盘区域的最小和最大高度，以适应3:2的比例
+    ui->dashboardsWidget->setMinimumHeight(350);
+    ui->dashboardsWidget->setMaximumHeight(400);
+    ui->optionWidget->setMinimumHeight(350);
+    ui->optionWidget->setMaximumHeight(400);
+
+    // 调整仪表盘组的布局
+    ui->dashboardGroupBox->layout()->setContentsMargins(4, 20, 4, 4);
+    ui->dashboardGroupBox->layout()->setSpacing(4);
+
     // 定义主要采集量类型和对应的仪表盘索引
     QMap<QString, int> typeDashboardIndex = {
         {"throttle_position", 0}, // 节气门位置 -> dashWidget1
@@ -887,10 +897,12 @@ void MainWindow::setupDashboards()
 
         // 创建仪表盘
         QVBoxLayout* layout = new QVBoxLayout(dashWidgets[dashboardIndex]);
-        layout->setContentsMargins(0, 0, 0, 0);
+        layout->setContentsMargins(4, 4, 4, 4);
+        layout->setSpacing(2);
 
         // 创建Dashboard实例
         Dashboard* dashboard = new Dashboard(dashWidgets[dashboardIndex]);
+        dashboard->setMinimumHeight(300); // 确保仪表盘有足够的高度显示所有元素
 
         // 配置仪表盘
         dashboard->configure(
@@ -907,6 +919,12 @@ void MainWindow::setupDashboards()
         dashboard->setTextColor(Qt::black);
         dashboard->setForegroundColor(QColor(50, 50, 50));
         dashboard->setAnimationEnabled(true);
+
+        // 确保仪表盘初始化状态
+        dashboard->setInitializationStatus(true);
+
+        // 设置一个初始值，确保显示正确
+        dashboard->setValue((displayFormat.minRange + displayFormat.maxRange) / 2);
 
         // 将仪表盘添加到布局
         layout->addWidget(dashboard);
@@ -954,9 +972,13 @@ void MainWindow::createColumnarInstruments(const QMap<QString, QList<QString>>& 
     // 获取二次计算仪器配置
     QList<Core::SecondaryInstrumentConfig> secondaryInstrumentConfigs = m_configManager->getSecondaryInstrumentConfigs();
 
+    // 调整仪表组的布局
+    ui->instrumentGroupBox->layout()->setContentsMargins(4, 20, 4, 4);
+    ui->instrumentGroupBox->layout()->setSpacing(4);
+
     // 创建仪表布局
     QVBoxLayout* instrumentLayout = new QVBoxLayout();
-    instrumentLayout->setContentsMargins(0, 0, 0, 0);
+    instrumentLayout->setContentsMargins(4, 4, 4, 4);
     instrumentLayout->setSpacing(8);
 
     // 遍历每种采集类型
@@ -995,6 +1017,7 @@ void MainWindow::createColumnarInstruments(const QMap<QString, QList<QString>>& 
 
             // 创建柱状仪表
             ColumnarInstrument* instrument = new ColumnarInstrument();
+            instrument->setMinimumHeight(150); // 确保仪表有足够的高度显示所有元素
 
             // 配置仪表
             instrument->configure(
@@ -1004,6 +1027,9 @@ void MainWindow::createColumnarInstruments(const QMap<QString, QList<QString>>& 
                 displayFormat.minRange,
                 displayFormat.maxRange
             );
+
+            // 设置一个初始值，确保显示正确
+            instrument->setValue((displayFormat.minRange + displayFormat.maxRange) / 2);
 
             // 将仪表添加到行布局
             rowLayout->addWidget(instrument);
@@ -1210,13 +1236,13 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
     // 计算左右两侧的高度（减去菜单栏和状态栏的高度）
     int availableHeight = newSize.height() - ui->menubar->height() - ui->statusbar->height();
-    int topHeight = (availableHeight * 3) / 4;
-    int bottomHeight = (availableHeight * 1) / 4;
+    int topHeight = (availableHeight * 3) / 5;  // 3/5 for top (3:2 ratio)
+    int bottomHeight = (availableHeight * 2) / 5;  // 2/5 for bottom (3:2 ratio)
 
-    // 重新设置左侧分割器的比例为3:1
+    // 重新设置左侧分割器的比例为3:2
     ui->leftSplitter->setSizes(QList<int>() << topHeight << bottomHeight);
 
-    // 重新设置右侧分割器的比例为3:1
+    // 重新设置右侧分割器的比例为3:2
     ui->rightSplitter->setSizes(QList<int>() << topHeight << bottomHeight);
 
     // 确保分割器保持锁定

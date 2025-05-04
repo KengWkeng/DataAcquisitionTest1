@@ -261,6 +261,7 @@ void Dashboard::paintEvent(QPaintEvent *event)
     painter.drawPixmap(rect(), m_staticCache);
 
     // Draw dynamic elements
+    drawValueDisplay(&painter); // Draw current value
     drawPointer(&painter);
     drawCenterDisc(&painter); // Center disc might overlap pointer base
 }
@@ -302,6 +303,7 @@ void Dashboard::updateStaticCache()
     drawBackground(&cachePainter);
     drawScale(&cachePainter);
     drawScaleLabels(&cachePainter);
+    // 不再在静态缓存中绘制标签和单位，改为在动态部分绘制
 
     m_cacheDirty = false;
 }
@@ -313,11 +315,14 @@ void Dashboard::drawBackground(QPainter *painter)
     painter->save();
     painter->setBrush(m_backgroundColor);
     painter->setPen(Qt::NoPen);
-    int side = qMin(width(), height());
-    painter->drawEllipse(rect().center(), side / 2 - 1, side / 2 - 1);
+
+    int side = qMin(width(), height() - 30); // 减少高度，为底部信息栏留出空间
+    QPoint center = QPoint(width() / 2, (height() - 30) / 2); // 调整中心点位置
+
+    painter->drawEllipse(center, side / 2 - 1, side / 2 - 1);
     painter->setBrush(Qt::NoBrush);
     painter->setPen(QPen(m_foregroundColor, 2));
-    painter->drawEllipse(rect().center(), side / 2 - 2, side / 2 - 2);
+    painter->drawEllipse(center, side / 2 - 2, side / 2 - 2);
     painter->restore();
 }
 
@@ -325,10 +330,11 @@ void Dashboard::drawScale(QPainter *painter)
 {
     painter->save();
     painter->setPen(m_scaleColor);
-    int side = qMin(width(), height());
+    int side = qMin(width(), height() - 30); // 减少高度，为底部信息栏留出空间
     int radius = side / 2 - 10;
 
-    painter->translate(rect().center());
+    // 调整中心点位置
+    painter->translate(QPoint(width() / 2, (height() - 30) / 2));
 
     double range = m_maxValue - m_minValue;
     if (qFuzzyIsNull(range)) range = 1.0;
@@ -364,11 +370,12 @@ void Dashboard::drawScaleLabels(QPainter *painter)
     painter->setPen(m_textColor);
     painter->setFont(m_scaleFont);
 
-    int side = qMin(width(), height());
+    int side = qMin(width(), height() - 30); // 减少高度，为底部信息栏留出空间
     int radius = side / 2 - 35;
     QFontMetrics fm = painter->fontMetrics();
 
-    painter->translate(rect().center());
+    // 调整中心点位置
+    painter->translate(QPoint(width() / 2, (height() - 30) / 2));
 
     double range = m_maxValue - m_minValue;
     if (qFuzzyIsNull(range)) range = 1.0;
@@ -397,7 +404,8 @@ void Dashboard::drawPointer(QPainter *painter)
     painter->setPen(Qt::NoPen);
     painter->setBrush(m_pointerColor);
 
-    painter->translate(rect().center());
+    // 调整中心点位置
+    painter->translate(QPoint(width() / 2, (height() - 30) / 2));
 
     double range = m_maxValue - m_minValue;
     if (qFuzzyIsNull(range)) range = 1.0;
@@ -407,7 +415,7 @@ void Dashboard::drawPointer(QPainter *painter)
 
     painter->rotate(-angle);
 
-    int side = qMin(width(), height());
+    int side = qMin(width(), height() - 30); // 减少高度，为底部信息栏留出空间
     int pointerLength = side / 2 - 20;
     int pointerWidth = 6;
 
@@ -430,6 +438,89 @@ void Dashboard::drawCenterDisc(QPainter *painter)
     painter->setPen(Qt::NoPen);
     painter->setBrush(m_foregroundColor);
     int radius = 8;
-    painter->drawEllipse(rect().center(), radius, radius);
+    // 调整中心点位置
+    QPoint center = QPoint(width() / 2, (height() - 30) / 2);
+    painter->drawEllipse(center, radius, radius);
+    painter->restore();
+}
+
+void Dashboard::drawLabel(QPainter *painter)
+{
+    // 不再单独绘制标签，改为在drawInfoBar中统一绘制
+}
+
+void Dashboard::drawUnit(QPainter *painter)
+{
+    // 不再单独绘制单位，改为在drawInfoBar中统一绘制
+}
+
+void Dashboard::drawValueDisplay(QPainter *painter)
+{
+    // 不再单独绘制数值，改为在drawInfoBar中统一绘制
+    drawInfoBar(painter);
+}
+
+void Dashboard::drawInfoBar(QPainter *painter)
+{
+    painter->save();
+    painter->setPen(m_textColor);
+
+    // 设置字体
+    QFont labelFont = painter->font();
+    labelFont.setPointSize(10);
+    painter->setFont(labelFont);
+
+    // 格式化当前值
+    QString valueText = QString::number(m_currentValue, 'f', m_precision);
+
+    // 计算文本宽度
+    QFontMetrics fm = painter->fontMetrics();
+    int labelWidth = m_label.isEmpty() ? 0 : fm.horizontalAdvance(m_label);
+    int valueWidth = fm.horizontalAdvance(valueText);
+    int unitWidth = m_unit.isEmpty() ? 0 : fm.horizontalAdvance(m_unit);
+
+    // 计算间距
+    const int spacing = 10; // 文本之间的间距
+    int totalWidth = labelWidth + valueWidth + unitWidth;
+    if (!m_label.isEmpty()) totalWidth += spacing;
+    if (!m_unit.isEmpty()) totalWidth += spacing;
+
+    // 计算起始位置 - 在仪表盘底部绘制信息栏
+    int y = height() - 10; // 距离底部10像素
+    int x = (width() - totalWidth) / 2;
+
+    // 绘制背景矩形（可选）
+    // painter->fillRect(QRect(0, height() - 30, width(), 30), QColor(240, 240, 240));
+
+    // 绘制标签
+    if (!m_label.isEmpty()) {
+        // 设置标签字体（加粗）
+        QFont boldFont = labelFont;
+        boldFont.setBold(true);
+        painter->setFont(boldFont);
+
+        painter->drawText(x, y, m_label);
+        x += labelWidth + spacing;
+
+        // 恢复普通字体
+        painter->setFont(labelFont);
+    }
+
+    // 绘制数值 - 使用稍大的字体
+    QFont valueFont = labelFont;
+    valueFont.setPointSize(11);
+    painter->setFont(valueFont);
+    painter->drawText(x, y, valueText);
+    x += valueWidth;
+
+    // 恢复普通字体
+    painter->setFont(labelFont);
+
+    // 绘制单位
+    if (!m_unit.isEmpty()) {
+        x += spacing;
+        painter->drawText(x, y, m_unit);
+    }
+
     painter->restore();
 }

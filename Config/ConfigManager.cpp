@@ -376,7 +376,7 @@ void ConfigManager::parseModbusDevices(const QJsonArray& jsonArray)
 
                         // 创建对应的通道配置
                         Core::ChannelConfig channelConfig;
-                        channelConfig.channelId = instanceName + "_" + channelName;
+                        channelConfig.channelId = channelName; // 直接使用通道名称作为通道ID
                         channelConfig.channelName = channelName;
                         channelConfig.deviceId = instanceName;
                         channelConfig.hardwareChannel = QString("%1_%2").arg(slaveId).arg(registerAddress);
@@ -490,7 +490,7 @@ void ConfigManager::parseDAQDevices(const QJsonArray& jsonArray)
 
                 // 创建对应的通道配置（用于数据处理）
                 Core::ChannelConfig procChannelConfig;
-                procChannelConfig.channelId = deviceId + "_" + channelName;
+                procChannelConfig.channelId = channelName; // 直接使用通道名称作为通道ID
                 procChannelConfig.channelName = channelName;
                 procChannelConfig.deviceId = deviceId;
                 procChannelConfig.hardwareChannel = QString::number(channelId);
@@ -665,7 +665,7 @@ void ConfigManager::parseECUDevices(const QJsonArray& jsonArray)
 
                 // 创建对应的通道配置（用于数据处理）
                 Core::ChannelConfig procChannelConfig;
-                procChannelConfig.channelId = instanceName + "_" + channelName;
+                procChannelConfig.channelId = channelName; // 直接使用通道名称作为通道ID
                 procChannelConfig.channelName = channelName;
                 procChannelConfig.deviceId = instanceName;
                 procChannelConfig.hardwareChannel = channelName;

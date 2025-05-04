@@ -192,6 +192,7 @@ private:
     void drawLabel(QPainter *painter);
     void drawUnit(QPainter *painter);
     void drawValueDisplay(QPainter *painter);
+    void drawInfoBar(QPainter *painter);
     void drawPointer(QPainter *painter);
     void drawCenterDisc(QPainter *painter);
 
