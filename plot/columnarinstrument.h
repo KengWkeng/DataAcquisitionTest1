@@ -1,13 +1,13 @@
-#ifndef COLUMNARINSTRUMENT_H
-#define COLUMNARINSTRUMENT_H
+#ifndef ColumnarInstrument_H
+#define ColumnarInstrument_H
 
 #include <QWidget>
 #include <QString>
 #include <QColor>
 #include <QPixmap>
 #include <QFont>
-
-class QLabel; // Forward declaration
+#include <QLabel>
+#include <QVBoxLayout>
 
 class ColumnarInstrument : public QWidget
 {
@@ -38,7 +38,7 @@ public slots:
     void setRange(double minValue, double maxValue);
     void setUnit(const QString &unit);
     void setLabel(const QString &label);
-    void setPrecision(int precision); // For digital display
+    void setPrecision(int precision);
 
 signals:
     void valueChanged(double value);
@@ -53,52 +53,48 @@ protected:
 
 private:
     void drawBackground(QPainter *painter);
-    void drawBar(QPainter *painter);
     void drawScale(QPainter *painter);
-    void drawLabels(QPainter *painter);
-    void drawAlarms(QPainter *painter);
-    void drawBarAreaOutline(QPainter *painter);
-    void updateDigitalDisplay();
+    void drawScaleLabels(QPainter *painter);
+    void drawStaticColorZones(QPainter *painter);
+    void drawIndicator(QPainter *painter);
+    void updateTextLabels();
     void updateStaticCache();
 
     double m_value = 0.0;
     double m_minValue = 0.0;
     double m_maxValue = 100.0;
-    QString m_unit = ""; // Default to empty string to avoid empty string issues
-    QString m_label = ""; // Default to empty string
+    QString m_unit = "";
+    QString m_label = "";
     int m_precision = 1;
 
-    QLabel *m_valueLabel; // Digital display
+    QLabel *m_mainLabel;
+    QLabel *m_valueLabel;
 
-    // Drawing parameters (can be adjusted)
-    int m_scaleMargin = 10;
-    int m_barWidthRatio = 40; // Percentage of width
-    int m_scaleTicks = 11; // Number of major ticks (0 to 100 -> 11 ticks)
-    int m_labelAreaHeight = 35; // Slightly increase for larger font
-    int m_digitalDisplayHeight = 40;
-    int m_alarmMarkWidth = 5;
-    int m_alarmLabelOffset = 2;
+    int m_scaleMargin = 5;
+    int m_barWidthRatio = 20;
+    int m_scaleTicks = 11;
+    int m_textWidthRatio = 40;
+    int m_indicatorHeight = 3;
+    int m_indicatorOverhang = 4;
 
-    // Colors
-    QColor m_barColor = QColor(0, 100, 200); // Normal color (0-70%)
-    QColor m_warningColor = QColor(218, 165, 32);      // Warning color (70-85%)
-    QColor m_dangerColor = QColor(178, 34, 34);        // Danger color (>85%)
+    QColor m_warningColor = QColor(218, 165, 32);
+    QColor m_dangerColor = QColor(178, 34, 34);
+    QColor m_normalColor = Qt::white;
     QColor m_scaleColor = Qt::black;
     QColor m_labelColor = Qt::black;
     QColor m_backgroundColor = Qt::white;
-    QColor m_outlineColor = Qt::darkGray; // Color for the bar area outline
+    QColor m_indicatorColor = Qt::blue;
+    QColor m_outerBorderColor = QColor(200, 200, 200, 150);
 
-    // Thresholds (as percentages of the range)
-    double m_warningThreshold = 0.70;
-    double m_dangerThreshold = 0.85;
+    const double m_warningThreshold = 0.70;
+    const double m_dangerThreshold = 0.85;
 
-    // Cache for static elements
     QPixmap m_staticCache;
     bool m_cacheDirty = true;
 
-    // Font
     QFont m_topLabelFont;
     QFont m_valueLabelFont;
+
 };
 
-#endif // COLUMNARINSTRUMENT_H 
+#endif // ColumnarInstrument_H 

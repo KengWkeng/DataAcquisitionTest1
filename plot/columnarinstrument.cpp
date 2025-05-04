@@ -1,49 +1,72 @@
 #include "columnarinstrument.h"
 #include <QPainter>
+#include <QHBoxLayout> // Use QHBoxLayout
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QWidget> // For the text area container
 #include <QDebug>
 #include <cmath>
 #include <algorithm>
 #include <QResizeEvent>
-#include <QApplication> // For default font
+#include <QApplication>
 
+// --- 修改类名和包含文件 --- 
 ColumnarInstrument::ColumnarInstrument(QWidget *parent)
     : QWidget(parent)
+    , m_mainLabel(new QLabel(this))
     , m_valueLabel(new QLabel(this))
 {
-    // Initial Font Setup
+    // Font Setup (reuse from previous version)
     m_topLabelFont = QApplication::font();
-    m_topLabelFont.setPointSize(m_topLabelFont.pointSize() + 2); // Increase size slightly
-    m_topLabelFont.setBold(true);
+    m_topLabelFont.setPointSize(m_topLabelFont.pointSize() + 1);
+    // m_topLabelFont.setBold(true);
 
     m_valueLabelFont = QApplication::font();
-    m_valueLabelFont.setPointSize(m_valueLabelFont.pointSize() + 4); // 比顶部标签更大
+    m_valueLabelFont.setPointSize(m_valueLabelFont.pointSize() + 2);
+    m_valueLabelFont.setBold(true);
 
-    // Layout and QLabel Initialization
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    // Add space at the top for the potentially larger label
-    mainLayout->setContentsMargins(5, m_labelAreaHeight, 5, 5); // Add some side margins too
-    mainLayout->addStretch(); // Push Label to bottom
+    // --- Layout Setup (QHBoxLayout) ---
+    QHBoxLayout *mainLayout = new QHBoxLayout(this);
+    mainLayout->setContentsMargins(2, 2, 2, 2); // Minimal margins
+    mainLayout->setSpacing(5);
+
+    // Left side: Drawing area (handled by paintEvent on 'this')
+    // We need a placeholder or rely on stretch factors
+    // Let the text area define its size, drawing area takes the rest
+
+    // Right side: Text Area
+    QWidget *textWidget = new QWidget(this);
+    QVBoxLayout *textLayout = new QVBoxLayout(textWidget);
+    textLayout->setContentsMargins(0, 0, 0, 0);
+    textLayout->setSpacing(2);
+    textLayout->addStretch(1);
+
+    m_mainLabel->setFont(m_topLabelFont);
+    m_mainLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    m_mainLabel->setForegroundRole(QPalette::WindowText);
+    textLayout->addWidget(m_mainLabel);
 
     m_valueLabel->setFont(m_valueLabelFont);
-    m_valueLabel->setAlignment(Qt::AlignCenter); // 居中对齐
-    m_valueLabel->setFixedHeight(m_digitalDisplayHeight);
-    m_valueLabel->setAutoFillBackground(false); // 通常 QLabel 不需要背景填充
-    QPalette valPalette = m_valueLabel->palette();
-    valPalette.setColor(QPalette::WindowText, m_labelColor);
-    m_valueLabel->setPalette(valPalette);
+    m_valueLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    m_valueLabel->setForegroundRole(QPalette::WindowText);
+    textLayout->addWidget(m_valueLabel);
+    textLayout->addStretch(1);
 
-    mainLayout->addWidget(m_valueLabel);
+    textWidget->setLayout(textLayout);
+
+    // Add drawing area stretch and text widget to main layout
+    mainLayout->addStretch(100 - m_textWidthRatio); // Drawing area takes majority width
+    mainLayout->addWidget(textWidget, m_textWidthRatio); // Text area takes defined ratio
+
     setLayout(mainLayout);
 
-    setMinimumSize(120, 250); // Slightly wider minimum
-    updateDigitalDisplay();
-
-    // Initial configuration (optional default values)
-    // configure("Parameter", "Units", 1, 0.0, 100.0);
+    setMinimumSize(150, 100); // Adjust minimum size
+    updateTextLabels(); // Initialize text labels
 }
 
+// Destructor remains simple (Qt handles children)
+
+// --- Getters (unchanged) ---
 double ColumnarInstrument::value() const { return m_value; }
 double ColumnarInstrument::minValue() const { return m_minValue; }
 double ColumnarInstrument::maxValue() const { return m_maxValue; }
@@ -51,121 +74,196 @@ QString ColumnarInstrument::unit() const { return m_unit; }
 QString ColumnarInstrument::label() const { return m_label; }
 int ColumnarInstrument::precision() const { return m_precision; }
 
+// --- Configure Method ---
 void ColumnarInstrument::configure(const QString &label, const QString &unit, int precision, double minRange, double maxRange)
 {
-    bool changed = false;
-    if (m_label != label) { m_label = label; changed = true; emit labelChanged(m_label); }
-    if (m_unit != unit) { m_unit = unit; changed = true; emit unitChanged(m_unit); }
-    if (m_precision != precision && precision >= 0) { m_precision = precision; changed = true; emit precisionChanged(m_precision); }
+    bool labelOrUnitChanged = false;
+    bool rangeOrPrecisionChanged = false;
+
+    if (m_label != label) { m_label = label; labelOrUnitChanged = true; emit labelChanged(m_label); }
+    if (m_unit != unit) { m_unit = unit; labelOrUnitChanged = true; emit unitChanged(m_unit); }
+    if (m_precision != precision && precision >= 0) { m_precision = precision; rangeOrPrecisionChanged = true; emit precisionChanged(m_precision); }
+
     if (minRange < maxRange) {
-        if (m_minValue != minRange) { m_minValue = minRange; changed = true; }
-        if (m_maxValue != maxRange) { m_maxValue = maxRange; changed = true; }
-        if (m_minValue != minRange || m_maxValue != maxRange) {
+        bool rangeChangedFlag = false;
+        if (m_minValue != minRange) { m_minValue = minRange; rangeChangedFlag = true; }
+        if (m_maxValue != maxRange) { m_maxValue = maxRange; rangeChangedFlag = true; }
+        if (rangeChangedFlag) {
+             rangeOrPrecisionChanged = true;
              emit rangeChanged(m_minValue, m_maxValue);
         }
     }
 
-    if (changed) {
+    if (labelOrUnitChanged || rangeOrPrecisionChanged) {
         m_cacheDirty = true;
+        updateTextLabels();
         setValue(m_value); // Re-clamp value if range changed
-        updateDigitalDisplay(); // Update numeric part of display
         update(); // Trigger repaint
     }
 }
 
+// --- Setters (call configure) ---
 void ColumnarInstrument::setValue(double value)
 {
     double clampedValue = std::clamp(value, m_minValue, m_maxValue);
+    // Use m_currentValue for smooth indicator movement if needed later,
+    // For now, just update m_value directly and redraw indicator.
+    // Let's skip animation for simplicity first.
     if (m_value != clampedValue) {
         m_value = clampedValue;
-        updateDigitalDisplay();
-        // No need for m_cacheDirty = true here, only bar redraw needed
-        update();
+        // update m_currentValue if animation was used
+        updateTextLabels(); // Update the value display label
+        update(); // Trigger repaint for the indicator
         emit valueChanged(m_value);
     }
 }
 
-void ColumnarInstrument::setMinValue(double minValue)
+void ColumnarInstrument::setMinValue(double minValue) { configure(m_label, m_unit, m_precision, minValue, m_maxValue); }
+void ColumnarInstrument::setMaxValue(double maxValue) { configure(m_label, m_unit, m_precision, m_minValue, maxValue); }
+void ColumnarInstrument::setRange(double minValue, double maxValue) { configure(m_label, m_unit, m_precision, minValue, maxValue); }
+void ColumnarInstrument::setUnit(const QString &unit) { configure(m_label, unit, m_precision, m_minValue, m_maxValue); }
+void ColumnarInstrument::setLabel(const QString &label) { configure(label, m_unit, m_precision, m_minValue, m_maxValue); }
+void ColumnarInstrument::setPrecision(int precision) { configure(m_label, m_unit, precision, m_minValue, m_maxValue); }
+
+
+// --- Update Text Labels ---
+void ColumnarInstrument::updateTextLabels()
 {
-    configure(m_label, m_unit, m_precision, minValue, m_maxValue);
+    if (m_mainLabel) {
+        QString mainText = m_label;
+        if (!m_unit.isEmpty()) {
+            mainText += "/" + m_unit;
+        }
+        m_mainLabel->setText(mainText);
+    }
+    if (m_valueLabel) {
+        QString valueStr = QString::number(m_value, 'f', m_precision);
+        QString valueText = valueStr;
+        if (!m_unit.isEmpty()) {
+            valueText += " " + m_unit;
+        }
+        m_valueLabel->setText(valueText);
+    }
 }
 
-void ColumnarInstrument::setMaxValue(double maxValue)
-{
-    configure(m_label, m_unit, m_precision, m_minValue, maxValue);
-}
-
-void ColumnarInstrument::setRange(double minValue, double maxValue)
-{
-     configure(m_label, m_unit, m_precision, minValue, maxValue);
-}
-
-void ColumnarInstrument::setUnit(const QString &unit)
-{
-    configure(m_label, unit, m_precision, m_minValue, m_maxValue);
-}
-
-void ColumnarInstrument::setLabel(const QString &label)
-{
-    configure(label, m_unit, m_precision, m_minValue, m_maxValue);
-}
-
-void ColumnarInstrument::setPrecision(int precision)
-{
-    configure(m_label, m_unit, precision, m_minValue, m_maxValue);
-}
-
+// --- Event Handlers ---
 void ColumnarInstrument::resizeEvent(QResizeEvent *event)
 {
     m_cacheDirty = true;
     QWidget::resizeEvent(event);
-    // Force immediate layout adjustment for LCD positioning if needed
-    // layout()->invalidate();
-    // layout()->activate();
+    update(); // Trigger repaint
 }
 
 void ColumnarInstrument::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
     QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
 
-    if (m_cacheDirty || m_staticCache.isNull() || m_staticCache.size() != size() * devicePixelRatioF()) {
+    // Calculate drawing area (left part of the widget)
+    int drawingWidth = width() * (100 - m_textWidthRatio) / 100 - layout()->spacing();
+    QRect drawingRect(0, 0, drawingWidth, height());
+
+    // Update static cache if needed
+    // Use drawingRect size for cache? No, cache the whole widget bg maybe?
+    // Let's cache only the drawing area part.
+    QPixmap currentCache = m_staticCache;
+    if (m_cacheDirty || currentCache.isNull() || currentCache.size() != drawingRect.size() * devicePixelRatioF()) {
         updateStaticCache();
+        currentCache = m_staticCache; // Get updated cache
     }
 
-    // Draw cache (adjusting for high DPI)
-    painter.drawPixmap(rect(), m_staticCache);
+    // Draw static cache for the drawing area
+    if (!currentCache.isNull()) {
+        painter.drawPixmap(drawingRect.topLeft(), currentCache);
+    }
 
-    // Draw dynamic bar
-    painter.setRenderHint(QPainter::Antialiasing);
-    drawBar(&painter);
+    // Draw dynamic indicator within the drawing area
+    painter.save();
+    painter.translate(drawingRect.topLeft()); // Adjust painter for drawing area
+    drawIndicator(&painter);
+    painter.restore();
+
+    // Draw outer border for the whole widget
+    painter.setPen(QPen(m_outerBorderColor, 1));
+    painter.setBrush(Qt::NoBrush);
+    painter.drawRect(rect().adjusted(0, 0, -1, -1));
 }
 
+// --- Static Cache Update ---
 void ColumnarInstrument::updateStaticCache()
 {
-    // Create pixmap with device pixel ratio for high DPI screens
-    m_staticCache = QPixmap(size() * devicePixelRatioF());
+    // --- 内部计算绘图区域大小 ---
+    int drawingWidth = width() * (100 - m_textWidthRatio) / 100 - layout()->spacing();
+    QSize cacheSize(drawingWidth, height());
+    if (cacheSize.width() <= 0 || cacheSize.height() <= 0) return; // Avoid creating empty pixmap
+
+    m_staticCache = QPixmap(cacheSize * devicePixelRatioF());
     m_staticCache.setDevicePixelRatio(devicePixelRatioF());
-    m_staticCache.fill(Qt::transparent);
+    m_staticCache.fill(m_backgroundColor);
 
     QPainter cachePainter(&m_staticCache);
     cachePainter.setRenderHint(QPainter::Antialiasing);
 
-    drawBackground(&cachePainter);
+    // Draw static elements relative to the cache pixmap (size = cacheSize)
+    drawStaticColorZones(&cachePainter);
     drawScale(&cachePainter);
-    drawBarAreaOutline(&cachePainter);
-    drawAlarms(&cachePainter);
-    drawLabels(&cachePainter); // Only draws top label now
+    drawScaleLabels(&cachePainter);
 
     m_cacheDirty = false;
 }
 
+// --- Drawing Methods ---
+
 void ColumnarInstrument::drawBackground(QPainter *painter)
+{
+    // Background is now drawn when filling the cache
+    // Or could draw widget background here if cache was transparent
+    Q_UNUSED(painter);
+}
+
+void ColumnarInstrument::drawStaticColorZones(QPainter *painter)
 {
     painter->save();
     painter->setPen(Qt::NoPen);
-    painter->setBrush(m_backgroundColor);
-    painter->drawRect(rect());
+
+    // Calculate drawing geometry within the provided areaSize
+    int drawingWidth = width() * (100 - m_textWidthRatio) / 100 - layout()->spacing();
+    QSize areaSize(drawingWidth, height());
+
+    int availableHeight = areaSize.height() - 2 * m_scaleMargin;
+    if (availableHeight <= 0) {
+        painter->restore();
+        return;
+    }
+    int barWidth = areaSize.width() * m_barWidthRatio / 100;
+    // Position bar slightly off the left edge, leave space for scale
+    int scaleAreaWidth = 30; // Width reserved for scale ticks/labels
+    int barX = scaleAreaWidth + m_scaleMargin;
+    int topY = m_scaleMargin;
+    int bottomY = topY + availableHeight;
+
+    // Calculate Y coordinates for thresholds
+    int warningLineY = topY + static_cast<int>(availableHeight * (1.0 - m_warningThreshold));
+    int dangerLineY = topY + static_cast<int>(availableHeight * (1.0 - m_dangerThreshold));
+
+    // 1. Danger Zone (Red)
+    painter->setBrush(m_dangerColor);
+    painter->drawRect(barX, topY, barWidth, dangerLineY - topY);
+
+    // 2. Warning Zone (Yellow)
+    painter->setBrush(m_warningColor);
+    painter->drawRect(barX, dangerLineY, barWidth, warningLineY - dangerLineY);
+
+    // 3. Normal Zone (White)
+    painter->setBrush(m_normalColor);
+    painter->drawRect(barX, warningLineY, barWidth, bottomY - warningLineY);
+
+    // Optional: Outline around the zones
+    painter->setPen(m_scaleColor);
+    painter->setBrush(Qt::NoBrush);
+    painter->drawRect(barX, topY, barWidth, availableHeight);
+
     painter->restore();
 }
 
@@ -174,44 +272,40 @@ void ColumnarInstrument::drawScale(QPainter *painter)
     painter->save();
     painter->setPen(m_scaleColor);
 
-    int topMargin = m_labelAreaHeight + m_scaleMargin;
-    int bottomMargin = m_digitalDisplayHeight + m_scaleMargin + 5;
-    int availableHeight = height() - topMargin - bottomMargin;
-    if (availableHeight <= 0) {
-         painter->restore();
-         return;
-    }
+    int drawingWidth = width() * (100 - m_textWidthRatio) / 100 - layout()->spacing();
+    QSize areaSize(drawingWidth, height());
 
-    int barAreaWidth = width() * m_barWidthRatio / 100;
-    int scaleAreaX = (width() - barAreaWidth) / 2;
-    int scaleLineX = scaleAreaX + barAreaWidth;
+    int availableHeight = areaSize.height() - 2 * m_scaleMargin;
+    if (availableHeight <= 0) {
+        painter->restore();
+        return;
+    }
+    // Position scale to the left of the bar
+    int scaleAreaWidth = 30;
+    int scaleLineX = scaleAreaWidth; // Right edge of scale area
+    int topY = m_scaleMargin;
 
     double range = m_maxValue - m_minValue;
     if (range <= 0) range = 1;
 
-    QFontMetrics fm = painter->fontMetrics();
     for (int i = 0; i < m_scaleTicks; ++i) {
-        double value = m_minValue + (range * i) / (m_scaleTicks - 1);
         double ratio = static_cast<double>(i) / (m_scaleTicks - 1);
-        int y = topMargin + availableHeight * (1.0 - ratio);
+        int y = topY + availableHeight * (1.0 - ratio);
 
-        painter->drawLine(scaleLineX, y, scaleLineX + 5, y);
+        // Major tick mark (longer, points right towards bar)
+        painter->drawLine(scaleLineX - 5, y, scaleLineX, y);
 
-        // Use precision for scale labels if appropriate, maybe 0 is fine
-        QString tickLabel = QString::number(value, 'f', 0);
-        int labelWidth = fm.horizontalAdvance(tickLabel);
-        painter->drawText(scaleLineX + 8, y - fm.height() / 2 + fm.ascent(), tickLabel);
-
-        // Minor ticks (corrected calculation)
+        // Optional: Minor ticks
         if (i < m_scaleTicks - 1) {
             int minorTicks = 4;
             double majorStepRatio = 1.0 / (m_scaleTicks - 1);
             for (int j = 1; j <= minorTicks; ++j) {
                 double minorOffsetRatio = (static_cast<double>(j) / (minorTicks + 1)) * majorStepRatio;
                 double minorRatio = ratio + minorOffsetRatio;
-                int minorY = topMargin + availableHeight * (1.0 - minorRatio);
-                if (minorY < height() - bottomMargin && minorY > topMargin) {
-                    painter->drawLine(scaleLineX, minorY, scaleLineX + 3, minorY);
+                int minorY = topY + availableHeight * (1.0 - minorRatio);
+                if (minorY < areaSize.height() - m_scaleMargin && minorY > m_scaleMargin) {
+                    // Shorter minor tick
+                    painter->drawLine(scaleLineX - 3, minorY, scaleLineX, minorY);
                 }
             }
         }
@@ -220,163 +314,72 @@ void ColumnarInstrument::drawScale(QPainter *painter)
     painter->restore();
 }
 
-void ColumnarInstrument::drawBar(QPainter *painter)
+void ColumnarInstrument::drawScaleLabels(QPainter *painter)
 {
     painter->save();
-    painter->setPen(Qt::NoPen);
+    painter->setPen(m_scaleColor);
+    painter->setFont(QApplication::font()); // Use default font
 
-    int topMargin = m_labelAreaHeight + m_scaleMargin;
-    int bottomMargin = m_digitalDisplayHeight + m_scaleMargin + 5;
-    int availableHeight = height() - topMargin - bottomMargin;
+    int drawingWidth = width() * (100 - m_textWidthRatio) / 100 - layout()->spacing();
+    QSize areaSize(drawingWidth, height());
+
+    int availableHeight = areaSize.height() - 2 * m_scaleMargin;
     if (availableHeight <= 0) {
         painter->restore();
         return;
     }
-
-    int barWidth = width() * m_barWidthRatio / 100;
-    int barX = (width() - barWidth) / 2;
+    int scaleAreaWidth = 30;
+    int labelX = 2; // X position for labels (left aligned)
+    int topY = m_scaleMargin;
 
     double range = m_maxValue - m_minValue;
     if (range <= 0) range = 1;
 
+    QFontMetrics fm = painter->fontMetrics();
+    for (int i = 0; i < m_scaleTicks; ++i) {
+        double value = m_minValue + (range * i) / (m_scaleTicks - 1);
+        double ratio = static_cast<double>(i) / (m_scaleTicks - 1);
+        int y = topY + availableHeight * (1.0 - ratio);
+
+        QString tickLabel = QString::number(std::round(value)); // Integer labels
+        painter->drawText(labelX, y + fm.ascent() / 2, tickLabel);
+    }
+
+    painter->restore();
+}
+
+void ColumnarInstrument::drawIndicator(QPainter *painter)
+{
+    painter->save();
+    painter->setPen(QPen(m_indicatorColor, m_indicatorHeight)); // Pen width defines line height
+    painter->setBrush(m_indicatorColor);
+
+    int drawingWidth = width() * (100 - m_textWidthRatio) / 100 - layout()->spacing();
+    QSize areaSize(drawingWidth, height());
+
+    int availableHeight = areaSize.height() - 2 * m_scaleMargin;
+    if (availableHeight <= 0) {
+        painter->restore();
+        return;
+    }
+    int scaleAreaWidth = 30;
+    int barWidth = areaSize.width() * m_barWidthRatio / 100;
+    int barX = scaleAreaWidth + m_scaleMargin;
+    int topY = m_scaleMargin;
+
+    double range = m_maxValue - m_minValue;
+    if (range <= 0) range = 1;
+
+    // Calculate Y position based on m_value (not animated m_currentValue for now)
     double valueRatio = (m_value - m_minValue) / range;
     valueRatio = std::clamp(valueRatio, 0.0, 1.0);
+    int indicatorY = topY + static_cast<int>(availableHeight * (1.0 - valueRatio));
 
-    int currentBarHeight = static_cast<int>(availableHeight * valueRatio);
-    int currentBarY = topMargin + availableHeight - currentBarHeight;
+    // Calculate X start/end for the indicator line
+    int startX = barX - m_indicatorOverhang;
+    int endX = barX + barWidth + m_indicatorOverhang;
 
-    int warningLineY = topMargin + static_cast<int>(availableHeight * (1.0 - m_warningThreshold));
-    int dangerLineY = topMargin + static_cast<int>(availableHeight * (1.0 - m_dangerThreshold));
-    int bottomY = topMargin + availableHeight;
-
-    // Draw segments from bottom up
-    if (currentBarY < bottomY) {
-        int normalTopY = std::max(currentBarY, warningLineY);
-        int normalHeight = bottomY - normalTopY;
-        if (normalHeight > 0) {
-            painter->setBrush(m_barColor);
-            painter->drawRect(barX, normalTopY, barWidth, normalHeight);
-        }
-    }
-
-    if (valueRatio >= m_warningThreshold && currentBarY < warningLineY) {
-        int warningTopY = std::max(currentBarY, dangerLineY);
-        int warningHeight = warningLineY - warningTopY;
-        if (warningHeight > 0) {
-            painter->setBrush(m_warningColor);
-            painter->drawRect(barX, warningTopY, barWidth, warningHeight);
-        }
-    }
-
-    if (valueRatio >= m_dangerThreshold && currentBarY < dangerLineY) {
-        int dangerHeight = dangerLineY - currentBarY;
-        if (dangerHeight > 0) {
-            painter->setBrush(m_dangerColor);
-            painter->drawRect(barX, currentBarY, barWidth, dangerHeight);
-        }
-    }
+    painter->drawLine(startX, indicatorY, endX, indicatorY);
 
     painter->restore();
-}
-
-void ColumnarInstrument::drawBarAreaOutline(QPainter *painter)
-{
-    painter->save();
-    painter->setPen(QPen(m_outlineColor, 1));
-    painter->setBrush(Qt::NoBrush);
-
-    int topMargin = m_labelAreaHeight + m_scaleMargin;
-    int bottomMargin = m_digitalDisplayHeight + m_scaleMargin + 5;
-    int availableHeight = height() - topMargin - bottomMargin;
-    if (availableHeight <= 0) {
-        painter->restore();
-        return;
-    }
-
-    int barWidth = width() * m_barWidthRatio / 100;
-    int barX = (width() - barWidth) / 2;
-
-    QRectF barAreaRect(barX, topMargin, barWidth, availableHeight);
-    painter->drawRect(barAreaRect);
-
-    painter->restore();
-}
-
-void ColumnarInstrument::drawAlarms(QPainter *painter)
-{
-    painter->save();
-
-    int topMargin = m_labelAreaHeight + m_scaleMargin;
-    int bottomMargin = m_digitalDisplayHeight + m_scaleMargin + 5;
-    int availableHeight = height() - topMargin - bottomMargin;
-    if (availableHeight <= 0) {
-        painter->restore();
-        return;
-    }
-
-    double range = m_maxValue - m_minValue;
-    if (range <= 0) range = 1;
-
-    int barAreaWidth = width() * m_barWidthRatio / 100;
-    int barX = (width() - barAreaWidth) / 2;
-    int alarmLineX = barX - m_alarmMarkWidth - m_alarmLabelOffset;
-
-    auto drawAlarmMark = [&](double thresholdRatio, const QString& label, const QColor& markerColor) {
-        double alarmValue = m_minValue + range * thresholdRatio;
-        if (alarmValue >= m_minValue && alarmValue <= m_maxValue) {
-            double ratio = (alarmValue - m_minValue) / range;
-            int y = topMargin + static_cast<int>(availableHeight * (1.0 - ratio));
-
-            // Draw Marker Line (Yellow or Red)
-            painter->setPen(markerColor);
-            painter->setBrush(markerColor);
-            painter->drawLine(alarmLineX, y, alarmLineX + m_alarmMarkWidth, y);
-
-            // --- Draw Text (Always Black) ---
-            painter->setPen(m_labelColor); // <-- 设置画笔为黑色
-            QFontMetrics fm = painter->fontMetrics();
-            int labelWidth = fm.horizontalAdvance(label);
-            painter->drawText(alarmLineX - labelWidth - m_alarmLabelOffset, y - fm.height() / 2 + fm.ascent(), label);
-        }
-    };
-
-    drawAlarmMark(m_warningThreshold, "AH", m_warningColor);
-    drawAlarmMark(m_dangerThreshold, "AHH", m_dangerColor);
-
-    painter->restore();
-}
-
-void ColumnarInstrument::drawLabels(QPainter *painter)
-{
-    painter->save();
-    painter->setPen(m_labelColor);
-
-    // --- Draw Top Label (Title/Unit) ---
-    if (!m_label.isEmpty()) {
-        painter->setFont(m_topLabelFont);
-        QFontMetrics fm = painter->fontMetrics();
-        QString fullLabel = m_label;
-        if (!m_unit.isEmpty()) {
-            fullLabel += ("/" + m_unit);
-        }
-        int labelWidth = fm.horizontalAdvance(fullLabel);
-        int labelX = (width() - labelWidth) / 2;
-        // Center vertically within the allocated top space
-        int labelY = fm.ascent() + (m_labelAreaHeight - fm.height()) / 2;
-        painter->drawText(labelX, labelY, fullLabel);
-    }
-
-    painter->restore();
-}
-
-void ColumnarInstrument::updateDigitalDisplay()
-{
-    if (m_valueLabel) {
-        QString valueStr = QString::number(m_value, 'f', m_precision);
-        QString displayText = valueStr;
-        if (!m_unit.isEmpty()) {
-            displayText += " " + m_unit;
-        }
-        m_valueLabel->setText(displayText);
-    }
 } 

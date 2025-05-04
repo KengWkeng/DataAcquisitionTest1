@@ -490,10 +490,12 @@ C:/Users/80911/Documents/QT/DataAcquisitionTest1/build/Desktop_Qt_6_8_1_MSVC2022
   D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/qserialportinfo.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtSerialPort/qtserialportexports.h \
   D:/Qt/6.8.1/msvc2022_64/include/QtWidgets/QCommonStyle \
+  D:/Qt/6.8.1/msvc2022_64/include/QtWidgets/QLabel \
   D:/Qt/6.8.1/msvc2022_64/include/QtWidgets/QLayout \
   D:/Qt/6.8.1/msvc2022_64/include/QtWidgets/QMainWindow \
   D:/Qt/6.8.1/msvc2022_64/include/QtWidgets/QPushButton \
   D:/Qt/6.8.1/msvc2022_64/include/QtWidgets/QScrollerProperties \
+  D:/Qt/6.8.1/msvc2022_64/include/QtWidgets/QVBoxLayout \
   D:/Qt/6.8.1/msvc2022_64/include/QtWidgets/QWidget \
   D:/Qt/6.8.1/msvc2022_64/include/QtWidgets/QtWidgets \
   D:/Qt/6.8.1/msvc2022_64/include/QtWidgets/QtWidgetsDepends \
